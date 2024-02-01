@@ -12,6 +12,7 @@ vitest_test:
   artifacts:
     paths:
       - Client/test-results.xml
+      - Client/coverage
     expire_in: 1 week
 
 sonarqube-check:
