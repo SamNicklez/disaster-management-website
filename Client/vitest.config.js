@@ -9,8 +9,8 @@ export default mergeConfig(
       environment: 'jsdom',
       exclude: [...configDefaults.exclude, 'e2e/*'],
       root: fileURLToPath(new URL('./', import.meta.url)),
-      reporters: 'junit',
-      outputFile: 'test-results.xml' // You can specify a different file name or path if neede
+      reporters: 'vitest-sonar-reporter',
+      outputFile: 'test-results.xml', // You can specify a different file name or path if neede
     }
   })
 )

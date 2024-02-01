@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="1" failures="0" errors="0" time="1.424">
-    <testsuite name="src/components/__tests__/HelloWorld.spec.js" timestamp="2024-02-01T21:19:18.027Z" hostname="Sam-HP-Spectre" tests="1" failures="0" errors="0" skipped="0" time="0.034">
-        <testcase classname="src/components/__tests__/HelloWorld.spec.js" name="HelloWorld &gt; renders properly" time="0.032">
-        </testcase>
-    </testsuite>
-</testsuites>
