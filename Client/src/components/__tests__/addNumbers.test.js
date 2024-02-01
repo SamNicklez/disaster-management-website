@@ -1,6 +1,6 @@
 // addNumbers.test.js
 import { describe, it, expect } from 'vitest';
-import addNumbers from './addNumbers';
+import addNumbers from '../addNumbers.js';
 
 describe('addNumbers', () => {
   it('correctly adds two numbers', () => {

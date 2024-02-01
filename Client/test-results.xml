@@ -1,0 +1,8 @@
+<testExecutions version="1">
+  <file path="src\components\__tests__\HelloWorld.spec.js">
+    <testCase name="HelloWorld - renders properly" duration="27" />
+  </file>
+  <file path="src\components\__tests__\addNumbers.test.js">
+    <testCase name="addNumbers - correctly adds two numbers" duration="2" />
+  </file>
+</testExecutions>
