@@ -1,5 +1,6 @@
 stages:
   - test
+  - analyze
 
 vitest_test:
   stage: test
@@ -15,6 +16,7 @@ vitest_test:
     expire_in: 1 week
 
 sonarqube-check:
+  stage: analyze
   image: 
     name: sonarsource/sonar-scanner-cli:latest
     entrypoint: [""]
