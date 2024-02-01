@@ -10,9 +10,8 @@ vitest_test:
     - npm install
     - npm run coverage:unit
   artifacts:
-    when: always
-    reports:
-      junit: Client/test-results.xml
+    paths:
+      - Client/test-results.xml
     expire_in: 1 week
 
 sonarqube-check:
