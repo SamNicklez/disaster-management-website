@@ -22,11 +22,12 @@ vitest_test:
   stage: test
   image: node:latest
   script:
+    - cd Client
     - npm install
-    - npm run test:vitest // Make sure this script runs Vitest tests for your Client folder
+    - npm run test:vitest
   artifacts:
     when: always
     reports:
-      junit: Client/test-results.xml // Update the path to match the new location
+      junit: Client/test-results.xml
     expire_in: 1 week
 
