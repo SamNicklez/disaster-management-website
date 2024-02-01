@@ -1,3 +1,21 @@
+stages:
+  - test
+
+vitest_test:
+  stage: test
+  image: node:latest
+  script:
+    - cd Client
+    - npm install
+    - npm run test:unit
+  artifacts:
+    when: always
+    reports:
+      junit: Client/test-results.xml
+    expire_in: 1 week
+
+
+
 sonarqube-check:
   image: 
     name: sonarsource/sonar-scanner-cli:latest
@@ -14,20 +32,3 @@ sonarqube-check:
   allow_failure: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'main'
-
-stages:
-  - test
-
-vitest_test:
-  stage: test
-  image: node:latest
-  script:
-    - cd Client
-    - npm install
-    - npm run test:vitest
-  artifacts:
-    when: always
-    reports:
-      junit: Client/test-results.xml
-    expire_in: 1 week
-
