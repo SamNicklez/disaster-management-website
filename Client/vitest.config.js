@@ -11,12 +11,10 @@ export default mergeConfig(viteConfig, defineConfig({
 
     // Configure coverage separately
     coverage: {
-      provider: 'v8',
-      reporters: ['text', 'lcov'], // Ensure coverage reporters are correctly specified
+      provider: 'istanbul',
+      reporters: ['text','lcov'],
     },
-
-    // Specify test reporters (for test results) correctly to avoid conflicts
-    reporters: ['default', 'vitest-sonar-reporter'], // Include 'default' or any other reporters as needed
-    outputFile: 'test-results.xml', // This likely applies to your test reporter
+    reporters: ['default', 'vitest-sonar-reporter'],
+    outputFile: 'test-results.xml',
   }
 }));
