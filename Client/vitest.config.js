@@ -13,6 +13,15 @@ export default mergeConfig(viteConfig, defineConfig({
     coverage: {
       provider: 'istanbul',
       reporters: ['text','lcov'],
+      exclude: [
+        'src/main.js',
+        '**/router/**',
+        '**/*.eslintrc.cjs',
+        '**/node_modules/**',
+        '**/tests/**',
+        '**/*.test.js',
+        '**/*.spec.js'
+      ],
     },
     reporters: ['default', 'vitest-sonar-reporter'],
     outputFile: 'test-results.xml',
