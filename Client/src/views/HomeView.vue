@@ -4,14 +4,17 @@
 
 <template>
   <div class="card">
-    <v-card text="Example Text For Home Screen" variant="tonal"></v-card>
+    Hello
   </div>
 </template>
 
 <style scoped>
 .card{
-  max-width: 50%;
-  margin-left:25vw
+  background-color: #990000;
+  width: 100%;
+  height: 50%;
+  text-align: center;
+  color: white;
+  font-size: 2em;
 }
 </style>
-```

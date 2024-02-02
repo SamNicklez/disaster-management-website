@@ -18,6 +18,7 @@ body, html, #app {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  background-color: whitesmoke;
 }
 
 #app {
@@ -25,11 +26,20 @@ body, html, #app {
   flex-direction: column;
   min-width: 100%;
   min-height: 100%;
+  background-color: whitesmoke;
 }
 
 .main {
   flex: 1;
   overflow: auto;
+  background-color: whitesmoke;
+}
+
+@font-face {
+    font-style: normal;
+    font-display: auto;
+    font-family: "Poppins";
+    src: url('/public/Poppins-Regular.ttf');
 }
 </style>
 
