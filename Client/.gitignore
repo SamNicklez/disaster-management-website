@@ -27,6 +27,8 @@ coverage
 *.sln
 *.sw?
 
+.idea/*
+
 *.tsbuildinfo
 node_modules
 .vscode
