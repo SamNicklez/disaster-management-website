@@ -15,3 +15,6 @@
 ## [Coverage](https://coverage.readthedocs.io/)
 - **Latest Version**: 7.4.1
 - **Overview**: Coverage.py is a tool for measuring code coverage of Python programs.
+
+# Run Unit Tests
+    Python -m pytest

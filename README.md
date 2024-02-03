@@ -67,3 +67,6 @@ A step by step series of examples that tell you how to get a development environ
     ```
     SOURCE MySQL/setup.sql;
     ```
+### Running Tests Locally
+
+To run unit tests, please refer to the `README.md` files in the `/Client` and `/Server` directory

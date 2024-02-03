@@ -31,3 +31,6 @@
 ### [Cypress](https://docs.cypress.io/guides/overview/why-cypress)
 - **Version**: 6.0.0
 - **Overview**: Cypress is an end-to-end testing framework designed for the modern web.
+
+## Run Unit Tests
+    npm run coverage:unit
