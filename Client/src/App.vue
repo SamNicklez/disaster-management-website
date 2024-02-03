@@ -41,5 +41,6 @@ body, html, #app {
     font-family: "Poppins";
     src: url('/public/Poppins-Regular.ttf');
 }
+
 </style>
 
