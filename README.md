@@ -1,7 +1,6 @@
 # Software Engineering Project Team 3
 
 ## Getting Started
-## CHANGE
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
