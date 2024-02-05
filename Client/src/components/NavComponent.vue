@@ -8,12 +8,10 @@ export default {
   },
   methods: {
     performSearch() {
-      // Implement your search logic here
       console.log('Searching for:', this.searchQuery);
     },
     openProfile() {
-      // Implement profile opening logic here
-      console.log('Profile icon clicked');
+      this.$router.push('/profile');
     },
   },
 };
@@ -21,7 +19,7 @@ export default {
 
 <template>
   <v-container>
-    <v-app-bar scroll-off-screen title="Disaster Donation">
+    <v-app-bar scroll-behavior="hide" title="Disaster Donation">
       <v-spacer></v-spacer>
       <div class="nav-textfield">
         <v-text-field v-model="searchQuery" dense flat hide-details prepend-icon="mdi-magnify"
