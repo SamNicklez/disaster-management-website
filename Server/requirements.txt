@@ -1,4 +1,6 @@
 Flask
 pymysql
+cryptography
 pytest
 coverage
+python-dotenv

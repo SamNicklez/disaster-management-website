@@ -1,12 +1,17 @@
 from flask import Flask, request, render_template
 import pymysql.cursors
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = Flask(__name__)
 
-connection = pymysql.connect(host='localhost',
-                             user='root',
-                             password='Password',
-                             database='test_db',)
+connection = pymysql.connect(host=os.getenv('DB_HOST', 'localhost'),
+                             user=os.getenv('DB_USER', 'root'),
+                             password=os.getenv('DB_PASSWORD', 'Password'),
+                             database=os.getenv('DB_NAME', 'test_db'),)
+
 
 app = Flask(__name__)
 
