@@ -4,7 +4,7 @@
 
 <template>
   <div class="card">
-    Profile Page
+    Event page
     <br>
     
     <br>

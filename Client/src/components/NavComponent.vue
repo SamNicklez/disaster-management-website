@@ -30,6 +30,7 @@ export default {
       </div>
       <v-spacer></v-spacer>
       <v-spacer></v-spacer>
+      <v-btn>Login</v-btn>
       <v-btn icon @click="openProfile">
         <v-icon>mdi-account-circle</v-icon>
       </v-btn>

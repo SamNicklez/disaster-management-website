@@ -1,9 +1,12 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
-export const userData = defineStore('counter', () => {
-  const username = ref('')
-  const password = ref('')
-  const email = ref('')
-  return (username,password,email)
+export const useCounterStore = defineStore('counter', () => {
+  const count = ref(0)
+  const doubleCount = computed(() => count.value * 2)
+  function increment() {
+    count.value++
+  }
+
+  return { count, doubleCount, increment }
 })
