@@ -8,6 +8,12 @@
     <br>
     <p>Our mission is to provide a platform for people to donate to the less fortunate. We believe that everyone should have access to the basic necessities of life. We are dedicated to helping those in need and we are committed to making a difference in the world.</p>
   </div>
+  <div class="card">
+    <h1>Current Events</h1>
+    <br>
+    <p>There are currently no events. Please check back later.</p>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+  </div>
 </template>
 
 <style scoped>
