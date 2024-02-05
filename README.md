@@ -16,23 +16,40 @@ Before you begin, ensure you have met the following requirements:
 
 A step by step series of examples that tell you how to get a development environment running.
 
-#### Setting up the Server
+### Setting up the Server
 
-1. Navigate to the `Server` folder.
-    ```
+Follow these steps to set up your server environment:
+
+1. **Navigate to the `Server` folder.**
+    ```bash
     cd Server
     ```
-2. Install the required Python dependencies.
-    ```
+
+2. **Install the required Python dependencies.**
+    ```bash
     pip install -r requirements.txt
     ```
-3. Navigate to the `src` folder.
-    ```
+
+3. **Navigate to the `src` folder.**
+    ```bash
     cd src
     ```
-4. Run the Flask server.
+
+4. **Create and populate a `.env` file with your database credentials.**
+    Before running the Flask server, you'll need to create a `.env` file in the `src` directory to store sensitive information such as database credentials securely. This file is not tracked by version control.
+
+    Create the `.env` file and add the following lines to it:
+
+    ```plaintext
+    DB_HOST=localhost
+    DB_USER=root
+    DB_PASSWORD=Password
+    DB_NAME=test_db
     ```
-    Python .\Flask_app.py
+
+5. **Run the Flask server.**
+    ```bash
+    python Flask_app.py
     ```
 
 #### Setting up the Client
