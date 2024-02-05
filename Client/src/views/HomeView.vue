@@ -14,11 +14,12 @@
 
 <style scoped>
 .card{
-  background-color: #990000;
+  background-color: #E9C46A;
   width: 100%;
   height: 50%;
   text-align: center;
   color: white;
   font-size: 2em;
+  border-radius: 5px;
 }
 </style>

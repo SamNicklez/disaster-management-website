@@ -3,12 +3,12 @@ import Navbar from '@/components/NavComponent.vue'
 </script>
 
 <template>
-  <div id="app">
+  <v-app>
     <Navbar />
-    <div class="main">
-      <router-view />
-    </div>
-  </div>
+      <v-main>
+        <router-view />
+      </v-main>
+  </v-app>
 </template>
 
 <style>
