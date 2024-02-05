@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 connection = pymysql.connect(host='localhost',
                              user='root',
-                             password='Killroy123',
+                             password='Password',
                              database='test_db',)
 
 app = Flask(__name__)
