@@ -1,15 +1,9 @@
 <script setup>
-
+import login from '../components/LoginComponent.vue'
 </script>
 
 <template>
-  <div class="card">
-    Hello, Here is the login page!!
-    <br>
-    <v-btn to="/">Home</v-btn>
-    <br>
-    <v-btn to="/login">Login</v-btn>
-  </div>
+    <login />
 </template>
 
 <style scoped>

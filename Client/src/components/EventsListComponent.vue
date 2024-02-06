@@ -25,7 +25,7 @@ export default {
         <h1>Active Disasters</h1>
         <v-row>
           <v-col cols="12" sm="6" v-for="event in Events" :key="event.route_id">
-            <v-card @click="goToEvent(event.route_id)" class="ma-5" hoverable>
+            <v-card @click="goToEvent(event.route_id)" class="ma-1" hoverable>
               <v-card-title style="font-size: 2em;">{{ event.name }}</v-card-title>
               <v-card-text style="font-size: 1.1em;">
                 <div><b>{{ event.location }}</b></div>
