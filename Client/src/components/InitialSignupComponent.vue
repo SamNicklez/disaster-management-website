@@ -46,8 +46,6 @@ export default {
             this.passwordRequirements[1].valid = isValidCharacters;
             this.passwordRequirements[2].valid = hasUpperCase;
             this.passwordRequirements[3].valid = hasSpecialChar;
-
-            this.valid = this.passwordRequirements.every(req => req.valid);
         },
 
         submit() {
@@ -70,11 +68,11 @@ export default {
                 placeholder="Choose a username" prepend-inner-icon="mdi-account-circle" maxLength="15"></v-text-field>
             <v-text-field class="textfield" variant="outlined" label="Password" v-model="password" :rules="passwordRules" required @input="validatePassword"
                 dense outlined placeholder="Create a password" prepend-inner-icon="mdi-lock-outline"
-                :type="visible ? 'text' : 'password'" @click:append-inner="visible = !visible"
+                type="password" @click:append-inner="visible = !visible"
                 maxLength="15"></v-text-field>
             <v-text-field class="textfield" variant="outlined" label="Confirm Password" v-model="confirmPassword" :type="visibleConfirm ? 'text' : 'password'"
                 :rules="confirmPasswordRules" required dense outlined placeholder="Confirm your password"
-                prepend-inner-icon="mdi-lock-outline" @click:append-inner="toggleConfirmPasswordVisibility"></v-text-field>
+                prepend-inner-icon="mdi-lock-outline"></v-text-field>
 
             <v-card class="mb-12" color="#F06543" variant="tonal">
                 <v-list dense>

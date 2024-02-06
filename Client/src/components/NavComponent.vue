@@ -22,6 +22,9 @@ export default {
     openLogin() {
       this.$router.push('/login');
     },
+    populateNotifications() {
+      console.log('Populating notifications');
+    },
   },
 };
 </script>
