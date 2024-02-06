@@ -40,8 +40,7 @@ export default {
                 @click:append-inner="visible = !visible"></v-text-field>
             <v-card class="mb-12" color="#313638" variant="tonal">
                 <v-card-text class="text-medium-emphasis text-caption">
-                    Warning: After 3 consecutive failed login attempts, you account will be temporarily locked for three
-                    hours. If you must login now, you can also click "Forgot login password?" below to reset the login
+                    Warning: After 3 consecutive failed login attempts, you account will be temporarily locked for 10 minutes. If you must login now, you can also click "Forgot login password?" below to reset the login
                     password.
                 </v-card-text>
             </v-card>
@@ -59,6 +58,6 @@ export default {
 
 <style scoped>
 #card{
-    max-width: 30%;
+    width: 35em;
 }
 </style>

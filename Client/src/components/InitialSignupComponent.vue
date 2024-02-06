@@ -103,7 +103,7 @@ export default {
 
 <style scoped>
 .signup-card {
-    max-width: 30%;
+    max-width: 35em;
     margin: auto;
 }
 .text-caption {

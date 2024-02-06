@@ -25,7 +25,7 @@ export default {
         <h1>Active Disasters</h1>
         <v-row>
           <v-col cols="12" sm="6" v-for="event in Events" :key="event.route_id">
-            <v-card @click="goToEvent(event.route_id)" class="ma-1" hoverable>
+            <v-card @click="goToEvent(event.route_id)" class="ma-1" hoverable id="card">
               <v-card-title style="font-size: 2em;">{{ event.name }}</v-card-title>
               <v-card-text style="font-size: 1.1em;">
                 <div><b>{{ event.location }}</b></div>
@@ -40,22 +40,8 @@ export default {
   </template>
 
 <style scoped>
-.card{
-  background-color: #313638;
-  width: auto;
-  height: auto;
-  text-align: center;
-  color: white;
-  font-size: 2em;
-  border-radius: 10px;
-  padding-left: 10vw;
-  padding-right: 10vw;
-  padding-bottom: 10vh;
-  padding-top: 10vh;
-  margin-left: 2.5vw;
-  margin-right: 2.5vw;
-  margin-bottom: 5vh;
-  color: whitesmoke;
+#card{
+    padding: 1vh;
 }
 
 
