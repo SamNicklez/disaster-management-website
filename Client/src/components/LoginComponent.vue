@@ -25,7 +25,8 @@ export default {
 
 <template>
     <div class="login-card">
-        <v-card title="Login" class="mx-auto pa-12 pb-8" id="card" elevation="8" rounded="lg" style="margin-bottom: 10vh;">
+        <v-card class="mx-auto pa-12 pb-8" id="card" elevation="8" rounded="lg" style="margin-bottom: 10vh;">
+            <div class="text-h5 text-center mb-8">Login</div>
             <div class="text-subtitle-1 text-medium-emphasis">Account</div>
             <v-text-field density="compact" v-model="username" maxLength="15" placeholder="Username" prepend-inner-icon="mdi-account-circle"
                 variant="outlined"></v-text-field>
