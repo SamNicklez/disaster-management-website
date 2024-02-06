@@ -2,7 +2,7 @@
 import '@mdi/font/css/materialdesignicons.css'
 export default {
     data: () => ({
-      visible: false,
+        visible: false,
     }),
     methods: {
         goToSignUp() {
@@ -14,7 +14,7 @@ export default {
 
 <template>
     <div>
-        <v-card class="mx-auto pa-12 pb-8" elevation="8" max-width="448" rounded="lg" style="margin-bottom: 10vh;">
+        <v-card title="Login" class="mx-auto pa-12 pb-8" id="card" elevation="8" rounded="lg" style="margin-bottom: 10vh;">
             <div class="text-subtitle-1 text-medium-emphasis">Account</div>
             <v-text-field density="compact" placeholder="Username" prepend-inner-icon="mdi-account-circle"
                 variant="outlined"></v-text-field>
@@ -46,8 +46,7 @@ export default {
 </template>
 
 <style scoped>
-.nav-textfield {
-    width: 50%;
-    margin: 0 auto;
+#card{
+    max-width: 40%;
 }
 </style>

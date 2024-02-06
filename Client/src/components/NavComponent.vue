@@ -22,7 +22,10 @@ export default {
 
 <template>
   <v-container>
-    <v-app-bar scroll-behavior="hide" title="Disaster Donation">
+    <v-app-bar scroll-behavior="hide">
+        <v-toolbar-title>
+          <v-btn text to="/" variant="plain" class="button">Disaster Donation</v-btn>
+        </v-toolbar-title>
       <v-spacer></v-spacer>
       <div class="nav-textfield">
         <v-text-field v-model="searchQuery" dense flat hide-details prepend-icon="mdi-magnify"
@@ -43,5 +46,14 @@ export default {
 .nav-textfield {
   width: 35%;
   margin: 0 auto;
+  color:black;
+}
+.button{
+  color: black;
+  font-size: 0.75em;
+  margin-left: 0.5vw;
+}
+.button:hover{
+  color: black;
 }
 </style>
