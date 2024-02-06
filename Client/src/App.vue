@@ -20,6 +20,10 @@ body, html, #app {
   background-color: #E8E9EB;
 }
 
+#template{
+  background-color: #E8E9EB;
+}
+
 #app {
   display: flex;
   flex-direction: column;
@@ -41,5 +45,8 @@ body, html, #app {
     src: url('/public/Poppins-Regular.ttf');
 }
 
+.v-application__wrap {
+    background-color: #E8E9EB;
+}
 </style>
 
