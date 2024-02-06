@@ -1,17 +1,9 @@
 <script setup>
-
+import InitialSignupComponent from '@/components/InitialSignupComponent.vue';
 </script>
 
 <template>
-  <div class="card">
-    Signup
-    <br>
-    
-    <br>
-    <v-btn to="/">Home</v-btn>
-    <br>
-    <v-btn to="/login">Login</v-btn>
-  </div>
+    <InitialSignupComponent />
 </template>
 
 <style scoped>

@@ -22,11 +22,10 @@ import EventList from '../components/EventsListComponent.vue'
   padding-left: 10vw;
   padding-right: 10vw;
   padding-bottom: 10vh;
-  padding-top: 10vh;
-  margin-left: 2.5vw;
-  margin-right: 2.5vw;
+  padding-top: 2.5vh;
+  margin-left: 1vw;
+  margin-right: 1vw;
   margin-bottom: 5vh;
-  color: whitesmoke;
-  
+  color: white;
 }
 </style>
