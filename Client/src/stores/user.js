@@ -4,21 +4,21 @@ import { defineStore } from 'pinia'
 export const useCounterStore = defineStore('counter', {
   // Using the setup function approach to define state, getters, and actions
   state: () => ({
-    count: 0,
+    username: '',
+    token: '',
+    refreshDate: new Date(),
   }),
   getters: {
-    doubleCount: (state) => state.count * 2,
+    expired: (state) => state.refreshDate.setMinutes(state.refreshDate.getMinutes() + 10) > new Date(),
+    
   },
   actions: {
-    increment() {
-      this.count++
-    },
+    setDate() {
+      this.refreshDate = new Date();
+    }
   },
   // Configure persisted state
   persist: {
     enabled: true,
-    // Optionally, you can customize the storage and paths
-    // For example, to persist only specific parts of the state
-    // paths: ['count'],
   },
 })
