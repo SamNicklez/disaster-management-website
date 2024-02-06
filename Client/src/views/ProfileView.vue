@@ -1,26 +1,18 @@
-<script setup>
-
-</script>
-
 <template>
-  <div class="card">
-    Profile Page
-    <br>
-    
-    <br>
-    <v-btn to="/">Home</v-btn>
-    <br>
-    <v-btn to="/login">Login</v-btn>
+  <div>
+    <h1>Profile page, this is a page to test state</h1>
+    <p>Count: {{ count }}</p>
+    <p>Double Count: {{ doubleCount }}</p>
+    <v-btn @click="increment">Increment</v-btn>
   </div>
 </template>
 
-<style scoped>
-.card{
-  background-color: #990000;
-  width: 100%;
-  height: 50%;
-  text-align: center;
-  color: white;
-  font-size: 2em;
-}
-</style>
+<script setup>
+import { useCounterStore } from '../stores/user.js' // Adjust the path as necessary
+
+// Use the store
+const counterStore = useCounterStore()
+
+// Extract state and actions from the store
+const { count, doubleCount, increment } = counterStore
+</script>

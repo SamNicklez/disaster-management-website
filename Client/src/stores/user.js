@@ -1,12 +1,24 @@
-import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
+// Import the persistedstate plugin
 
-export const useCounterStore = defineStore('counter', () => {
-  const count = ref(0)
-  const doubleCount = computed(() => count.value * 2)
-  function increment() {
-    count.value++
-  }
-
-  return { count, doubleCount, increment }
+export const useCounterStore = defineStore('counter', {
+  // Using the setup function approach to define state, getters, and actions
+  state: () => ({
+    count: 0,
+  }),
+  getters: {
+    doubleCount: (state) => state.count * 2,
+  },
+  actions: {
+    increment() {
+      this.count++
+    },
+  },
+  // Configure persisted state
+  persist: {
+    enabled: true,
+    // Optionally, you can customize the storage and paths
+    // For example, to persist only specific parts of the state
+    // paths: ['count'],
+  },
 })
