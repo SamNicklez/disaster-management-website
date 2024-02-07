@@ -13,18 +13,34 @@ export default {
     };
   },
   methods: {
+    /**
+     * Perform a search
+     */
     performSearch() {
       console.log('Searching for:', this.searchQuery);
     },
+    /**
+     * Open the profile page
+     */
     openProfile() {
       this.$router.push('/profile');
     },
+    /**
+     * Open the login page
+     */
     openLogin() {
       this.$router.push('/login');
     },
+    /**
+     * Populates the notifications
+     */
     populateNotifications() {
       console.log('Populating notifications');
     },
+    /**
+     * Closes a notification
+     * @param {int} index 
+     */
     closeNoti(index) {
       console.log('Closing notification at index:', index);
       this.notifications.splice(index, 1);

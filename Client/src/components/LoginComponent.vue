@@ -11,9 +11,15 @@ export default {
         alert: false,
     }),
     methods: {
+        /**
+         * Routes to the signup page
+         */
         goToSignUp() {
             this.$router.push({ name: 'signup' });
         },
+        /**
+         * Logs the user in
+         */
         login() {
             if (this.username != '' && this.password != '') {
                 if (userData.getLoginAttempts >= 3 && this.minutesBetweenDatesVal(userData.getLastLoginAttemptTime) >= 1){
@@ -47,10 +53,17 @@ export default {
                 this.alert = true;
             }
         },
+        /**
+         * Routes to the forgot password page
+         */
         forgotPass() {
             console.log('Forgot password');
             //Router push to somewhere to reset password
         },
+        /**
+         * Calculates the minutes between the current time and the input date and returns a stringified version of the minutes or seconds
+         * @param {Date} inputDateString 
+         */
         minutesBetweenDates(inputDateString) {
             const inputDate = new Date(inputDateString);
             const tenMinutesLater = new Date(inputDate.getTime() + 10 * 60000);
@@ -62,6 +75,10 @@ export default {
                 return Math.floor(diffInMilliseconds / 60000) + " minutes remaining";
             }
         },
+        /**
+         * Calculates the minutes between the current time and the input date
+         * @param {Date} inputDateString 
+         */
         minutesBetweenDatesVal(inputDateString) {
             const inputDate = new Date(inputDateString);
             const tenMinutesLater = new Date(inputDate.getTime() + 10 * 60000);

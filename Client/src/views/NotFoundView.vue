@@ -1,6 +1,9 @@
 <script>
 export default {
   methods: {
+    /**
+     * Routes to the home page
+     */
     goHome() {
       this.$router.push('/');
     }

@@ -23,11 +23,17 @@ export default {
         };
     },
     computed: {
+        /**
+         * Check if the form is valid
+         */
         valid() {
             const usernameValid = this.usernameRules.slice(0, -1).every(rule => rule(this.username) === true);
             const passwordValid = this.passwordRequirements.every(req => req.valid);
             return usernameValid && passwordValid && (this.password === this.confirmPassword);
         },
+        /**
+         * Confirm password rules
+         */
         confirmPasswordRules() {
             return [
                 v => !!v || 'Confirm password is required',
@@ -36,6 +42,9 @@ export default {
         }
     },
     methods: {
+        /**
+         * Validates password
+         */
         validatePassword() {
             const hasLength = this.password.length >= 8 && this.password.length <= 15;
             const hasSpecialChar = /[,.?!]/.test(this.password);
@@ -47,11 +56,16 @@ export default {
             this.passwordRequirements[2].valid = hasUpperCase;
             this.passwordRequirements[3].valid = hasSpecialChar;
         },
-
+        /**
+         * Submits the signup form and routes to next part of the signup process
+         */
         submit() {
             alert('Form Submitted');
             // submission logic here
         },
+        /**
+         * Routes to the sign in page
+         */
         goToSignIn() {
             this.$router.push({ name: 'login' });
         },
@@ -64,19 +78,20 @@ export default {
     <div class="signup-card">
         <v-card class="mx-auto pa-12 pb-8" elevation="8" rounded="lg" style="margin-bottom: 10vh;">
             <div class="text-h5 text-center mb-8">Sign Up</div>
-            <v-text-field class="textfield" variant="outlined" label="Username" v-model="username" :rules="usernameRules" required dense outlined
-                placeholder="Choose a username" prepend-inner-icon="mdi-account-circle" maxLength="15"></v-text-field>
-            <v-text-field class="textfield" variant="outlined" label="Password" v-model="password" :rules="passwordRules" required @input="validatePassword"
-                dense outlined placeholder="Create a password" prepend-inner-icon="mdi-lock-outline"
-                type="password" @click:append-inner="visible = !visible"
+            <v-text-field class="textfield" variant="outlined" label="Username" v-model="username" :rules="usernameRules"
+                required dense outlined placeholder="Choose a username" prepend-inner-icon="mdi-account-circle"
                 maxLength="15"></v-text-field>
-            <v-text-field class="textfield" variant="outlined" label="Confirm Password" v-model="confirmPassword" :type="visibleConfirm ? 'text' : 'password'"
-                :rules="confirmPasswordRules" required dense outlined placeholder="Confirm your password"
-                prepend-inner-icon="mdi-lock-outline"></v-text-field>
+            <v-text-field class="textfield" variant="outlined" label="Password" v-model="password" :rules="passwordRules"
+                required @input="validatePassword" dense outlined placeholder="Create a password"
+                prepend-inner-icon="mdi-lock-outline" type="password" @click:append-inner="visible = !visible"
+                maxLength="15"></v-text-field>
+            <v-text-field class="textfield" variant="outlined" label="Confirm Password" v-model="confirmPassword"
+                :type="visibleConfirm ? 'text' : 'password'" :rules="confirmPasswordRules" required dense outlined
+                placeholder="Confirm your password" prepend-inner-icon="mdi-lock-outline"></v-text-field>
 
             <v-card class="mb-12" color="#F06543" variant="tonal">
                 <v-list dense>
-                    <v-list-item v-for="(item, index) in passwordRequirements" :key="index" >
+                    <v-list-item v-for="(item, index) in passwordRequirements" :key="index">
                         <template v-slot:append v-if="item.valid">
                             <v-icon color="green" icon="mdi-check-circle"></v-icon>
                         </template>
@@ -104,10 +119,11 @@ export default {
     max-width: 35em;
     margin: auto;
 }
+
 .text-caption {
     color: #FFF;
 }
-.textfield{
+
+.textfield {
     margin-bottom: 1.5vh;
-}
-</style>
+}</style>

@@ -12,6 +12,10 @@ export default {
     };
   },
   methods: {
+    /**
+     * On click of a card, route to the event pages
+     * @param {int} id 
+     */
     goToEvent(id) {
       this.$router.push({ name: 'event', params: { id: id } });
     },
