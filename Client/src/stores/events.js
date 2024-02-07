@@ -2,15 +2,14 @@ import { defineStore } from 'pinia'
 
 export const useCounterStore = defineStore('events', {
     state: () => ({
-      count: 0,
+      events: [{event_name: 'event1', date: '2021-10-10', time: '10:00', location: 'location1', description: 'description1'}],
     }),
+    getters: {
+      events: (state) => state.events,
+    },
     actions: {
-      // since we rely on `this`, we cannot use an arrow function
-      increment() {
-        this.count++
-      },
-      randomizeCounter() {
-        this.count = Math.round(100 * Math.random())
+      setEvents(event){
+        this.events = event
       },
     },
   })

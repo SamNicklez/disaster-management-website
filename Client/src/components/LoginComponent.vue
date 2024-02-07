@@ -78,7 +78,7 @@ export default {
         <v-card class="mx-auto pa-12 pb-8" id="card" elevation="8" rounded="lg" style="margin-bottom: 10vh;">
             <div class="text-h5 text-center mb-8">Login</div>
             <v-alert v-model="alert" density="compact" variant="outlined" type="warning" :text="alertText"
-                dismissible><v-icon icon="mdi-close-box-outline" style="float:right"
+                dismissible><v-icon icon="mdi-close" style="float:right"
                     @click="this.alert = false"></v-icon></v-alert>
             <div class="text-subtitle-1 text-medium-emphasis">Account</div>
             <v-text-field density="compact" v-model="username" maxLength="15" placeholder="Username"
