@@ -23,9 +23,16 @@ export default {
         login() {
             if (this.username != '' && this.password != '') {
                 if (userData.getLoginAttempts >= 3 && this.minutesBetweenDatesVal(userData.getLastLoginAttemptTime) >= 1){
-                    this.alertText = `You have exceeded the maximum number of login attempts. Please try again in ${this.minutesBetweenDates(userData.getLastLoginAttemptTime)}`;
-                    this.alert = true;
-                    return;
+                    if(userData.getLoginAttempts == 3){
+                        userData.setLoginAttempt()
+                        this.alertText = `You have exceeded the maximum number of login attempts. Please try again in 10 minutes.`;
+                        return;
+                    }
+                    else{
+                        this.alertText = `You have exceeded the maximum number of login attempts. Please try again in ${this.minutesBetweenDates(userData.getLastLoginAttemptTime)}`;
+                        this.alert = true;
+                        return;
+                    }
                 }
                 else {
                     if(userData.getLoginAttempts >= 3){
@@ -70,9 +77,9 @@ export default {
             const now = new Date();
             const diffInMilliseconds = tenMinutesLater.getTime() - now.getTime();
             if (diffInMilliseconds < 60000) {
-                return Math.floor(diffInMilliseconds / 1000) + " seconds remaining";
+                return Math.floor(diffInMilliseconds / 1000) + " seconds.";
             } else {
-                return Math.floor(diffInMilliseconds / 60000) + " minutes remaining";
+                return Math.floor(diffInMilliseconds / 60000) + " minutes.";
             }
         },
         /**

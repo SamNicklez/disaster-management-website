@@ -17,7 +17,7 @@ export default {
      * Perform a search
      */
     performSearch() {
-      console.log('Searching for:', this.searchQuery);
+      this.$router.push(`/search/${this.searchQuery}`);
     },
     /**
      * Open the profile page
@@ -35,16 +35,15 @@ export default {
      * Populates the notifications
      */
     populateNotifications() {
-      console.log('Populating notifications');
+      //Somewhere in here, ping server to get unread notifications for the user
     },
     /**
      * Closes a notification
      * @param {int} index 
      */
     closeNoti(index) {
-      console.log('Closing notification at index:', index);
       this.notifications.splice(index, 1);
-      console.log(this.notifications.length);
+      //Somewhere in here, ping server to mark notification as read
     },
   },
 };
