@@ -26,6 +26,7 @@ const router = createRouter({
         const eventData = events()
         let event = eventData.getEvent(to.params.id)
         if (event != null && event != undefined) {
+          to.params.event = event
           next()
         } else {
           next('/notfound')

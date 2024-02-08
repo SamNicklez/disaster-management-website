@@ -1,6 +1,4 @@
 <script>
-import { events } from '../stores/events.js'
-const eventData = events()
   export default {
     event: null,
     methods: {
@@ -11,23 +9,14 @@ const eventData = events()
         this.$router.push('/');
       }
     },
-    mounted() {
-      this.event = eventData.getEvent(this.$route.params.id)
+    created() {
+      this.event = this.$route.params.event
     }
   }
 </script>
 
 <template>
-  <div class="card" v-if="this.event == null">
-    Event page
-    <br>
-    
-    <br>
-    <v-btn to="/">Home</v-btn>
-    <br>
-    <v-btn to="/login">Login</v-btn>
-  </div>
-  <div class ="card" v-else>
+  <div class ="card">
     <h1>{{this.event.name}}</h1>
     <h2>{{this.event.location}}</h2>
     <h3>{{this.event.date}} at {{this.event.time}}</h3>
@@ -38,11 +27,19 @@ const eventData = events()
 
 <style scoped>
 .card{
-  background-color: #990000;
-  width: 100%;
-  height: 50%;
+  background-color: #F06543;
+  width: auto;
+  height: auto;
   text-align: center;
-  color: white;
   font-size: 2em;
+  border-radius: 10px;
+  padding-left: 10vw;
+  padding-right: 10vw;
+  padding-bottom: 10vh;
+  padding-top: 2.5vh;
+  margin-left: 1vw;
+  margin-right: 1vw;
+  margin-bottom: 5vh;
+  color: white;
 }
 </style>
