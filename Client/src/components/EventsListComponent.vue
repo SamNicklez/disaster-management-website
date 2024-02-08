@@ -1,23 +1,28 @@
 <script>
 import { events } from '../stores/events.js'
-const eventData = events()
+
 export default {
   data() {
     return {
-      events: eventData.getEvents,
+      eventData: null,
     };
   },
+  computed: {
+    events() {
+      return this.eventData ? this.eventData.getEvents : [];
+    }
+  },
+  mounted() {
+    this.eventData = events();
+  },
   methods: {
-    /**
-     * On click of a card, route to the event pages
-     * @param {int} id 
-     */
     goToEvent(id) {
       this.$router.push({ name: 'event', params: { id: id } });
     },
   },
 };
 </script>
+
 
 <template>
     <v-container>
