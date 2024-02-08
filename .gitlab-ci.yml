@@ -12,7 +12,7 @@ client_unit_test:
   artifacts:
     paths:
       - Client/test-results.xml
-      - Client/coverage/*
+      - Client/coverage
     expire_in: 1 week
 
 server_unit_test:
