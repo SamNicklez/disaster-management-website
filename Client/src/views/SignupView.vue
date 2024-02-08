@@ -3,11 +3,11 @@ import InitialSignupComponent from '@/components/InitialSignupComponent.vue';
 </script>
 
 <template>
-    <InitialSignupComponent />
+  <InitialSignupComponent />
 </template>
 
 <style scoped>
-.card{
+.card {
   background-color: #990000;
   width: 100%;
   height: 50%;

@@ -6,13 +6,15 @@ import EventList from '../components/EventsListComponent.vue'
   <div class="card">
     <h1>Our Mission</h1>
     <br>
-    <p>Our mission is to provide a platform for people to donate to the less fortunate. We believe that everyone should have access to the basic necessities of life. We are dedicated to helping those in need and we are committed to making a difference in the world.</p>
+    <p>Our mission is to provide a platform for people to donate to the less fortunate. We believe that everyone should
+      have access to the basic necessities of life. We are dedicated to helping those in need and we are committed to
+      making a difference in the world.</p>
   </div>
   <EventList />
 </template>
 
 <style scoped>
-.card{
+.card {
   background-color: #F06543;
   width: auto;
   height: auto;

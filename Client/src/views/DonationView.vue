@@ -6,7 +6,7 @@
   <div class="card">
     Event page
     <br>
-    
+
     <br>
     <v-btn to="/">Home</v-btn>
     <br>
@@ -15,7 +15,7 @@
 </template>
 
 <style scoped>
-.card{
+.card {
   background-color: #990000;
   width: 100%;
   height: 50%;

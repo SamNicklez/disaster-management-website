@@ -93,6 +93,7 @@ export default {
   margin: 0 auto;
   color: black;
 }
+
 .button {
   color: black;
   font-size: 0.75em;

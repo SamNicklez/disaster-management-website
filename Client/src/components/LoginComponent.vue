@@ -1,7 +1,6 @@
 <script>
 import '@mdi/font/css/materialdesignicons.css'
 import { user } from '../stores/user.js'
-const userData = user()
 export default {
     data: () => ({
         visible: false,
@@ -9,6 +8,7 @@ export default {
         password: '',
         alertText: 'This is a warning alert',
         alert: false,
+        userData: null,
     }),
     methods: {
         /**
@@ -22,31 +22,31 @@ export default {
          */
         login() {
             if (this.username != '' && this.password != '') {
-                if (userData.getLoginAttempts >= 3 && this.minutesBetweenDatesVal(userData.getLastLoginAttemptTime) >= 1){
-                    if(userData.getLoginAttempts == 3){
-                        userData.setLoginAttempt()
+                if (this.userData.getLoginAttempts >= 3 && this.minutesBetweenDatesVal(this.userData.getLastLoginAttemptTime) >= 1) {
+                    if (this.userData.getLoginAttempts == 3) {
+                        this.userData.setLoginAttempt()
                         this.alertText = `You have exceeded the maximum number of login attempts. Please try again in 10 minutes.`;
                         return;
                     }
-                    else{
-                        this.alertText = `You have exceeded the maximum number of login attempts. Please try again in ${this.minutesBetweenDates(userData.getLastLoginAttemptTime)}`;
+                    else {
+                        this.alertText = `You have exceeded the maximum number of login attempts. Please try again in ${this.minutesBetweenDates(this.userData.getLastLoginAttemptTime)}`;
                         this.alert = true;
                         return;
                     }
                 }
                 else {
-                    if(userData.getLoginAttempts >= 3){
-                        userData.resetLoginAttempts()
+                    if (this.userData.getLoginAttempts >= 3) {
+                        this.userData.resetLoginAttempts()
                     }
                     //LOGIN ATTEMPT HERE
 
-                    userData.setLoginAttempt()
+                    this.userData.setLoginAttempt()
                     //Do API call to check if username and password are correct
                     //If they are correct route to home page and store user token in local storage
 
                     //IF CORRECT
-                    // userData.setLogin(this.username.toLowerCase(), "TOKEN HERE")
-                    // userData.resetLoginAttempts()
+                    // this.userData.setLogin(this.username.toLowerCase(), "TOKEN HERE")
+                    // this.userData.resetLoginAttempts()
                     // this.$router.push({ name: 'home' });
 
                     //else display error message and count failed attempts
@@ -94,6 +94,9 @@ export default {
             return diffInMilliseconds;
         }
     },
+    mounted() {
+    this.userData = user();
+  },
 };
 </script>
 
@@ -102,8 +105,7 @@ export default {
         <v-card class="mx-auto pa-12 pb-8" id="card" elevation="8" rounded="lg" style="margin-bottom: 10vh;">
             <div class="text-h5 text-center mb-8">Login</div>
             <v-alert v-model="alert" density="compact" variant="outlined" type="warning" :text="alertText"
-                dismissible><v-icon icon="mdi-close" style="float:right"
-                    @click="this.alert = false"></v-icon></v-alert>
+                dismissible><v-icon icon="mdi-close" style="float:right" @click="this.alert = false"></v-icon></v-alert>
             <div class="text-subtitle-1 text-medium-emphasis">Account</div>
             <v-text-field density="compact" v-model="username" maxLength="15" placeholder="Username"
                 prepend-inner-icon="mdi-account-circle" variant="outlined"></v-text-field>

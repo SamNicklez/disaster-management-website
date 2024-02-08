@@ -62,6 +62,7 @@ export default {
         submit() {
             alert('Form Submitted');
             // submission logic here
+            this.$router.push({ name: 'login' })
         },
         /**
          * Routes to the sign in page
@@ -78,20 +79,24 @@ export default {
     <div class="signup-card">
         <v-card class="mx-auto pa-12 pb-8" elevation="8" rounded="lg" style="margin-bottom: 10vh;">
             <div class="text-h5 text-center mb-8">Sign Up</div>
-            <v-text-field class="textfield" variant="outlined" label="Username" v-model="username" :rules="usernameRules"
-                required dense outlined placeholder="Choose a username" prepend-inner-icon="mdi-account-circle"
-                maxLength="15"></v-text-field>
-            <v-text-field class="textfield" variant="outlined" label="Password" v-model="password" :rules="passwordRules"
-                required @input="validatePassword" dense outlined placeholder="Create a password"
-                prepend-inner-icon="mdi-lock-outline" type="password" @click:append-inner="visible = !visible"
-                maxLength="15"></v-text-field>
-            <v-text-field class="textfield" variant="outlined" label="Confirm Password" v-model="confirmPassword"
-                :type="visibleConfirm ? 'text' : 'password'" :rules="confirmPasswordRules" required dense outlined
-                placeholder="Confirm your password" prepend-inner-icon="mdi-lock-outline"></v-text-field>
+            <v-text-field data-test="username-input" class="textfield" variant="outlined" label="Username"
+                v-model="username" :rules="usernameRules" required dense outlined placeholder="Choose a username"
+                prepend-inner-icon="mdi-account-circle" maxLength="15">
+            </v-text-field>
+            <v-text-field data-test="password-input" class="textfield" variant="outlined" label="Password"
+                v-model="password" :rules="passwordRules" required @input="validatePassword" dense outlined
+                placeholder="Create a password" prepend-inner-icon="mdi-lock-outline" type="password"
+                @click:append-inner="visible = !visible" maxLength="15">
+            </v-text-field>
+            <v-text-field data-test="confirm-password-input" class="textfield" variant="outlined" label="Confirm Password"
+                v-model="confirmPassword" :type="visibleConfirm ? 'text' : 'password'" :rules="confirmPasswordRules"
+                required dense outlined placeholder="Confirm your password" prepend-inner-icon="mdi-lock-outline">
+            </v-text-field>
 
-            <v-card class="mb-12" color="#F06543" variant="tonal">
+            <v-card data-test="password-requirements-card" class="mb-12" color="#F06543" variant="tonal">
                 <v-list dense>
-                    <v-list-item v-for="(item, index) in passwordRequirements" :key="index">
+                    <v-list-item v-for="(item, index) in passwordRequirements" :key="index"
+                        :data-test="`password-requirement-${index}`">
                         <template v-slot:append v-if="item.valid">
                             <v-icon color="green" icon="mdi-check-circle"></v-icon>
                         </template>
@@ -100,19 +105,21 @@ export default {
                 </v-list>
             </v-card>
 
-            <v-btn :disabled="!valid" block class="mb-8" color="#F06543" size="large" variant="tonal" style=""
-                @click="submit">
+            <v-btn data-test="signup-button" :disabled="!valid" block class="mb-8" color="#F06543" size="large"
+                variant="tonal" style="" @click="submit">
                 Sign Up
             </v-btn>
 
             <v-card-text class="text-center mt-4">
-                <a class="text-decoration-none" style="color:#313638; cursor: pointer;" @click="goToSignIn">
+                <a data-test="signin-link" class="text-decoration-none" style="color:#313638; cursor: pointer;"
+                    @click="goToSignIn">
                     Already have an account? Sign in <v-icon right>mdi-chevron-right</v-icon>
                 </a>
             </v-card-text>
         </v-card>
     </div>
 </template>
+
 
 <style scoped>
 .signup-card {
@@ -126,4 +133,5 @@ export default {
 
 .textfield {
     margin-bottom: 1.5vh;
-}</style>
+}
+</style>

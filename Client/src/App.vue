@@ -5,14 +5,16 @@ import Navbar from '@/components/NavComponent.vue'
 <template>
   <v-app>
     <Navbar />
-      <v-main>
-        <router-view />
-      </v-main>
+    <v-main>
+      <router-view />
+    </v-main>
   </v-app>
 </template>
 
 <style>
-body, html, #app {
+body,
+html,
+#app {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -20,7 +22,7 @@ body, html, #app {
   background-color: #E8E9EB;
 }
 
-#template{
+#template {
   background-color: #E8E9EB;
 }
 
@@ -39,14 +41,14 @@ body, html, #app {
 }
 
 @font-face {
-    font-style: normal;
-    font-display: auto;
-    font-family: "Poppins";
-    src: url('/public/Poppins-Regular.ttf');
+  font-style: normal;
+  font-display: auto;
+  font-family: "Poppins";
+  src: url('/public/Poppins-Regular.ttf');
 }
 
 .v-application__wrap {
-    background-color: #E8E9EB;
+  background-color: #E8E9EB;
 }
 </style>
 

@@ -40,7 +40,7 @@ export default {
   align-items: center;
 }
 
-.text-center{
+.text-center {
   margin-top: 2.5vh;
   margin-bottom: 1vh;
 }

@@ -8,12 +8,13 @@ export const user = defineStore('user', {
     token: '',
     refreshDate: null,
     loginAttempts: 0,
-    lastLoginAttempt: null,
+    lastLoginAttempt: null
   }),
   getters: {
-    expired: (state) => state.refreshDate.setMinutes(state.refreshDate.getMinutes() + 10) > new Date(),
+    expired: (state) =>
+      state.refreshDate.setMinutes(state.refreshDate.getMinutes() + 10) > new Date(),
     getLoginAttempts: (state) => state.loginAttempts,
-    getLastLoginAttemptTime: (state) => state.lastLoginAttempt,
+    getLastLoginAttemptTime: (state) => state.lastLoginAttempt
   },
   actions: {
     setDate() {
@@ -36,7 +37,7 @@ export const user = defineStore('user', {
     },
     resetLoginAttempts() {
       this.loginAttempts = 0
-    },
+    }
   },
   // Configure persisted state
   persist: {
