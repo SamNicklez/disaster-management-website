@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { events } from '../stores/events.js'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,15 +15,45 @@ const router = createRouter({
       component: () => import('../views/LoginView.vue')
     },
     {
-      path: '/profile',
+      path: '/profile/',
       name: 'profile',
       component: () => import('../views/ProfileView.vue')
+    },
+    {
+      path: '/event/:id',
+      name: 'event',
+      beforeEnter: (to, from, next) => {
+        const eventData = events()
+        let event = eventData.getEvent(to.params.id)
+        if (event != null && event != undefined) {
+          to.params.event = event
+          next()
+        } else {
+          next('/notfound')
+        }
+      },
+      component: () => import('../views/EventView.vue')
+    },
+    {
+      path: '/donation/:id',
+      name: 'donation',
+      component: () => import('../views/DonationView.vue')
+    },
+    {
+      path: '/signup',
+      name: 'signup',
+      component: () => import('../views/SignupView.vue')
+    },
+    {
+      path: '/search/:query',
+      name: 'search',
+      component: () => import('../views/SearchView.vue')
     },
     {
       path: '/:catchAll(.*)',
       name: '404',
       component: () => import('../views/NotFoundView.vue')
-    },
+    }
   ]
 })
 
