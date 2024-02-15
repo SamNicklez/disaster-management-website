@@ -1,30 +1,44 @@
 <template>
-  <v-card variant="outlined" title="User Information">
-
-  </v-card>
-  <v-card variant="outlined" title="Address Information" style="margin-top: 10vh">
-    <v-text-field v-if="edit" class="text-enter" :loading="loading" variant="solo" label="Search Address" clearable
-      v-model="searchQuery" @keyup="debouncedFetchAddresses" append-inner-icon="mdi-magnify"
-      @click:clear="checkClear"></v-text-field>
-    <v-list v-if="addresses.length" dense>
-      <v-list-item v-for="address in addresses" :key="address.properties.place_id" @click="selectAddress(address)">
-        <v-list-item-content>
-          <v-list-item-title>{{ address.properties.formatted }}</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-    </v-list>
-    <v-text-field class="address" readonly variant="outlined" label="Address" v-model="addressDetails.address" outlined
-      dense></v-text-field>
-    <v-text-field class="address" variant="outlined" label="Address Line 2" v-model="addressDetails.addressLine2" outlined
-      dense></v-text-field>
-    <v-text-field class="address" readonly variant="outlined" label="City" v-model="addressDetails.city" outlined
-      dense></v-text-field>
-    <v-text-field class="address" readonly variant="outlined" label="State" v-model="addressDetails.state" outlined
-      dense></v-text-field>
-    <v-text-field class="address" readonly variant="outlined" label="Zipcode" v-model="addressDetails.zipcode" outlined
-      dense></v-text-field>
-    <v-btn v-if="edit" style="background-color: #F06543;" @click="addressEdit">Save</v-btn>
-    <v-btn v-if="!edit" style="background-color: #F06543;" @click="addressEdit">Edit</v-btn>
+  <v-card class="mb-5" outlined tile>
+    <v-card-title>User Information</v-card-title>
+    <v-container>
+      <v-row>
+        <v-col cols="12" md="6">
+          <v-text-field label="Username" v-model="username" :readonly="!edit" outlined dense></v-text-field>
+        </v-col>
+        <v-col cols="12" md="6">
+          <v-text-field label="Email" v-model="email" :readonly="!edit" outlined dense></v-text-field>
+        </v-col>
+        <v-col cols="12" md="6">
+          <v-text-field label="Role" v-model="role" :readonly="!edit" outlined dense></v-text-field>
+        </v-col>
+        <v-col cols="12" md="6">
+          <v-text-field label="Phone Number" v-model="phone_number" :readonly="!edit" outlined dense></v-text-field>
+        </v-col>
+      </v-row>
+      <v-btn :color="edit ? 'success' : 'primary'" @click="toggleEdit">
+        <v-icon left>{{ edit ? 'mdi-content-save' : 'mdi-pencil' }}</v-icon>
+        {{ edit ? 'Save' : 'Edit' }}
+      </v-btn>
+    </v-container>
+    <v-card-title>Address Information</v-card-title>
+    <v-container>
+      <v-text-field v-if="edit" class="mb-3" :loading="loading" outlined clearable label="Add Address"
+        v-model="searchQuery" @keyup="debouncedFetchAddresses" append-inner-icon="mdi-magnify"
+        @click:clear="checkClear"></v-text-field>
+      <v-list v-if="addresses.length" dense>
+        <v-list-item v-for="address in addresses" :key="address.properties.place_id" @click="selectAddress(address)">
+          <v-list-item-content>
+            <v-list-item-title>{{ address.properties.formatted }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+      <v-text-field readonly outlined label="Address" v-model="addressDetails.address" dense></v-text-field>
+      <v-text-field v-if="edit" outlined label="Address Line 2" v-model="addressDetails.addressLine2" dense></v-text-field>
+      <v-text-field readonly outlined label="City" v-model="addressDetails.city" dense></v-text-field>
+      <v-text-field readonly outlined label="State" v-model="addressDetails.state" dense></v-text-field>
+      <v-text-field readonly outlined label="Zipcode" v-model="addressDetails.zipcode" dense></v-text-field>
+    </v-container>
   </v-card>
 </template>
 
@@ -52,16 +66,11 @@ export default {
       username: 'temp',
       email: 'snicklaus@uiowa.edu',
       role: 'ADMIN',
-      phone_number: '319-555-5555', 
+      phone_number: '319-555-5555',
       edit: false,
     };
   },
   created() {
-    //Create FETCH call here for user data
-
-    //If address data is not available, set edit to true
-    //this.edit = true
-    // Create a debounced version of fetchAddresses
     this.debouncedFetchAddresses = this.debounce(this.fetchAddresses, 500);
   },
   methods: {
@@ -120,29 +129,25 @@ export default {
         latitude: ''
       }
     },
-    addressEdit() {
+    toggleEdit() {
       this.edit = !this.edit
 
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style scoped>
-.address {
-  width: 50%;
-  margin-left: 5vh;
-}
-
-.text-enter {
-  margin-bottom: 1vh;
-  width: 50%;
-  margin-left: 5vh;
-
-}
-
 .v-card {
-  padding: 3em;
-  background-color: #E0DFD5;
-}</style>
-```
+  padding: 2em;
+  margin-bottom: 2em;
+}
+
+.v-container {
+  max-width: 80%;
+}
+
+.mb-3 {
+  margin-bottom: 1rem;
+}
+</style>
