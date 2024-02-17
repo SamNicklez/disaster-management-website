@@ -34,31 +34,42 @@ def create_item():
     
     
 @items_bp.route('/GetCategories', methods=['GET'])
-def get_categories():
+def get_categoriess():
     try:
-        categories = Category.query.all()
-        categories_list = [{'CategoryId': category.CategoryId, 'CategoryName': category.CategoryName} for category in categories]
+        conn = db.engine.raw_connection()
+        cursor = conn.cursor()
+        cursor.callproc('GetAllCategories')
+        categories = cursor.fetchall()
+        cursor.close() 
+        conn.close()
+        categories_list = [{'CategoryId': category[0], 'CategoryName': category[1]} for category in categories]
         return jsonify(categories_list), 200
+    
     except Exception as e:
+        print("error")
         print(f"Error: {str(e)}")
         return jsonify({"error": "Internal Server Error"}), 500
 
 
 @items_bp.route('/GetItems', methods=['GET'])
-def get_items():
-    category_id = request.args.get('CategoryId', None)
+def get_itemsNew():
+    CategoryId = request.args.get('CategoryId', None)
 
-    if category_id is None:
-        return jsonify({"error": "CategoryId parameter is required"}), 400 
-
+    if CategoryId is None:
+        return jsonify({"error": "CategoryId parameter is required"}), 400
+    
     try:
-        items = Item.query.filter_by(CategoryId=category_id).all()
-        items_list = [{'ItemId': item.ItemID, 'ItemName': item.ItemName, 'ItemDescription': item.ItemDescription, 'CategoryId': item.CategoryId} for item in items]
+        conn = db.engine.raw_connection()
+        cursor = conn.cursor()
+        cursor.callproc('GetItemsByCategory', [CategoryId])
+        items = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        items_list = [{'ItemId': item[0], 'ItemName': item[1], 'CategoryId': item[2], 'ItemDescription': item[3]} for item in items]
         return jsonify(items_list), 200
     
     except Exception as e:
-        print(f"Error occured ")
-        print(f"Error: {str(e)}")
+        print(f"Error occurred: {str(e)}")
         return jsonify({"error": "Internal Server Error"}), 500
-
+    
 
