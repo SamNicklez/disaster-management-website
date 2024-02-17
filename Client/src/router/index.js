@@ -10,14 +10,27 @@ const router = createRouter({
       component: () => import('../views/HomeView.vue')
     },
     {
+      //test
       path: '/login',
       name: 'login',
-      component: () => import('../views/LoginView.vue')
+      component: () => import('../views/LoginView.vue'),
+      beforeEnter: () => {
+        // Need to check if user is already logged in, if so redirect to profile
+      },
     },
     {
-      path: '/profile/',
+      path: '/profile',
       name: 'profile',
-      component: () => import('../views/ProfileView.vue')
+      component: () => import('../views/ProfileView.vue'),
+      beforeEnter: () => {
+        // Logic to check if user is logged in, please check with server before routing
+        // if (localStorage.getItem('token') == null) {
+        //   return '/login'
+        // }
+        // else {
+        //   return true
+        // }
+      },
     },
     {
       path: '/event/:id',
