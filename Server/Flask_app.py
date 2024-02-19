@@ -1,13 +1,16 @@
 from flask import Flask
 from stores import db
 from routes.Items import items_bp
+from routes.Users import users_bp
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] ='mysql://root:newSQLIowa00@localhost:3306/theapp'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
+app.register_blueprint(users_bp, url_prefix='/users_bp')
 app.register_blueprint(items_bp, url_prefix='/item')
+
 
 @app.route("/")
 def home():
