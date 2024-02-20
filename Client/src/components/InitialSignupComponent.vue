@@ -1,12 +1,16 @@
 <template>
-    <v-dialog v-model="dialog" width="auto">
+    <v-dialog v-model="dialog" width="auto" persistent>
         <v-card>
+            <v-alert v-model="alert2" class="alert" density="compact" type="warning" :title="alertText2" variant="tonal"></v-alert>
             <v-card-text>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua.
+                An email has been sent to your email address. Please enter the code to verify your account.
             </v-card-text>
+            <v-text-field variant="outlined" label="Verification Code" v-model="verifyCode" required dense outlined
+                placeholder="Enter verification code" maxLength="6"
+                style="min-width: 50%; margin: auto; margin-top: 2.5vh;">
+            </v-text-field>
             <v-card-actions>
-                <v-btn color="primary" block @click="dialog = false">Close Dialog</v-btn>
+                <v-btn color="primary" block @click="verify()">Submit</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -39,7 +43,6 @@
                         <v-list-item-title>{{ item.rule }}</v-list-item-title>
                     </v-list-item>
                 </v-list>
-
             </v-card>
             <v-radio-group label="Select a Role" v-model="role">
                 <v-radio label="Recipient" value="3" color="red"></v-radio>
@@ -66,12 +69,15 @@ export default {
     data() {
         return {
             alertText: 'Test',
+            alertText2: 'Test',
             dialog: false,
             alert: false,
+            alert2: false,
             username: '',
             password: '',
             confirmPassword: '',
             visibleConfirm: false,
+            verifyCode: '',
             role: '3',
             usernameRules: [
                 v => !!v || 'Email is required',
@@ -168,6 +174,42 @@ export default {
         goToSignIn() {
             this.$router.push({ name: 'login' });
         },
+        /**
+         * Verifies the code
+         */
+        verify() {
+            let data = JSON.stringify({
+                "email": this.username,
+                "verification": this.verifyCode
+            });
+
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: 'http://127.0.0.1:5000/users_bp/verify',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: data
+            };
+
+            axios.request(config)
+                .then(() => {
+                    this.$router.push({ name: 'login' });
+                })
+                .catch((error) => {
+                    if(error.response.status === 401) {
+                        this.alertText2 = "Invalid verification code";
+                    }
+                    else if (error.response.status === 500) {
+                        this.alertText2 = "Internal server error";
+                    }
+                    else {
+                        this.alertText2 = "An error occurred";
+                    }
+                    this.alert2 = true;
+                });
+        }
     },
 };
 </script>
