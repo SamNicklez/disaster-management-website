@@ -4,3 +4,5 @@ cryptography
 pytest
 coverage
 python-dotenv
+Flask-HTTPAuth
+jwt
