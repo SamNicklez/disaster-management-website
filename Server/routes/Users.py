@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 import uuid
 from stores import db
-from collections import Mapping
+from collections.abc import Mapping
 
 
 users_bp = Blueprint('users_bp', __name__)
