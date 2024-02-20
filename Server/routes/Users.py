@@ -60,9 +60,10 @@ def signup():
         data = request.get_json()
         verify_token = random.randint(100000, 999999)
         hashed_password = generate_password_hash(data["password"], method="sha256")
-        new_user = User(UserID=data["UserID"], password=hashed_password)
+        new_user = User(Username=data["username"], password=hashed_password, Email=data["email"],RoleID=data["roleid"], IsVerified=verify_token)
         db.session.add(new_user)
         db.session.commit()
+        ## Send user email for verification
         
         return jsonify({"message": "User created successfully"}), 201
     

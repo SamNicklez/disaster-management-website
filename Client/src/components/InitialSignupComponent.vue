@@ -2,9 +2,9 @@
     <div class="signup-card">
         <v-card class="mx-auto pa-12 pb-8" elevation="8" rounded="lg" style="margin-bottom: 10vh;">
             <div class="text-h5 text-center mb-8">Sign Up</div>
-            <v-text-field data-test="username-input" class="textfield" variant="outlined" label="Username"
-                v-model="username" :rules="usernameRules" required dense outlined placeholder="Choose a username"
-                prepend-inner-icon="mdi-account-circle" maxLength="15">
+            <v-text-field data-test="username-input" class="textfield" variant="outlined" label="Email" v-model="username"
+                :rules="usernameRules" required dense outlined placeholder="Enter your email address"
+                prepend-inner-icon="mdi-account-circle" maxLength="100">
             </v-text-field>
             <v-text-field data-test="password-input" class="textfield" variant="outlined" label="Password"
                 v-model="password" :rules="passwordRules" required @input="validatePassword" dense outlined
@@ -15,8 +15,8 @@
                 v-model="confirmPassword" :type="visibleConfirm ? 'text' : 'password'" :rules="confirmPasswordRules"
                 required dense outlined placeholder="Confirm your password" prepend-inner-icon="mdi-lock-outline">
             </v-text-field>
-
             <v-card data-test="password-requirements-card" class="mb-12" color="#F06543" variant="tonal">
+                <v-card-title class="text-h6 text-center">Password Requirements</v-card-title>
                 <v-list dense>
                     <v-list-item v-for="(item, index) in passwordRequirements" :key="index"
                         :data-test="`password-requirement-${index}`">
@@ -26,8 +26,12 @@
                         <v-list-item-title>{{ item.rule }}</v-list-item-title>
                     </v-list-item>
                 </v-list>
-            </v-card>
 
+            </v-card>
+            <v-radio-group label="Select a Role" v-model="role">
+                <v-radio label="Recipient" value="1" color="red"></v-radio>
+                <v-radio label="Donor" value="2" color="red"></v-radio>
+            </v-radio-group>
             <v-btn data-test="signup-button" :disabled="!valid" block class="mb-8" color="#F06543" size="large"
                 variant="tonal" style="" @click="submit">
                 Sign Up
@@ -51,10 +55,10 @@ export default {
             password: '',
             confirmPassword: '',
             visibleConfirm: false,
+            role: '1',
             usernameRules: [
-                v => !!v || 'Username is required',
-                v => (v && v.length >= 8 && v.length <= 15) || 'Username must be 8-15 characters long',
-                v => /^[a-zA-Z0-9]*$/.test(v) || 'Username must be alphanumeric',
+                v => !!v || 'Email is required',
+                v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'Email must be a valid email address',
             ],
             passwordRules: [
                 v => !!v || 'Password is required',
