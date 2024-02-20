@@ -6,6 +6,7 @@ import jwt
 import uuid
 from stores import db
 from collections.abc import Mapping
+import random
 
 
 users_bp = Blueprint('users_bp', __name__)
@@ -57,7 +58,7 @@ def signup():
     #     return jsonify({"error": "Internal Server Error"}), 500
         
         data = request.get_json()
-        
+        verify_token = random.randint(100000, 999999)
         hashed_password = generate_password_hash(data["password"], method="sha256")
         new_user = User(UserID=data["UserID"], password=hashed_password)
         db.session.add(new_user)
