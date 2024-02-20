@@ -1,8 +1,20 @@
 <template>
+    <v-dialog v-model="dialog" width="auto">
+        <v-card>
+            <v-card-text>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+                dolore magna aliqua.
+            </v-card-text>
+            <v-card-actions>
+                <v-btn color="primary" block @click="dialog = false">Close Dialog</v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
     <div class="signup-card">
         <v-card class="mx-auto pa-12 pb-8" elevation="8" rounded="lg" style="margin-bottom: 10vh;">
             <div class="text-h5 text-center mb-8">Sign Up</div>
-            <v-alert v-model="alert" class="alert" density="compact" type="warning" title="Warning" variant="tonal" :text="alertText"></v-alert>
+            <v-alert v-model="alert" class="alert" density="compact" type="warning" title="Warning" variant="tonal"
+                :text="alertText"></v-alert>
             <v-text-field data-test="username-input" class="textfield" variant="outlined" label="Email" v-model="username"
                 :rules="usernameRules" required dense outlined placeholder="Enter your email address"
                 prepend-inner-icon="mdi-account-circle" maxLength="100">
@@ -54,6 +66,7 @@ export default {
     data() {
         return {
             alertText: 'Test',
+            dialog: false,
             alert: false,
             username: '',
             password: '',
@@ -130,9 +143,6 @@ export default {
             };
 
             axios.request(config)
-                .then((response) => {
-                    console.log(JSON.stringify(response.data));
-                })
                 .catch((error) => {
                     if (error.response.status === 409) {
                         this.alertText = "Account with that email already exists";
@@ -144,8 +154,12 @@ export default {
                         this.alertText = "An error occurred";
                     }
                     this.alert = true;
-                    window.scrollTo(0,0);
-                });
+                    window.scrollTo(0, 0);
+                }).then((response) => {
+                    if (response) {
+                        this.dialog = true;
+                    }
+                })
 
         },
         /**
@@ -172,6 +186,7 @@ export default {
 .textfield {
     margin-bottom: 1.5vh;
 }
+
 .alert {
     margin-bottom: 3vh;
 }
