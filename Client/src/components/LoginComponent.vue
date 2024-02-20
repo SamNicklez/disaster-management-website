@@ -4,8 +4,8 @@
             <div class="text-h5 text-center mb-8">Login</div>
             <v-alert v-model="alert" density="compact" variant="outlined" type="warning" :text="alertText"
                 dismissible><v-icon icon="mdi-close" style="float:right" @click="this.alert = false"></v-icon></v-alert>
-            <div class="text-subtitle-1 text-medium-emphasis">Account</div>
-            <v-text-field density="compact" v-model="username" maxLength="15" placeholder="Username"
+            <div class="text-subtitle-1 text-medium-emphasis">Email</div>
+            <v-text-field density="compact" v-model="username" maxLength="100" placeholder="Email"
                 prepend-inner-icon="mdi-account-circle" variant="outlined"></v-text-field>
             <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
                 Password
@@ -38,6 +38,7 @@
 <script>
 import '@mdi/font/css/materialdesignicons.css'
 import { user } from '../stores/user.js'
+import axios from 'axios'
 export default {
     data: () => ({
         visible: false,
@@ -75,21 +76,37 @@ export default {
                     if (this.userData.getLoginAttempts >= 3) {
                         this.userData.resetLoginAttempts()
                     }
-                    //LOGIN ATTEMPT HERE
-
                     this.userData.setLoginAttempt()
-                    //Do API call to check if username and password are correct
-                    //If they are correct route to home page and store user token in local storage
+                    let data = JSON.stringify({
+                        "email": this.username.toLowerCase(),
+                        "password": this.password
+                    });
 
-                    //IF CORRECT
-                    // this.userData.setLogin(this.username.toLowerCase(), "TOKEN HERE")
-                    // this.userData.resetLoginAttempts()
-                    // this.$router.push({ name: 'home' });
+                    let config = {
+                        method: 'post',
+                        maxBodyLength: Infinity,
+                        url: 'http://127.0.0.1:5000/users_bp/signin',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        data: data
+                    };
 
-                    //else display error message and count failed attempts
-                    this.alertText = `Invalid username or password.`;
-                    this.alert = true;
-                    return;
+                    axios.request(config)
+                        .then((response) => {
+                            console.log(JSON.stringify(response.data));
+                            this.userData.setLogin(this.username.toLowerCase(), response.data.token)
+                            this.$router.push({ name: 'home' });
+                        })
+                        .catch((error) => {
+                            if (error.response.status === 401) {
+                                this.alertText = `Invalid username or password.`;
+                            }
+                            else {
+                                this.alertText = "An error occurred";
+                            }
+                            this.alert = true;
+                        });
                 }
 
             } else {
@@ -132,8 +149,8 @@ export default {
         }
     },
     mounted() {
-    this.userData = user();
-  },
+        this.userData = user();
+    },
 };
 </script>
 

@@ -134,7 +134,7 @@ export default {
          */
         submit() {
             let data = JSON.stringify({
-                "email": this.username,
+                "email": this.username.toLowerCase(),
                 "password": this.password,
                 "roleid": parseInt(this.role)
             });
@@ -180,7 +180,7 @@ export default {
          */
         verify() {
             let data = JSON.stringify({
-                "email": this.username,
+                "email": this.username.toLowerCase(),
                 "verification": this.verifyCode
             });
 
