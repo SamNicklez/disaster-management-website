@@ -6,7 +6,7 @@ from routes.Users import users_bp
 
 app = Flask(__name__)
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI'] ='mysql://root:password@localhost:3306/theapp'
+app.config['SQLALCHEMY_DATABASE_URI'] ='mysql://root:Killroy123@localhost:3306/theapp'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 

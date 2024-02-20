@@ -11,5 +11,10 @@ class User(db.Model):
     Password: str = db.Column(db.String(255), nullable=False)
     RoleID: int = db.Column(db.Integer, db.ForeignKey('roles.RoleID'))
     IsVerified: int = db.Column(db.Integer)
+    State: str = db.Column(db.String(45), nullable=False)
+    City: str = db.Column(db.String(45), nullable=False)
+    Address: str = db.Column(db.String(255), nullable=False)
+    Latitude = db.Column(db.Float, nullable=False)
+    Longitude = db.Column(db.Float, nullable=False)
     ZipCode: int = db.Column(db.Integer, nullable=False)
     

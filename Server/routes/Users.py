@@ -8,6 +8,9 @@ import uuid
 from stores import db
 from collections.abc import Mapping
 import random
+import smtplib, ssl
+import os
+from dotenv import load_dotenv
 
 
 users_bp = Blueprint('users_bp', __name__)
@@ -35,40 +38,38 @@ def signin():
     
 @users_bp.route('/signup', methods=['POST'])
 def signup():
-    try:
-    # Users table
-    # UserId: int = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    # Username: str = db.Column(db.String(45), nullable=False)
-    # FirstName: str = db.Column(db.String(45), nullable=False)
-    # LastName: str = db.Column(db.String(45), nullable=False)
-    # email: str = db.Column(db.String(255), nullable=False)
-    # PhoneNumber: int = db.Column(db.Integer)
-    # Password: str = db.Column(db.String(255), nullable=False)
-    # RoleID: int = db.Column(db.Integer, db.ForeignKey('roles.RoleID'))
-    # IsVerified: int = db.Column(db.Integer)
-    # ZipCode: int = db.Column(db.Integer, nullable=False)
-        
-    # Example Create 
-    # new_item = Item(ItemName=data['ItemName'], CategoryId=data['CategoryId'], ItemDescription = data['ItemDescription'])
-    # db.session.add(new_item)
-    # db.session.commit()
-    # return ('success')
-    
-    # except Exception as e:
-    #     print(f"Error: {str(e)}")
-    #     return jsonify({"error": "Internal Server Error"}), 500
-        
-        data = request.get_json()
-        verify_token = random.randint(100000, 999999)
-        print(data)
-        hashed_password = generate_password_hash(data["password"])
-        new_user = User(Password=hashed_password, Email=data["email"],RoleID=data["roleid"], IsVerified=verify_token)
-        db.session.add(new_user)
-        db.session.commit()
-        ## Send user email for verification
+    try:       
+        # data = request.get_json()
+        # verify_token = random.randint(100000, 999999)
+        # hashed_password = generate_password_hash(data["password"])
+        # new_user = User(Password=hashed_password, Email=data["email"],RoleID=data["roleid"], IsVerified=verify_token)
+        # db.session.add(new_user)
+        # db.session.commit()
 
+
+        ## Send user email for verification
+        smtp_server = "smtp.gmail.com"
+        port = 587  # For starttls
+        sender_email = os.getenv("EMAIL")
+        password = os.getenv("PASSWORD")
+        context = ssl.create_default_context()
+        try:
+            server = smtplib.SMTP(smtp_server,port)
+            server.ehlo() # Can be omitted
+            server.starttls(context=context) # Secure the connection
+            server.ehlo() # Can be omitted
+            server.login(sender_email, password)
+            server.sendmail(sender_email, "SamuelNicklaus1@gmail.com", f"Subject: Email Verification\n\nYour verification code is 123456")
+        except Exception as e:
+            # Print any error messages to stdout
+            print(e)
+        finally:
+            server.quit()
         return jsonify({"message": "User created successfully"}), 201
     
     except Exception as e:
-        print(f"Error: {str(e)}")
-        return jsonify({"error": "Internal Server Error"}), 500
+        print(str(e))
+        if "1062" in str(e):
+            return jsonify({"error": "User already exists"}), 409
+        else:
+            return jsonify({"error": "Internal Server Error"}), 500

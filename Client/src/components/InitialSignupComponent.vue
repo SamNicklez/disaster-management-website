@@ -2,6 +2,7 @@
     <div class="signup-card">
         <v-card class="mx-auto pa-12 pb-8" elevation="8" rounded="lg" style="margin-bottom: 10vh;">
             <div class="text-h5 text-center mb-8">Sign Up</div>
+            <v-alert v-model="alert" class="alert" density="compact" type="warning" title="Warning" variant="tonal" :text="alertText"></v-alert>
             <v-text-field data-test="username-input" class="textfield" variant="outlined" label="Email" v-model="username"
                 :rules="usernameRules" required dense outlined placeholder="Enter your email address"
                 prepend-inner-icon="mdi-account-circle" maxLength="100">
@@ -52,6 +53,8 @@ import axios from 'axios'
 export default {
     data() {
         return {
+            alertText: 'Test',
+            alert: false,
             username: '',
             password: '',
             confirmPassword: '',
@@ -111,9 +114,9 @@ export default {
          */
         submit() {
             let data = JSON.stringify({
-                "email": "SamuelNicklaus1222@gmail.com",
-                "password": "Test123.",
-                "roleid": 3
+                "email": this.username,
+                "password": this.password,
+                "roleid": parseInt(this.role)
             });
 
             let config = {
@@ -131,7 +134,17 @@ export default {
                     console.log(JSON.stringify(response.data));
                 })
                 .catch((error) => {
-                    console.log(error);
+                    if (error.response.status === 409) {
+                        this.alertText = "Account with that email already exists";
+                    }
+                    else if (error.response.status === 500) {
+                        this.alertText = "Internal server error";
+                    }
+                    else {
+                        this.alertText = "An error occurred";
+                    }
+                    this.alert = true;
+                    window.scrollTo(0,0);
                 });
 
         },
@@ -158,5 +171,8 @@ export default {
 
 .textfield {
     margin-bottom: 1.5vh;
+}
+.alert {
+    margin-bottom: 3vh;
 }
 </style>
