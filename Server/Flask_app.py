@@ -1,10 +1,12 @@
 from flask import Flask
+from flask_cors import CORS
 from stores import db
 from routes.Items import items_bp
 from routes.Users import users_bp
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] ='mysql://root:newSQLIowa00@localhost:3306/theapp'
+CORS(app)
+app.config['SQLALCHEMY_DATABASE_URI'] ='mysql://root:password@localhost:3306/theapp'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
@@ -17,4 +19,4 @@ def home():
     return "Home"
 
 if __name__ == '__main__':
-    app.run(debug=True) 
+    app.run(debug=True)

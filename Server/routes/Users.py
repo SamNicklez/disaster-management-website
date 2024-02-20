@@ -66,7 +66,7 @@ def signup():
         db.session.add(new_user)
         db.session.commit()
         ## Send user email for verification
-        
+
         return jsonify({"message": "User created successfully"}), 201
     
     except Exception as e:

@@ -48,6 +48,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
     data() {
         return {
@@ -109,9 +110,30 @@ export default {
          * Submits the signup form and routes to next part of the signup process
          */
         submit() {
-            alert('Form Submitted');
-            // submission logic here
-            this.$router.push({ name: 'login' })
+            let data = JSON.stringify({
+                "email": "SamuelNicklaus1222@gmail.com",
+                "password": "Test123.",
+                "roleid": 3
+            });
+
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: 'http://127.0.0.1:5000/users_bp/signup',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: data
+            };
+
+            axios.request(config)
+                .then((response) => {
+                    console.log(JSON.stringify(response.data));
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+
         },
         /**
          * Routes to the sign in page

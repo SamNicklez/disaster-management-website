@@ -7,3 +7,4 @@ python-dotenv
 Flask-HTTPAuth
 jwt
 mysqlclient
+flask-cors
