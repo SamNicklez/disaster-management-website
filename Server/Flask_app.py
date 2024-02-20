@@ -3,11 +3,13 @@ from flask_cors import CORS
 from stores import db
 from routes.Items import items_bp
 from routes.Users import users_bp
+import os
 
 app = Flask(__name__)
 CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] ='mysql://root:Killroy123@localhost:3306/theapp'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = os.getenv("SECRET_KEY")
 db.init_app(app)
 
 app.register_blueprint(users_bp, url_prefix='/users_bp')

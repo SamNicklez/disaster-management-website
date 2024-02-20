@@ -3,7 +3,8 @@
         <v-card>
             <v-alert v-model="alert2" class="alert" density="compact" type="warning" :title="alertText2" variant="tonal"></v-alert>
             <v-card-text>
-                An email has been sent to your email address. Please enter the code to verify your account.
+                Account created!
+                An email has been sent to your email address, please enter the code to verify your account.
             </v-card-text>
             <v-text-field variant="outlined" label="Verification Code" v-model="verifyCode" required dense outlined
                 placeholder="Enter verification code" maxLength="6"

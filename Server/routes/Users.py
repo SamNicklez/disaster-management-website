@@ -19,17 +19,17 @@ users_bp = Blueprint('users_bp', __name__)
 def signin():
     try:
         data = request.get_json()
-        if "UserID" not in data or "password" not in data:
-            return jsonify({"error": "Missing user ID or password"}), 400
         
-        user = User.query.filter_by(UserID=data["UserID"], IsVerified=1).first()
-        
-        if user and check_password_hash(user.password, data["password"]):
+        user = User.query.filter_by(Email=data["email"]).first()
+
+        if user and user.IsVerified != 1:
+            return jsonify({"error": "User not verified"}), 401
+        elif user and check_password_hash(user.Password, data["password"]) and user.IsVerified == 1:
             encoded_token = jwt.encode({"id": user.UserId, "RoleID":user.RoleID}, "secret", algorithm="HS256")
             session["token"]=encoded_token
             return jsonify({"token": encoded_token}), 200
         else:
-            return jsonify({"error": "Invalid voter ID or password"}), 401
+            return jsonify({"error": "Invalid email or password"}), 401
     
     except Exception as e:
         print(f"Error: {str(e)}")

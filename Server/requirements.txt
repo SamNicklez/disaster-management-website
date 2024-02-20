@@ -4,6 +4,6 @@ cryptography
 pytest
 coverage
 Flask-HTTPAuth
-jwt
+PyJWT
 mysqlclient
 flask-cors
