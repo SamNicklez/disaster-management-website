@@ -6,7 +6,7 @@ class User(db.Model):
     UserId: int = db.Column(db.Integer, primary_key=True, autoincrement=True)
     FirstName: str = db.Column(db.String(45), nullable=False)
     LastName: str = db.Column(db.String(45), nullable=False)
-    email: str = db.Column(db.String(255), nullable=False)
+    Email: str = db.Column(db.String(255), nullable=False)
     PhoneNumber: int = db.Column(db.Integer)
     Password: str = db.Column(db.String(255), nullable=False)
     RoleID: int = db.Column(db.Integer, db.ForeignKey('roles.RoleID'))

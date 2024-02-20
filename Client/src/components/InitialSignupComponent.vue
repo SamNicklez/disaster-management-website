@@ -29,7 +29,7 @@
 
             </v-card>
             <v-radio-group label="Select a Role" v-model="role">
-                <v-radio label="Recipient" value="1" color="red"></v-radio>
+                <v-radio label="Recipient" value="3" color="red"></v-radio>
                 <v-radio label="Donor" value="2" color="red"></v-radio>
             </v-radio-group>
             <v-btn data-test="signup-button" :disabled="!valid" block class="mb-8" color="#F06543" size="large"
@@ -55,7 +55,7 @@ export default {
             password: '',
             confirmPassword: '',
             visibleConfirm: false,
-            role: '1',
+            role: '3',
             usernameRules: [
                 v => !!v || 'Email is required',
                 v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'Email must be a valid email address',
