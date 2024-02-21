@@ -7,7 +7,7 @@ import os
 
 app = Flask(__name__)
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI'] ='mysql://root:password@localhost:3306/theapp'
+app.config['SQLALCHEMY_DATABASE_URI'] =f'mysql://root:{os.getenv("DB_PASSWORD")}@localhost:3306/theapp'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = os.getenv("SECRET_KEY")
 db.init_app(app)
@@ -21,4 +21,4 @@ def home():
     return "Home"
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True)cd 
