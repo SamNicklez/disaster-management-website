@@ -1,7 +1,8 @@
 <template>
     <v-dialog v-model="dialog" width="auto" persistent>
         <v-card>
-            <v-alert v-model="alert2" class="alert" density="compact" type="warning" :title="alertText2" variant="tonal"></v-alert>
+            <v-alert v-model="alert2" class="alert" density="compact" type="warning" :title="alertText2"
+                variant="tonal"></v-alert>
             <v-card-text>
                 Account created!
                 An email has been sent to your email address, please enter the code to verify your account.
@@ -60,6 +61,7 @@
                     Already have an account? Sign in <v-icon right>mdi-chevron-right</v-icon>
                 </a>
             </v-card-text>
+            <v-progress-linear :active="progress" indeterminate color="orange" height="10" rounded></v-progress-linear>
         </v-card>
     </div>
 </template>
@@ -79,6 +81,7 @@ export default {
             confirmPassword: '',
             visibleConfirm: false,
             verifyCode: '',
+            progress: false,
             role: '3',
             usernameRules: [
                 v => !!v || 'Email is required',
@@ -133,6 +136,7 @@ export default {
          * Submits the signup form and routes to next part of the signup process
          */
         submit() {
+            this.progress = true
             let data = JSON.stringify({
                 "email": this.username.toLowerCase(),
                 "password": this.password,
@@ -151,6 +155,7 @@ export default {
 
             axios.request(config)
                 .catch((error) => {
+                    this.progress = false
                     if (error.response.status === 409) {
                         this.alertText = "Account with that email already exists";
                     }
@@ -164,7 +169,8 @@ export default {
                     window.scrollTo(0, 0);
                 }).then((response) => {
                     if (response) {
-                        this.dialog = true;
+                        this.dialog = true
+                        this.progress = false
                     }
                 })
 
@@ -199,7 +205,7 @@ export default {
                     this.$router.push({ name: 'login' });
                 })
                 .catch((error) => {
-                    if(error.response.status === 401) {
+                    if (error.response.status === 401) {
                         this.alertText2 = "Invalid verification code";
                     }
                     else if (error.response.status === 500) {
