@@ -30,21 +30,16 @@ Follow these steps to set up your server environment:
     pip install -r requirements.txt
     ```
 
-3. **Navigate to the `src` folder.**
-    ```bash
-    cd src
-    ```
-
-4. **Create and populate a `.env` file with your database credentials.**
-    Before running the Flask server, you'll need to create a `.env` file in the `src` directory to store sensitive information such as database credentials securely. This file is not tracked by version control.
+3. **Create and populate a `.env` file with your database credentials.**
+    Before running the Flask server, you'll need to create a `.env` file in the root directory to store sensitive information such as database credentials securely. This file is not tracked by version control.
 
     Create the `.env` file and add the following lines to it:
 
     ```plaintext
-    DB_HOST=localhost
-    DB_USER=root
-    DB_PASSWORD=Password
-    DB_NAME=test_db
+        EMAIL = "EMAIL USERNAME"
+        PASSWORD = "EMAIL PASSWORD"
+        SECRET_KEY = "SECRET ENCRPYTION KEY"
+        DB_PASSWORD = "YOUR DATABASE PASSWORD"
     ```
 
 5. **Run the Flask server.**
@@ -72,18 +67,7 @@ Follow these steps to set up your server environment:
 
 1. Start your MySQL server on your local machine.
 2. Open a MySQL client or use the command line to connect to your MySQL server.
-3. Create a new database for the project:
-    ```
-    CREATE DATABASE your_database_name;
-    ```
-4. Select the database you created:
-    ```
-    USE your_database_name;
-    ```
-5. Import the `.sql` file located in the MySQL folder to create the required tables:
-    ```
-    SOURCE MySQL/setup.sql;
-    ```
+3. Import the `.sql` dump file in the MySQL folder
 ### Running Tests Locally
 
 To run unit tests, please refer to the `README.md` files in the `/Client` and `/Server` directory
