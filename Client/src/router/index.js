@@ -1,5 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { events } from '../stores/events.js'
+import { user } from '../stores/user.js'
+import axios from 'axios'
+import { store } from '../stores/loading.js'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -10,13 +13,33 @@ const router = createRouter({
       component: () => import('../views/HomeView.vue')
     },
     {
-      //test
       path: '/login',
       name: 'login',
       component: () => import('../views/LoginView.vue'),
-      beforeEnter: () => {
-        // Need to check if user is already logged in, if so redirect to profile
-      },
+      beforeEnter: (to, from, next) => {
+        store.loading = true
+        let userData = user()
+        let config = {
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: 'http://127.0.0.1:5000/users_bp/verifyUser',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + userData.getToken
+          }
+        }
+
+        axios
+          .request(config)
+          .then(() => {
+            store.loading = false
+            next('/logout')
+          })
+          .catch(() => {
+            store.loading = false
+            next()
+          })
+      }
     },
     {
       path: '/profile',
@@ -30,7 +53,7 @@ const router = createRouter({
         // else {
         //   return true
         // }
-      },
+      }
     },
     {
       path: '/event/:id',
@@ -61,6 +84,11 @@ const router = createRouter({
       path: '/search/:query',
       name: 'search',
       component: () => import('../views/SearchView.vue')
+    },
+    {
+      path: '/logout',
+      name: 'logout',
+      component: () => import('../views/LogoutView.vue')
     },
     {
       path: '/:catchAll(.*)',

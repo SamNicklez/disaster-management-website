@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request, session
-from routes import basic_auth, verify_token
+from routes import token_auth
 from models.Users import User
 from models.Roles import Role
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -7,6 +7,7 @@ import jwt
 import uuid
 from stores import db
 from collections.abc import Mapping
+import datetime
 import random
 import smtplib, ssl
 import os
@@ -25,8 +26,7 @@ def signin():
         if user and user.IsVerified != 1:
             return jsonify({"error": "User not verified"}), 401
         elif user and check_password_hash(user.Password, data["password"]) and user.IsVerified == 1:
-            encoded_token = jwt.encode({"id": user.UserId, "RoleID":user.RoleID}, "secret", algorithm="HS256")
-            session["token"]=encoded_token
+            encoded_token = jwt.encode({"id": user.UserId, "RoleID":user.RoleID, "DateCreated": datetime.today()}, "secret", algorithm="HS256")
             return jsonify({"token": encoded_token}), 200
         else:
             return jsonify({"error": "Invalid email or password"}), 401
@@ -70,18 +70,12 @@ def signup():
             return jsonify({"error": "User already exists"}), 409
         else:
             return jsonify({"error": "Internal Server Error"}), 500
-        
-@users_bp.route('/verify', methods=['POST'])
+
+
+@users_bp.route('/verifyUser', methods=['POST'])
+@token_auth.login_required
 def verify():
     try:
-        data = request.get_json()
-        user = User.query.filter_by(Email=data["email"], IsVerified=data["verification"]).first()
-        if user:
-            user.IsVerified = 1
-            db.session.commit()
-            return jsonify({"message": "User verified successfully"}), 200
-        else:
-            return jsonify({"error": "Invalid verification code"}), 401
+        return jsonify({"message": "User verified successfully"}), 200
     except Exception as e:
-        print(str(e))
         return jsonify({"error": "Internal Server Error"}), 500

@@ -2,10 +2,31 @@
 import Navbar from '@/components/NavComponent.vue'
 </script>
 
+<script>
+import { store } from './stores/loading.js';
+
+export default {
+  computed: {
+    loading() {
+      return store.loading;
+    },
+  },
+};
+</script>
+
 <template>
   <v-app>
-    <Navbar />
+    <!-- Loading bar at the top -->
+    
     <v-main>
+      <v-progress-linear
+      :active="loading"
+      indeterminate
+      color="orange"
+      height="10"
+      top
+    ></v-progress-linear>
+      <Navbar />
       <router-view />
     </v-main>
   </v-app>

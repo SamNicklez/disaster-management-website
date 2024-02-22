@@ -2,10 +2,12 @@ from flask import Blueprint, jsonify, request
 from stores import db
 from models.Items import Item
 from models.Items import Category
+from routes import admin_auth
 
 items_bp = Blueprint('Items', __name__)
 
 @items_bp.route('/CreateCategory', methods=['POST'])
+@admin_auth.login_required
 def create_category():
     try:
         data = request.get_json() 
