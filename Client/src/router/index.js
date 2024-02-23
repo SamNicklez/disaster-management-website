@@ -91,6 +91,11 @@ const router = createRouter({
       component: () => import('../views/LogoutView.vue')
     },
     {
+      path: '/createEvent',
+      name: 'createEvent',
+      component: () => import('../views/EventCreateView.vue')
+    },
+    {
       path: '/:catchAll(.*)',
       name: '404',
       component: () => import('../views/NotFoundView.vue')

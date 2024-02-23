@@ -22,9 +22,11 @@ def create_category():
     
 
 @items_bp.route('/CreateItem', methods=['POST'])
+@admin_auth.login_required
 def create_item():
     try:
         data = request.get_json()
+        print(data)
         new_item = Item(ItemName=data['ItemName'], CategoryId=data['CategoryId'], ItemDescription = data['ItemDescription'])
         db.session.add(new_item)
         db.session.commit()

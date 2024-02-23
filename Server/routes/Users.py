@@ -7,7 +7,7 @@ import jwt
 import uuid
 from stores import db
 from collections.abc import Mapping
-import datetime
+from datetime import datetime
 import random
 import smtplib, ssl
 from email.message import EmailMessage
@@ -27,7 +27,7 @@ def signin():
         if user and user.IsVerified != 1:
             return jsonify({"error": "User not verified"}), 401
         elif user and check_password_hash(user.Password, data["password"]) and user.IsVerified == 1:
-            encoded_token = jwt.encode({"id": user.UserId, "RoleID":user.RoleID, "DateCreated": datetime.today()}, "secret", algorithm="HS256")
+            encoded_token = jwt.encode({"id": user.UserId, "RoleID":user.RoleID, "DateCreated": datetime.now().isoformat()}, "secret", algorithm="HS256")
             return jsonify({"token": encoded_token}), 200
         else:
             return jsonify({"error": "Invalid email or password"}), 401
@@ -79,6 +79,7 @@ def signup():
 @token_auth.login_required
 def verify():
     try:
+        print("HERER @")
         return jsonify({"message": "User verified successfully"}), 200
     except Exception as e:
         return jsonify({"error": "Internal Server Error"}), 500

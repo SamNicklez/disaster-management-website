@@ -49,6 +49,7 @@
             <v-radio-group label="Select a Role" v-model="role">
                 <v-radio label="Recipient" value="3" color="red"></v-radio>
                 <v-radio label="Donor" value="2" color="red"></v-radio>
+                <v-radio label="Admin" value="1" color="red"></v-radio>
             </v-radio-group>
             <v-btn data-test="signup-button" :disabled="!valid" block class="mb-8" color="#F06543" size="large"
                 variant="tonal" style="" @click="submit">
@@ -169,8 +170,9 @@ export default {
                     window.scrollTo(0, 0);
                 }).then((response) => {
                     if (response) {
-                        this.dialog = true
+                        // this.dialog = true
                         this.progress = false
+                        this.$router.push({ name: 'home' });
                     }
                 })
 

@@ -5,7 +5,7 @@ from models.Users import User
 from models.Roles import Role
 
 
-admin_auth = HTTPBasicAuth()
+admin_auth = HTTPTokenAuth()
 token_auth = HTTPTokenAuth()
     
 
@@ -18,13 +18,16 @@ def verify_token(token):
     except Exception as e:
         return False
 
-@admin_auth.verify_password
+@admin_auth.verify_token
 def verify_status(token):
     try:
         decoded_token = jwt.decode(token, "secret", algorithms=["HS256"])
-        user = User.query(User.UserId, Role.Name).join(Role, User.RoleID == decoded_token['RoleID']).filter(User.UserId == decoded_token['id']).first()
-        print(user)
+        if(decoded_token["RoleID"] == 1):
+            return True
+        else:
+            return False
     except Exception as e:
+        print(e)
         return False
         
 

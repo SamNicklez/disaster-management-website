@@ -1,5 +1,6 @@
 <template>
   <v-card class="mb-5" outlined tile>
+    <v-btn @click="createEvent">Make Event</v-btn>
     <v-card-title>User Information</v-card-title>
     <v-container>
       <v-row>
@@ -133,6 +134,9 @@ export default {
       this.edit = !this.edit
 
     },
+    createEvent() {
+      this.$router.push({ name: 'createEvent' });
+    }
   },
 };
 </script>
