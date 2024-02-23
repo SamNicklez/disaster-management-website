@@ -27,7 +27,17 @@ def create_item():
     try:
         data = request.get_json()
         print(data)
-        new_item = Item(ItemName=data['ItemName'], CategoryId=data['CategoryId'], ItemDescription = data['ItemDescription'])
+        category = Category.query.filter_by(CategoryName=data['CategoryName']).first()
+        item = Item.query.filter_by(ItemName=data['ItemName']).first()
+        if item:
+            return jsonify({"error": "Item already exists"}), 400
+        if not category:
+                new_category = Category(CategoryName=data['CategoryName'])
+                db.session.add(new_category)
+                db.session.commit()
+                category = Category.query.filter_by(CategoryName=data['CategoryName']).first()
+
+        new_item = Item(ItemName=data['ItemName'], CategoryId=category.CategoryId, ItemDescription=data['ItemDescription'])
         db.session.add(new_item)
         db.session.commit()
         return ('success')
@@ -38,6 +48,7 @@ def create_item():
     
     
 @items_bp.route('/GetCategories', methods=['GET'])
+@admin_auth.login_required
 def get_categoriess():
     try:
         conn = db.engine.raw_connection()
@@ -56,6 +67,7 @@ def get_categoriess():
 
 
 @items_bp.route('/GetItems', methods=['GET'])
+@admin_auth.login_required
 def get_itemsNew():
     CategoryId = request.args.get('CategoryId', None)
 
