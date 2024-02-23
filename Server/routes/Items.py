@@ -6,21 +6,6 @@ from routes import admin_auth
 
 items_bp = Blueprint('Items', __name__)
 
-@items_bp.route('/CreateCategory', methods=['POST'])
-@admin_auth.login_required
-def create_category():
-    try:
-        data = request.get_json() 
-        new_category = Category(CategoryName=data['CategoryName'])
-        db.session.add(new_category)
-        db.session.commit()
-        return jsonify('success'), 201
-
-    except Exception as e:
-        print(f"Error: {str(e)}")
-        return jsonify({"error": "Internal Server Error"}), 500
-    
-
 @items_bp.route('/CreateItem', methods=['POST'])
 @admin_auth.login_required
 def create_item():
