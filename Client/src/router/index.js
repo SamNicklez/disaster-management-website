@@ -91,9 +91,9 @@ const router = createRouter({
       component: () => import('../views/LogoutView.vue')
     },
     {
-      path: '/createEvent',
-      name: 'createEvent',
-      component: () => import('../views/EventCreateView.vue')
+      path: '/createItem',
+      name: 'createItem',
+      component: () => import('../views/ItemCreateView.vue')
     },
     {
       path: '/:catchAll(.*)',
