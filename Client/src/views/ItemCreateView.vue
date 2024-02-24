@@ -50,7 +50,8 @@
         <v-card-title>Add New Item</v-card-title>
         <v-card-text>
           <v-text-field v-model="newItem.name" label="Item Name" outlined></v-text-field>
-          <v-text-field v-model="newItem.category" label="Item Category" outlined></v-text-field>
+          <v-autocomplete v-model="newItem.category" label="Item Category" outlined
+          :items="categoryArray"></v-autocomplete>
           <v-textarea v-model="newItem.description" label="Item Description" outlined></v-textarea>
         </v-card-text>
         <v-card-actions>
@@ -95,6 +96,7 @@ export default {
     search: '',
     items: [],
     categories: [],
+    categoryArray: [],
     showItemDialog: false,
     showCategoryDialog: false,
     showDeleteDialog: false,
@@ -128,12 +130,7 @@ export default {
     },
   },
   created() {
-    let data = JSON.stringify({
-      "ItemName": "Ibprofin",
-      "ItemDescription": "Test Description",
-      "CategoryName": "TestCategory"
-    });
-
+    let data = '';
     let config = {
       method: 'get',
       maxBodyLength: Infinity,
@@ -148,18 +145,15 @@ export default {
     axios.request(config)
       .then((response) => {
         for (var i = 0; i < response.data.length; i++) {
-          this.categories.push({ name: response.data[i].CategoryName });
+          this.categories.push({name: response.data[i].CategoryName});
+          this.categoryArray.push(response.data[i].CategoryName);
         }
       })
       .catch((error) => {
         console.log(error);
       });
 
-    let data2 = JSON.stringify({
-      "ItemName": "Ibprofin",
-      "ItemDescription": "Test Description",
-      "CategoryName": "TestCategory"
-    });
+    let data2 = '';
 
     let config2 = {
       method: 'get',
