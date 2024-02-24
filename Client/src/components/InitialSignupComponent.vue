@@ -170,9 +170,8 @@ export default {
                     window.scrollTo(0, 0);
                 }).then((response) => {
                     if (response) {
-                        // this.dialog = true
+                        this.dialog = true
                         this.progress = false
-                        this.$router.push({ name: 'home' });
                     }
                 })
 
@@ -189,7 +188,7 @@ export default {
         verify() {
             let data = JSON.stringify({
                 "email": this.username.toLowerCase(),
-                "verification": this.verifyCode
+                "verification": parseInt(this.verifyCode)
             });
 
             let config = {

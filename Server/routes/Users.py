@@ -40,29 +40,29 @@ def signin():
 def signup():
     try:
         data = request.get_json()
-        # verify_token = random.randint(100000, 999999)
+        verify_token = random.randint(100000, 999999)
         hashed_password = generate_password_hash(data["password"])
-        new_user = User(Password=hashed_password, Email=data["email"],RoleID=data["roleid"], IsVerified=1)
+        new_user = User(Password=hashed_password, Email=data["email"],RoleID=data["roleid"], IsVerified=verify_token)
         db.session.add(new_user)
         db.session.commit()
-        ## Send user email for verification
-        # smtp_server = "smtp.gmail.com"
-        # port = 587  # For starttls
-        # sender_email = os.getenv("EMAIL")
-        # password = os.getenv("PASSWORD")
-        # context = ssl.create_default_context()
-        # try:
-        #     server = smtplib.SMTP(smtp_server,port)
-        #     server.ehlo()
-        #     server.starttls(context=context)
-        #     server.ehlo()
-        #     server.login(sender_email, password)
-        #     server.sendmail(sender_email,data["email"], f"Subject: Email Verification Code\n\nYour verification code is {verify_token}")
-        # except Exception as e:
-        #     print(f"Error: {str(e)}")
-        #     return jsonify({"error": "Internal Server Error"}), 500
-        # finally:
-        #     server.quit()
+        # Send user email for verification
+        smtp_server = "smtp.gmail.com"
+        port = 587  # For starttls
+        sender_email = os.getenv("EMAIL")
+        password = os.getenv("PASSWORD")
+        context = ssl.create_default_context()
+        try:
+            server = smtplib.SMTP(smtp_server,port)
+            server.ehlo()
+            server.starttls(context=context)
+            server.ehlo()
+            server.login(sender_email, password)
+            server.sendmail(sender_email,data["email"], f"Subject: Email Verification Code\n\nYour verification code is {verify_token}")
+        except Exception as e:
+            print(f"Error: {str(e)}")
+            return jsonify({"error": "Internal Server Error"}), 500
+        finally:
+            server.quit()
         
         return jsonify({"message": "User created successfully"}), 201
     
@@ -77,9 +77,25 @@ def signup():
 
 @users_bp.route('/verifyUser', methods=['POST'])
 @token_auth.login_required
-def verify():
+def verifyUser():
     try:
         print("HERER @")
         return jsonify({"message": "User verified successfully"}), 200
     except Exception as e:
+        return jsonify({"error": "Internal Server Error"}), 500
+    
+@users_bp.route('/verify', methods=['POST'])
+def verify():
+    try:
+        data = request.get_json()
+        user = User.query.filter_by(Email=data["email"]).first()
+        print(user.IsVerified, data["verification"])
+        if user.IsVerified == data["verification"]:
+            user.IsVerified = 1
+            db.session.commit()
+            return jsonify({"message": "User verified successfully"}), 200
+        else:
+            return jsonify({"error": "Invalid verification code"}), 401
+    except Exception as e:
+        print(f"Error: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
