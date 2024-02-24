@@ -73,4 +73,13 @@ def get_itemsNew():
         print(f"Error occurred: {str(e)}")
         return jsonify({"error": "Internal Server Error"}), 500
     
-
+@items_bp.route('/GetAllItems', methods=['GET'])
+@admin_auth.login_required
+def get_all_items():    
+    try:
+        items = db.session.query(Item, Category.CategoryName).join(Category, Item.CategoryId == Category.CategoryId).all()
+        items_list = [{'name': item.ItemName, 'category': category_name, 'description': item.ItemDescription} for item, category_name in items]
+        return jsonify(items_list), 200
+    except Exception as e:
+        print(f"Error occurred: {str(e)}")
+        return jsonify({"error": "Internal Server Error"}), 500

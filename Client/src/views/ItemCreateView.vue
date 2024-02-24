@@ -14,15 +14,7 @@
             <v-btn color="primary" dark @click="showItemDialog = true">Add Item</v-btn>
           </v-card-title>
           <v-card-text>
-            <v-data-table
-              :headers="itemHeaders"
-              :items="filteredItems"
-              :search="search"
-              class="elevation-1"
-            >
-              <template v-slot:[`item.description`]="{ item }">
-                <span class="description-cell">{{ item.description }}</span>
-              </template>
+            <v-data-table :headers="itemHeaders" :items="filteredItems" :search="search">
               <template v-slot:[`item.action`]="{ item }">
                 <v-btn text @click="confirmDeleteItem(item)" class="mx-2">
                   <v-icon small color="red">mdi-delete</v-icon>
@@ -41,12 +33,7 @@
             <v-btn color="primary" dark @click="showCategoryDialog = true">Add Category</v-btn>
           </v-card-title>
           <v-card-text>
-            <v-data-table
-              :headers="categoryHeaders"
-              :items="filteredCategories"
-              :search="search"
-              class="elevation-1"
-            >
+            <v-data-table :headers="categoryHeaders" :items="filteredCategories" :search="search" class="elevation-1">
               <template v-slot:[`item.action`]="{ item }">
                 <v-btn text @click="confirmDeleteCategory(item)" class="mx-2">
                   <v-icon small color="red">mdi-delete</v-icon>
@@ -58,7 +45,6 @@
       </v-col>
     </v-row>
 
-    <!-- Add Item Dialog -->
     <v-dialog v-model="showItemDialog" max-width="600px">
       <v-card>
         <v-card-title>Add New Item</v-card-title>
@@ -75,7 +61,6 @@
       </v-card>
     </v-dialog>
 
-    <!-- Add Category Dialog -->
     <v-dialog v-model="showCategoryDialog" max-width="600px">
       <v-card>
         <v-card-title>Add New Category</v-card-title>
@@ -90,7 +75,6 @@
       </v-card>
     </v-dialog>
 
-    <!-- Delete Confirmation Dialog -->
     <v-dialog v-model="showDeleteDialog" max-width="500px">
       <v-card>
         <v-card-title class="text-h5">Are you sure?</v-card-title>
@@ -105,6 +89,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   data: () => ({
     search: '',
@@ -125,8 +110,8 @@ export default {
     },
     itemHeaders: [
       { title: 'Item Name', key: 'name' },
-      { title: 'Item Category', key: 'category' },
-      { title: 'Item Description', key: 'description', width: '250px' },
+      { title: 'Item Category', key: 'category', sortable: false },
+      { title: 'Item Description', key: 'description', sortable: false },
       { title: 'Actions', key: 'action', sortable: false },
     ],
     categoryHeaders: [
@@ -141,6 +126,61 @@ export default {
     filteredCategories() {
       return this.search ? this.categories.filter(c => c.name.toLowerCase().includes(this.search.toLowerCase())) : this.categories;
     },
+  },
+  created() {
+    let data = JSON.stringify({
+      "ItemName": "Ibprofin",
+      "ItemDescription": "Test Description",
+      "CategoryName": "TestCategory"
+    });
+
+    let config = {
+      method: 'get',
+      maxBodyLength: Infinity,
+      url: 'http://127.0.0.1:5000/item/GetCategories',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiUm9sZUlEIjoxLCJEYXRlQ3JlYXRlZCI6IjIwMjQtMDItMjNUMTU6NTE6MTcuOTY2MzA5In0.eJ8KJO5Dr-b0-Hf7f7ImmBtwhZD-sVIrmt8Xu-UAyKY'
+      },
+      data: data
+    };
+
+    axios.request(config)
+      .then((response) => {
+        for (var i = 0; i < response.data.length; i++) {
+          this.categories.push({ name: response.data[i].CategoryName });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    let data2 = JSON.stringify({
+      "ItemName": "Ibprofin",
+      "ItemDescription": "Test Description",
+      "CategoryName": "TestCategory"
+    });
+
+    let config2 = {
+      method: 'get',
+      maxBodyLength: Infinity,
+      url: 'http://127.0.0.1:5000/item/GetAllItems',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiUm9sZUlEIjoxLCJEYXRlQ3JlYXRlZCI6IjIwMjQtMDItMjNUMTU6NTE6MTcuOTY2MzA5In0.eJ8KJO5Dr-b0-Hf7f7ImmBtwhZD-sVIrmt8Xu-UAyKY'
+      },
+      data: data2
+    };
+
+    axios.request(config2)
+      .then((response) => {
+        this.items = response.data;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+
   },
   methods: {
     addItem() {
@@ -180,10 +220,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.description-cell {
-  max-width: 250px; /* Adjust based on your layout */
-  white-space: normal;
-  word-wrap: break-word;
-}
-</style>
+<style scoped></style>
