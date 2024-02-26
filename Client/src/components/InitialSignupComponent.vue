@@ -1,3 +1,29 @@
+/**
+ * Component: InitialSignupComponent
+ * Description: This component represents the initial sign-up form for users.
+ * It allows users to enter their email, password, and confirm password.
+ * It also provides password requirements and allows users to select their role.
+ * Once the form is submitted, it sends a request to the server for user registration.
+ * If successful, it displays a verification dialog.
+ * If there are any errors, it displays appropriate error messages.
+ *
+ * Props:
+ * - None
+ *
+ * Events:
+ * - None
+ *
+ * Slots:
+ * - None
+ *
+ * Dependencies:
+ * - VerifyComponentVue: A child component that displays the verification dialog.
+ * - axios: A library for making HTTP requests.
+ * - alertStore: A store for managing alert messages.
+ * - loadingBar: A store for managing loading state.
+ *
+ * @component InitialSignupComponent
+ */
 <template>
     <VerifyComponentVue v-if="dialog" :email="username" :login="false"/>
     <div class="signup-card">
@@ -57,6 +83,7 @@ import VerifyComponentVue from './VerifyComponent.vue';
 import axios from 'axios'
 import { alertStore } from '../stores/alert.js';
 import { loadingBar } from '../stores/loading.js';
+
 export default {
     data() {
         return {
@@ -85,6 +112,7 @@ export default {
     computed: {
         /**
          * Check if the form is valid
+         * @returns {boolean} True if the form is valid, otherwise false.
          */
         valid() {
             const usernameValid = this.usernameRules.slice(0, -1).every(rule => rule(this.username) === true);
@@ -93,6 +121,7 @@ export default {
         },
         /**
          * Confirm password rules
+         * @returns {Array} An array of validation rules for the confirm password field.
          */
         confirmPasswordRules() {
             return [
@@ -177,7 +206,6 @@ export default {
     },
 };
 </script>
-
 
 <style scoped>
 .signup-card {

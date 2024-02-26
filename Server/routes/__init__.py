@@ -7,18 +7,35 @@ admin_auth = HTTPTokenAuth()
 token_auth = HTTPTokenAuth()
     
 
-# Basic auth that tells if a user is signed in or not
 @token_auth.verify_token
 def verify_token(token):
+    """
+    Verify the authenticity of a token.
+
+    Args:
+        token (str): The token to be verified.
+
+    Returns:
+        bool: True if the token is valid, False otherwise.
+    """
     try:
         jwt.decode(token, "secret", algorithms=["HS256"])
         return True
     except Exception:
         return False
 
-# Auth that tells us if the user is an admin or not
+
 @admin_auth.verify_token
 def verify_status(token):
+    """
+    Verify if a user is an admin based on the token.
+
+    Args:
+        token (str): The token to be verified.
+
+    Returns:
+        bool: True if the user is an admin, False otherwise.
+    """
     try:
         decoded_token = jwt.decode(token, "secret", algorithms=["HS256"])
         if(decoded_token["RoleID"] == 1):
