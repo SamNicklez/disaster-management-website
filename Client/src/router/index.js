@@ -3,6 +3,7 @@ import { events } from '../stores/events.js'
 import { user } from '../stores/user.js'
 import axios from 'axios'
 import { loadingBar } from '../stores/loading.js'
+import { alertStore } from '@/stores/alert.js'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,7 +18,6 @@ const router = createRouter({
       name: 'login',
       component: () => import('../views/LoginView.vue'),
       beforeEnter: (to, from, next) => {
-        loadingBar.loading = true
         let userData = user()
         let config = {
           method: 'post',
@@ -46,7 +46,6 @@ const router = createRouter({
       name: 'profile',
       component: () => import('../views/ProfileView.vue'),
       beforeEnter: (to, from, next) => {
-        loadingBar.loading = true
         let userData = user()
         let config = {
           method: 'post',
@@ -61,11 +60,9 @@ const router = createRouter({
         axios
           .request(config)
           .then(() => {
-            loadingBar.loading = false
             next()
           })
           .catch(() => {
-            loadingBar.loading = false
             next('/login')
           })
       }
@@ -110,7 +107,6 @@ const router = createRouter({
       name: 'createItem',
       component: () => import('../views/ItemCreateView.vue'),
       beforeEnter: (to, from, next) => {
-        loadingBar.loading = true
         let userData = user()
         let config = {
           method: 'post',
@@ -125,11 +121,9 @@ const router = createRouter({
         axios
           .request(config)
           .then(() => {
-            loadingBar.loading = false
             next()
           })
           .catch(() => {
-            loadingBar.loading = false
             next('/login')
           })
       }
@@ -140,6 +134,22 @@ const router = createRouter({
       component: () => import('../views/NotFoundView.vue')
     }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  loadingBar.loading = true
+  if(alertStore.overRide) {
+    alertStore.overRide = false
+    next()
+  }
+  else{
+    alertStore.display = false
+    next()
+  }
+})
+
+router.afterEach(() => {
+  loadingBar.loading = false
 })
 
 export default router

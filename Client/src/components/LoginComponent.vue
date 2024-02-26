@@ -1,9 +1,8 @@
 <template>
+    <VerifyComponentVue v-if="dialog" :email="username" :login="true"/>
     <div class="login-card">
         <v-card class="mx-auto pa-12 pb-8" id="card" elevation="8" rounded="lg" style="margin-bottom: 10vh;">
             <div class="text-h5 text-center mb-8">Login</div>
-            <v-alert v-model="alert" density="compact" variant="outlined" type="warning" :text="alertText"
-                dismissible><v-icon icon="mdi-close" style="float:right" @click="this.alert = false"></v-icon></v-alert>
             <div class="text-subtitle-1 text-medium-emphasis">Email</div>
             <v-text-field density="compact" v-model="username" maxLength="100" placeholder="Email"
                 prepend-inner-icon="mdi-account-circle" variant="outlined"></v-text-field>
@@ -35,18 +34,22 @@
     </div>
 </template>
 
+<script setup>
+import VerifyComponentVue from './VerifyComponent.vue';
+</script>
+
 <script>
 import '@mdi/font/css/materialdesignicons.css'
 import { user } from '../stores/user.js'
+import { alertStore } from '../stores/alert.js';
 import axios from 'axios'
 export default {
     data: () => ({
         visible: false,
         username: '',
         password: '',
-        alertText: 'This is a warning alert',
-        alert: false,
         userData: null,
+        dialog: false,
     }),
     methods: {
         /**
@@ -63,12 +66,17 @@ export default {
                 if (this.userData.getLoginAttempts >= 3 && this.minutesBetweenDatesVal(this.userData.getLastLoginAttemptTime) >= 1) {
                     if (this.userData.getLoginAttempts == 3) {
                         this.userData.setLoginAttempt()
-                        this.alertText = `You have exceeded the maximum number of login attempts. Please try again in 10 minutes.`;
+                        alertStore.title = "Account Locked";
+                        alertStore.text = `You have exceeded the maximum number of login attempts. Please try again in 10 minutes.`;
+                        alertStore.type = "warning"
+                        alertStore.display = true;
                         return;
                     }
                     else {
-                        this.alertText = `You have exceeded the maximum number of login attempts. Please try again in ${this.minutesBetweenDates(this.userData.getLastLoginAttemptTime)}`;
-                        this.alert = true;
+                        alertStore.title = "Account Locked";
+                        alertStore.text = `You have exceeded the maximum number of login attempts. Please try again in ${this.minutesBetweenDates(this.userData.getLastLoginAttemptTime)}`;
+                        alertStore.type = "warning"
+                        alertStore.display = true;
                         return;
                     }
                 }
@@ -96,22 +104,37 @@ export default {
                         .then((response) => {
                             console.log(JSON.stringify(response.data));
                             this.userData.setLogin(this.username.toLowerCase(), response.data.token)
+                            alertStore.title = "Login Successful";
+                            alertStore.text = `You have successfully logged in.`;
+                            alertStore.type = "success";
+                            alertStore.overRide = true;
+                            alertStore.display = true;
                             this.$router.push({ name: 'home' });
                         })
                         .catch((error) => {
                             if (error.response.status === 401) {
-                                this.alertText = `Invalid username or password.`;
+                                alertStore.title = "Invalid Credentials";
+                                alertStore.text = `Invalid username or password.`;
+                                alertStore.type = "warning"
+                                alertStore.display = true;
+                            }
+                            else if (error.response.status === 405) {
+                                this.dialog = true;
                             }
                             else {
-                                this.alertText = "An error occurred";
+                                alertStore.title = "Error";
+                                alertStore.text = `An error occurred.`;
+                                alertStore.type = "warning"
+                                alertStore.display = true;
                             }
-                            this.alert = true;
                         });
                 }
 
             } else {
-                this.alertText = 'Please enter a username and password';
-                this.alert = true;
+                alertStore.title = "Invalid Credentials";
+                alertStore.text = `Please enter a username and password.`;
+                alertStore.type = "warning"
+                alertStore.display = true;
             }
         },
         /**

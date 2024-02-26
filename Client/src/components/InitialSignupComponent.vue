@@ -1,26 +1,8 @@
 <template>
-    <v-dialog v-model="dialog" width="auto" persistent>
-        <v-card>
-            <v-alert v-model="alert2" class="alert" density="compact" type="warning" :title="alertText2"
-                variant="tonal"></v-alert>
-            <v-card-text>
-                Account created!
-                An email has been sent to your email address, please enter the code to verify your account.
-            </v-card-text>
-            <v-text-field variant="outlined" label="Verification Code" v-model="verifyCode" required dense outlined
-                placeholder="Enter verification code" maxLength="6"
-                style="min-width: 50%; margin: auto; margin-top: 2.5vh;">
-            </v-text-field>
-            <v-card-actions>
-                <v-btn color="primary" block @click="verify()">Submit</v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-dialog>
+    <VerifyComponentVue v-if="dialog" :email="username" :login="false"/>
     <div class="signup-card">
         <v-card class="mx-auto pa-12 pb-8" elevation="8" rounded="lg" style="margin-bottom: 10vh;">
             <div class="text-h5 text-center mb-8">Sign Up</div>
-            <v-alert v-model="alert" class="alert" density="compact" type="warning" title="Warning" variant="tonal"
-                :text="alertText"></v-alert>
             <v-text-field data-test="username-input" class="textfield" variant="outlined" label="Email" v-model="username"
                 :rules="usernameRules" required dense outlined placeholder="Enter your email address"
                 prepend-inner-icon="mdi-account-circle" maxLength="100">
@@ -62,27 +44,28 @@
                     Already have an account? Sign in <v-icon right>mdi-chevron-right</v-icon>
                 </a>
             </v-card-text>
-            <v-progress-linear :active="progress" indeterminate color="orange" height="10" rounded></v-progress-linear>
         </v-card>
     </div>
 </template>
 
+
+<script setup>
+import VerifyComponentVue from './VerifyComponent.vue';
+</script>
+
 <script>
 import axios from 'axios'
+import { alertStore } from '../stores/alert.js';
+import { loadingBar } from '../stores/loading.js';
 export default {
     data() {
         return {
             alertText: 'Test',
-            alertText2: 'Test',
             dialog: false,
-            alert: false,
-            alert2: false,
             username: '',
             password: '',
             confirmPassword: '',
             visibleConfirm: false,
-            verifyCode: '',
-            progress: false,
             role: '3',
             usernameRules: [
                 v => !!v || 'Email is required',
@@ -137,7 +120,9 @@ export default {
          * Submits the signup form and routes to next part of the signup process
          */
         submit() {
-            this.progress = true
+            loadingBar.loading = true;
+            alertStore.display = false;
+            window.scrollTo(0, 0);
             let data = JSON.stringify({
                 "email": this.username.toLowerCase(),
                 "password": this.password,
@@ -156,25 +141,32 @@ export default {
 
             axios.request(config)
                 .catch((error) => {
-                    this.progress = false
+                    loadingBar.loading = false;
                     if (error.response.status === 409) {
-                        this.alertText = "Account with that email already exists";
+                        alertStore.title = "Account Exists";
+                        alertStore.text = "Account with that email already exists";
+                        alertStore.type = "warning"
+                        alertStore.display = true;
                     }
                     else if (error.response.status === 500) {
-                        this.alertText = "Internal server error";
+                        alertStore.title = "Internal Server Error";
+                        alertStore.text = "An error occurred";
+                        alertStore.type = "error"
+                        alertStore.display = true;
                     }
                     else {
-                        this.alertText = "An error occurred";
+                        alertStore.title = "Error";
+                        alertStore.text = "An error occurred";
+                        alertStore.type = "error"
+                        alertStore.display = true;
                     }
-                    this.alert = true;
-                    window.scrollTo(0, 0);
                 }).then((response) => {
                     if (response) {
+                        console.log("HERE")
                         this.dialog = true
-                        this.progress = false
+                        loadingBar.loading = false;
                     }
                 })
-
         },
         /**
          * Routes to the sign in page
@@ -182,42 +174,6 @@ export default {
         goToSignIn() {
             this.$router.push({ name: 'login' });
         },
-        /**
-         * Verifies the code
-         */
-        verify() {
-            let data = JSON.stringify({
-                "email": this.username.toLowerCase(),
-                "verification": parseInt(this.verifyCode)
-            });
-
-            let config = {
-                method: 'post',
-                maxBodyLength: Infinity,
-                url: 'http://127.0.0.1:5000/users_bp/verify',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                data: data
-            };
-
-            axios.request(config)
-                .then(() => {
-                    this.$router.push({ name: 'login' });
-                })
-                .catch((error) => {
-                    if (error.response.status === 401) {
-                        this.alertText2 = "Invalid verification code";
-                    }
-                    else if (error.response.status === 500) {
-                        this.alertText2 = "Internal server error";
-                    }
-                    else {
-                        this.alertText2 = "An error occurred";
-                    }
-                    this.alert2 = true;
-                });
-        }
     },
 };
 </script>
@@ -229,15 +185,8 @@ export default {
     margin: auto;
 }
 
-.text-caption {
-    color: #FFF;
-}
-
 .textfield {
     margin-bottom: 1.5vh;
 }
 
-.alert {
-    margin-bottom: 3vh;
-}
 </style>

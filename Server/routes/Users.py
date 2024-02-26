@@ -38,7 +38,7 @@ def signin():
         user = User.query.filter_by(Email=data["email"]).first()
 
         if user and user.IsVerified != 1:
-            return jsonify({"error": "User not verified"}), 401
+            return jsonify({"error": "User not verified"}), 405
         elif user and check_password_hash(user.Password, data["password"]) and user.IsVerified == 1:
             encoded_token = jwt.encode({"id": user.UserId, "RoleID":user.RoleID, "DateCreated": datetime.now().isoformat()}, "secret", algorithm="HS256")
             return jsonify({"token": encoded_token}), 200

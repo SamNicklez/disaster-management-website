@@ -2,9 +2,10 @@
 import { reactive } from 'vue';
 
 export const alertStore = reactive({
-    display: true,
+    display: false,
     text: 'This is a test message.',
     type: 'warning',
-    title: 'Test'
+    title: 'Test',
+    overRide: false,
 });
 
