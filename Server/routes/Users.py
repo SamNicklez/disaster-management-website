@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request, session
 from routes import token_auth
+from routes import admin_auth
 from models.Users import User
 from models.Roles import Role
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -19,6 +20,18 @@ users_bp = Blueprint('users_bp', __name__)
 
 @users_bp.route('/signin', methods=['POST'])
 def signin():
+    """
+    Sign in a user.
+
+    Inputs:
+    - data: JSON object containing the user's email and password.
+
+    Outputs:
+    - If the user is verified and the password is correct, returns a JSON object containing a token.
+    - If the user is not verified, returns a JSON object with an error message.
+    - If the email or password is invalid, returns a JSON object with an error message.
+    - If there is an internal server error, returns a JSON object with an error message.
+    """
     try:
         data = request.get_json()
         
@@ -38,6 +51,17 @@ def signin():
     
 @users_bp.route('/signup', methods=['POST'])
 def signup():
+    """
+    Sign up a new user.
+
+    Inputs:
+    - data: JSON object containing the user's email, password, and role ID.
+
+    Outputs:
+    - If the user is created successfully, returns a JSON object with a success message.
+    - If the user already exists, returns a JSON object with an error message.
+    - If there is an internal server error, returns a JSON object with an error message.
+    """
     try:
         data = request.get_json()
         verify_token = random.randint(100000, 999999)
@@ -78,14 +102,46 @@ def signup():
 @users_bp.route('/verifyUser', methods=['POST'])
 @token_auth.login_required
 def verifyUser():
+    """
+    Verify a user.
+
+    Outputs:
+    - If the user is verified successfully, returns a JSON object with a success message.
+    - If there is an internal server error, returns a JSON object with an error message.
+    """
     try:
-        print("HERER @")
+        return jsonify({"message": "User verified successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": "Internal Server Error"}), 500
+    
+@users_bp.route('/verifyAdmin', methods=['POST'])
+@admin_auth.login_required
+def verifyAdmin():
+    """
+    Verify an admin user.
+
+    Outputs:
+    - If the admin user is verified successfully, returns a JSON object with a success message.
+    - If there is an internal server error, returns a JSON object with an error message.
+    """
+    try:
         return jsonify({"message": "User verified successfully"}), 200
     except Exception as e:
         return jsonify({"error": "Internal Server Error"}), 500
     
 @users_bp.route('/verify', methods=['POST'])
 def verify():
+    """
+    Verify a user using a verification code.
+
+    Inputs:
+    - data: JSON object containing the user's email and verification code.
+
+    Outputs:
+    - If the verification code is valid, updates the user's verification status and returns a JSON object with a success message.
+    - If the verification code is invalid, returns a JSON object with an error message.
+    - If there is an internal server error, returns a JSON object with an error message.
+    """
     try:
         data = request.get_json()
         user = User.query.filter_by(Email=data["email"]).first()

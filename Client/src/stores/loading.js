@@ -1,7 +1,7 @@
-// store.js
+// loading.js
 import { reactive } from 'vue';
 
-export const store = reactive({
+export const loadingBar = reactive({
   loading: false,
 });
 

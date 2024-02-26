@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { events } from '../stores/events.js'
 import { user } from '../stores/user.js'
 import axios from 'axios'
-import { store } from '../stores/loading.js'
+import { loadingBar } from '../stores/loading.js'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,7 +17,7 @@ const router = createRouter({
       name: 'login',
       component: () => import('../views/LoginView.vue'),
       beforeEnter: (to, from, next) => {
-        store.loading = true
+        loadingBar.loading = true
         let userData = user()
         let config = {
           method: 'post',
@@ -32,11 +32,11 @@ const router = createRouter({
         axios
           .request(config)
           .then(() => {
-            store.loading = false
+            loadingBar.loading = false
             next('/logout')
           })
           .catch(() => {
-            store.loading = false
+            loadingBar.loading = false
             next()
           })
       }
@@ -45,14 +45,29 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: () => import('../views/ProfileView.vue'),
-      beforeEnter: () => {
-        // Logic to check if user is logged in, please check with server before routing
-        // if (localStorage.getItem('token') == null) {
-        //   return '/login'
-        // }
-        // else {
-        //   return true
-        // }
+      beforeEnter: (to, from, next) => {
+        loadingBar.loading = true
+        let userData = user()
+        let config = {
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: 'http://127.0.0.1:5000/users_bp/verifyUser',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + userData.getToken
+          }
+        }
+
+        axios
+          .request(config)
+          .then(() => {
+            loadingBar.loading = false
+            next()
+          })
+          .catch(() => {
+            loadingBar.loading = false
+            next('/login')
+          })
       }
     },
     {
@@ -93,7 +108,31 @@ const router = createRouter({
     {
       path: '/createItem',
       name: 'createItem',
-      component: () => import('../views/ItemCreateView.vue')
+      component: () => import('../views/ItemCreateView.vue'),
+      beforeEnter: (to, from, next) => {
+        loadingBar.loading = true
+        let userData = user()
+        let config = {
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: 'http://127.0.0.1:5000/users_bp/verifyUser',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + userData.getToken
+          }
+        }
+
+        axios
+          .request(config)
+          .then(() => {
+            loadingBar.loading = false
+            next()
+          })
+          .catch(() => {
+            loadingBar.loading = false
+            next('/login')
+          })
+      }
     },
     {
       path: '/:catchAll(.*)',

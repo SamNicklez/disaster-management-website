@@ -1,8 +1,6 @@
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
-from models.Users import User
-from models.Roles import Role
 
 
 admin_auth = HTTPTokenAuth()
@@ -15,9 +13,10 @@ def verify_token(token):
     try:
         jwt.decode(token, "secret", algorithms=["HS256"])
         return True
-    except Exception as e:
+    except Exception:
         return False
 
+# Auth that tells us if the user is an admin or not
 @admin_auth.verify_token
 def verify_status(token):
     try:
@@ -26,8 +25,7 @@ def verify_status(token):
             return True
         else:
             return False
-    except Exception as e:
-        print(e)
+    except Exception:
         return False
         
 
