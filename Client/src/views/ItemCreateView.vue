@@ -1,96 +1,102 @@
 <template>
-  <v-container>
-    <v-row class="mb-5">
-      <v-col cols="12">
-        <v-text-field v-model="search" label="Search Items and Categories" outlined clearable></v-text-field>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12" md="6">
-        <v-card>
-          <v-card-title>
-            Items
-            <v-spacer></v-spacer>
-            <v-btn color="primary" dark @click="showItemDialog = true">Add Item</v-btn>
-          </v-card-title>
-          <v-card-text>
-            <v-data-table :headers="itemHeaders" :items="filteredItems" :search="search">
-              <template v-slot:[`item.action`]="{ item }">
-                <v-btn text @click="confirmDeleteItem(item)" class="mx-2">
-                  <v-icon small color="red">mdi-delete</v-icon>
-                </v-btn>
-              </template>
-            </v-data-table>
-          </v-card-text>
-        </v-card>
-      </v-col>
+  <v-card style="margin:auto; max-width: 70vw;">
+    <v-tabs v-model="tab" color="orange">
+      <v-tab value="one">Item Details</v-tab>
+      <v-tab value="two">Category Details</v-tab>
+    </v-tabs>
+    <v-card-text>
+      <v-window v-model="tab">
+        <v-window-item value="one">
+          <v-container>
+            <v-row class="mb-5">
+              <v-col cols="12">
+                <v-text-field v-model="search" label="Search Items" outlined clearable></v-text-field>
+              </v-col>
+            </v-row>
 
-      <v-col cols="12" md="6">
-        <v-card>
-          <v-card-title>
-            Categories
-            <v-spacer></v-spacer>
-            <v-btn color="primary" dark @click="showCategoryDialog = true">Add Category</v-btn>
-          </v-card-title>
-          <v-card-text>
-            <v-data-table :headers="categoryHeaders" :items="filteredCategories" :search="search" class="elevation-1">
-              <template v-slot:[`item.action`]="{ item }">
-                <v-btn text @click="confirmDeleteCategory(item)" class="mx-2">
-                  <v-icon small color="red">mdi-delete</v-icon>
-                </v-btn>
-              </template>
-            </v-data-table>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+            <v-card>
+              <v-card-title>
+                Items
+                <v-spacer></v-spacer>
+                <v-btn color="primary" dark @click="showItemDialog = true">Add Item</v-btn>
+              </v-card-title>
+              <v-card-text>
+                <v-data-table :headers="itemHeaders" :items="filteredItems" :search="search">
+                  <template v-slot:[`item.action`]="{ item }">
+                    <v-btn text @click="confirmDeleteItem(item)" class="mx-2">
+                      <v-icon small color="red">mdi-delete</v-icon>
+                    </v-btn>
+                  </template>
+                </v-data-table>
+              </v-card-text>
+            </v-card>
+            <v-dialog v-model="showItemDialog" max-width="600px">
+              <v-card>
+                <v-card-title>Add New Item</v-card-title>
+                <v-card-text>
+                  <v-text-field v-model="newItem.name" label="Item Name" outlined></v-text-field>
+                  <v-autocomplete v-model="newItem.category" label="Item Category" outlined
+                    :items="categoryArray"></v-autocomplete>
+                  <v-textarea v-model="newItem.description" label="Item Description" outlined></v-textarea>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="blue darken-1" text @click="showItemDialog = false">Cancel</v-btn>
+                  <v-btn color="blue darken-1" text @click="addItem()">Add</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </v-container>
 
-    <v-dialog v-model="showItemDialog" max-width="600px">
-      <v-card>
-        <v-card-title>Add New Item</v-card-title>
-        <v-card-text>
-          <v-text-field v-model="newItem.name" label="Item Name" outlined></v-text-field>
-          <v-autocomplete v-model="newItem.category" label="Item Category" outlined
-          :items="categoryArray"></v-autocomplete>
-          <v-textarea v-model="newItem.description" label="Item Description" outlined></v-textarea>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="showItemDialog = false">Cancel</v-btn>
-          <v-btn color="blue darken-1" text @click="addItem()">Add</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+        </v-window-item>
 
-    <v-dialog v-model="showCategoryDialog" max-width="600px">
-      <v-card>
-        <v-card-title>Add New Category</v-card-title>
-        <v-card-text>
-          <v-text-field v-model="newCategory.name" label="Category Name" outlined></v-text-field>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="showCategoryDialog = false">Cancel</v-btn>
-          <v-btn color="blue darken-1" text @click="addCategory()">Add</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+        <v-window-item value="two">
+          <v-container>
+            <v-row class="mb-5">
+              <v-col cols="12">
+                <v-text-field v-model="search" label="Search Categories" outlined clearable></v-text-field>
+              </v-col>
+            </v-row>
+            <v-card>
+              <v-card-title>
+                Categories
+                <v-spacer></v-spacer>
+                <v-btn color="primary" dark @click="showCategoryDialog = true">Add Category</v-btn>
+              </v-card-title>
+              <v-card-text>
+                <v-data-table :headers="categoryHeaders" :items="filteredCategories" :search="search">
+                  <template v-slot:[`item.action`]="{ item }">
+                    <v-btn text @click="confirmDeleteCategory(item)" class="mx-2">
+                      <v-icon small color="red">mdi-delete</v-icon>
+                    </v-btn>
+                  </template>
+                </v-data-table>
+              </v-card-text>
+            </v-card>
+            <v-dialog v-model="showCategoryDialog" max-width="600px">
+              <v-card>
+                <v-card-title>Add New Category</v-card-title>
+                <v-card-text>
+                  <v-text-field v-model="newCategory.name" label="Category Name" outlined></v-text-field>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="blue darken-1" text @click="showCategoryDialog = false">Cancel</v-btn>
+                  <v-btn color="blue darken-1" text @click="addCategory()">Add</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </v-container>
 
-    <v-dialog v-model="showDeleteDialog" max-width="500px">
-      <v-card>
-        <v-card-title class="text-h5">Are you sure?</v-card-title>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="cancelDelete()">Cancel</v-btn>
-          <v-btn color="red darken-1" text @click="confirmDelete()">Delete</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-container>
+        </v-window-item>
+      </v-window>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>
 import axios from 'axios';
+import { user } from '../stores/user.js';
 export default {
   data: () => ({
     search: '',
@@ -102,6 +108,7 @@ export default {
     showDeleteDialog: false,
     deleteType: null,
     deleteItemIndex: null,
+    tab: null,
     newItem: {
       name: '',
       category: '',
@@ -131,13 +138,14 @@ export default {
   },
   created() {
     let data = '';
+    let userData = user();
     let config = {
       method: 'get',
       maxBodyLength: Infinity,
       url: 'http://127.0.0.1:5000/item/GetCategories',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiUm9sZUlEIjoxLCJEYXRlQ3JlYXRlZCI6IjIwMjQtMDItMjNUMTU6NTE6MTcuOTY2MzA5In0.eJ8KJO5Dr-b0-Hf7f7ImmBtwhZD-sVIrmt8Xu-UAyKY'
+        'Authorization': 'Bearer ' + userData.getToken
       },
       data: data
     };
@@ -145,7 +153,7 @@ export default {
     axios.request(config)
       .then((response) => {
         for (var i = 0; i < response.data.length; i++) {
-          this.categories.push({name: response.data[i].CategoryName});
+          this.categories.push({ name: response.data[i].CategoryName });
           this.categoryArray.push(response.data[i].CategoryName);
         }
       })
@@ -161,7 +169,7 @@ export default {
       url: 'http://127.0.0.1:5000/item/GetAllItems',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiUm9sZUlEIjoxLCJEYXRlQ3JlYXRlZCI6IjIwMjQtMDItMjNUMTU6NTE6MTcuOTY2MzA5In0.eJ8KJO5Dr-b0-Hf7f7ImmBtwhZD-sVIrmt8Xu-UAyKY'
+        'Authorization': 'Bearer ' + userData.getToken
       },
       data: data2
     };
@@ -173,8 +181,6 @@ export default {
       .catch((error) => {
         console.log(error);
       });
-
-
   },
   methods: {
     addItem() {
