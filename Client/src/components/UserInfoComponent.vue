@@ -1,5 +1,38 @@
+/**
+ * Component for displaying user information and address information.
+ *
+ * Props:
+ * - None
+ *
+ * Data:
+ * - searchQuery: string - The search query for address autocomplete.
+ * - addresses: array - The list of addresses returned from the autocomplete API.
+ * - addressDetails: object - The details of the selected address.
+ * - loading: boolean - Indicates if the autocomplete API is currently loading.
+ * - location: object - The longitude and latitude of the selected address.
+ * - username: string - The username of the user.
+ * - email: string - The email of the user.
+ * - role: string - The role of the user.
+ * - phone_number: string - The phone number of the user.
+ * - edit: boolean - Indicates if the user information is in edit mode.
+ *
+ * Methods:
+ * - fetchAddresses: Fetches the addresses from the autocomplete API based on the search query.
+ * - debounce: Debounces a function to limit the number of calls within a certain time frame.
+ * - selectAddress: Selects an address from the autocomplete suggestions and updates the address details.
+ * - checkClear: Clears the address details and location.
+ * - toggleEdit: Toggles the edit mode for user information.
+ * - createItem: Redirects to the create item page.
+ *
+ * Lifecycle Hooks:
+ * - created: Initializes the debouncedFetchAddresses method.
+ *
+ * @name AddressAutocomplete
+ */
+
 <template>
   <v-card class="mb-5" outlined tile>
+    <v-btn @click="createItem">Make Item</v-btn>
     <v-card-title>User Information</v-card-title>
     <v-container>
       <v-row>
@@ -44,7 +77,6 @@
 
 <script>
 import axios from 'axios';
-
 export default {
   name: 'AddressAutocomplete',
   data() {
@@ -74,6 +106,9 @@ export default {
     this.debouncedFetchAddresses = this.debounce(this.fetchAddresses, 500);
   },
   methods: {
+    /**
+     * Fetches addresses based on the search query.
+     */
     fetchAddresses() {
       if (this.searchQuery.length < 3) return;
       this.loading = true
@@ -87,6 +122,12 @@ export default {
         })
         .catch(error => console.error(error));
     },
+    /**
+     * Debounces a function to limit the number of times it is called.
+     * @param {Function} func - The function to be debounced.
+     * @param {number} wait - The debounce wait time in milliseconds.
+     * @returns {Function} - The debounced function.
+     */
     debounce(func, wait) {
       let timeout;
       return function (...args) {
@@ -98,6 +139,10 @@ export default {
         timeout = setTimeout(later, wait);
       };
     },
+    /**
+     * Selects an address from the autocomplete suggestions.
+     * @param {Object} address - The selected address object.
+     */
     selectAddress(address) {
       console.log("Selected Address");
       this.searchQuery = address.properties.formatted;
@@ -116,6 +161,9 @@ export default {
       this.addressDetails.state = address.properties.state;
       this.addressDetails.zipcode = address.properties.postcode;
     },
+    /**
+     * Clears the address details and location.
+     */
     checkClear() {
       this.addressDetails = {
         address: '',
@@ -129,10 +177,18 @@ export default {
         latitude: ''
       }
     },
+    /**
+     * Toggles the edit mode.
+     */
     toggleEdit() {
       this.edit = !this.edit
-
     },
+    /**
+     * Redirects to the create item page.
+     */
+    createItem() {
+      this.$router.push({ name: 'createItem' });
+    }
   },
 };
 </script>

@@ -5,7 +5,7 @@
         <v-btn text to="/" variant="plain" class="button">Disaster Donation</v-btn>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-text-field v-model="searchQuery" dense flat hide-details prepend-icon="mdi-magnify" @click:append="performSearch"
+      <v-text-field id="search" v-model="searchQuery" dense flat hide-details prepend-icon="mdi-magnify" @click:append="performSearch"
         @keyup.enter="performSearch" variant="outlined" label="Search for an Event" class="mx-auto"
         density="compact"></v-text-field>
       <v-spacer></v-spacer>

@@ -3,4 +3,7 @@ pymysql
 cryptography
 pytest
 coverage
-python-dotenv
+Flask-HTTPAuth
+PyJWT
+mysqlclient
+flask-cors

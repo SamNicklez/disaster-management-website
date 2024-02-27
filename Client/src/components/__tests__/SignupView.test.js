@@ -8,7 +8,6 @@ describe('ParentComponent', () => {
     const wrapper = mount(ParentComponent, {
     });
 
-    // Check if InitialSignupComponent is rendered
     const signupComponent = wrapper.findComponent(InitialSignupComponent);
     expect(signupComponent.exists()).toBe(true);
   });

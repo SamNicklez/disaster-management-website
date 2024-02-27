@@ -2,10 +2,43 @@
 import Navbar from '@/components/NavComponent.vue'
 </script>
 
+<script>
+import { loadingBar } from './stores/loading.js';
+import { alertStore } from './stores/alert';
+
+export default {
+  computed: {
+    loading() {
+      return loadingBar.loading;
+    },
+    alertText() {
+      return alertStore.text;
+    },
+    isAlert() {
+      return alertStore.display;
+    },
+    alertType() {
+      return alertStore.type;
+    },
+    alertTitle() {
+      return alertStore.title;
+    },
+  },
+};
+</script>
+
 <template>
   <v-app>
-    <Navbar />
     <v-main>
+      <v-progress-linear
+      :active="loading"
+      indeterminate
+      color="orange"
+      height="10"
+      top
+    ></v-progress-linear>
+      <Navbar />
+      <v-alert :text="alertText" :title="alertTitle" v-if="isAlert" :type="alertType" style="margin:auto; max-width: 90%; min-height: 5vh; margin-bottom: 2.5vh;"></v-alert>
       <router-view />
     </v-main>
   </v-app>

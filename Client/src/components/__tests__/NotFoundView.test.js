@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import NotFoundView from '@/views/NotFoundView.vue';
 
-// Setup global mocks, including Vue Router mock
+// Setup global mocks
 const globalMocks = {
   global: {
     mocks: {

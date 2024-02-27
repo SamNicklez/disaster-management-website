@@ -28,6 +28,10 @@ export default {
     };
   },
   computed: {
+    /**
+     * Get the list of events.
+     * @returns {Array} The list of events.
+     */
     events() {
       return this.eventData ? this.eventData.getEvents : [];
     }
@@ -36,6 +40,10 @@ export default {
     this.eventData = events();
   },
   methods: {
+    /**
+     * Navigate to the event details page.
+     * @param {string} id - The ID of the event.
+     */
     goToEvent(id) {
       this.$router.push({ name: 'event', params: { id: id } });
     },
