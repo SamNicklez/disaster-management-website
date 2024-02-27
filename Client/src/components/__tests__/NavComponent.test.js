@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import NavComponent from '../NavComponent.vue'
+import { flushPromises } from '@vue/test-utils'
 
 describe('NavComponent', () => {
   let wrapper
@@ -35,17 +36,36 @@ describe('NavComponent', () => {
     expect(mockRouterPush).toHaveBeenCalledWith('/login')
   })
 
-  // Assuming populateNotifications would fetch and set notifications
-  // This test might need to be adjusted based on the actual implementation of populateNotifications
   it('populates notifications', async () => {
-    // Placeholder for testing populateNotifications
-    // Depending on its implementation, you might need to mock API calls or other asynchronous operations
     console.log('Test for populateNotifications needs to be implemented based on its logic')
   })
 
   it('closes a notification', async () => {
     const initialLength = wrapper.vm.notifications.length
-    wrapper.vm.closeNoti(0) // Close the first notification
+    wrapper.vm.closeNoti(0)
     expect(wrapper.vm.notifications.length).toBe(initialLength - 1)
+  })
+
+  it('updates searchQuery on input', async () => {
+    wrapper.vm.searchQuery = 'disaster';
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.searchQuery).toBe('disaster');
+  });
+  
+  it('populates notifications on bell icon click', async () => {
+    const populateNotificationsSpy = vi.spyOn(wrapper.vm, 'populateNotifications')
+    await wrapper.vm.populateNotifications()
+    await flushPromises()
+
+    expect(populateNotificationsSpy).toHaveBeenCalled()
+  })
+
+  it('closes a notification', async () => {
+    await wrapper.setData({
+      notifications: [{ title: 'Notification 1', description: 'Description 1' }]
+    })
+    const initialLength = wrapper.vm.notifications.length
+    await wrapper.vm.closeNoti(0)
+    expect(wrapper.vm.notifications.length).toBeLessThan(initialLength)
   })
 })

@@ -24,7 +24,8 @@
     methods: {
       logout() {
         // Here you should clear the user data/session/token etc.
-        user().clearUser();
+        let userData = user();
+        userData.clearUser();
         this.$router.push({ name: 'login' });
       },
       goToHome() {

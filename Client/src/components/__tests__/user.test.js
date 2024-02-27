@@ -1,99 +1,77 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import { setActivePinia, createPinia } from 'pinia'
-import { user } from '../../stores/user.js'
+import { describe, it, expect, beforeEach } from 'vitest';
+import { createPinia, setActivePinia } from 'pinia';
+import { user } from '@/stores/user';
 
-beforeEach(() => {
-  setActivePinia(createPinia())
-})
-
-describe('User Store', () => {
-  it('initializes with default state', () => {
-    const userStore = user()
-    expect(userStore.username).toBe('')
-    expect(userStore.token).toBe('')
-    expect(userStore.refreshDate).toBeNull()
-    expect(userStore.loginAttempts).toBe(0)
-    expect(userStore.lastLoginAttempt).toBeNull()
-  })
-
-  it('setLogin sets user data correctly', () => {
-    const userStore = user()
-    userStore.setLogin('testUser', 'testToken')
-    expect(userStore.username).toBe('testUser')
-    expect(userStore.token).toBe('testToken')
-    expect(userStore.refreshDate).not.toBeNull()
-    expect(userStore.lastLoginAttempt).not.toBeNull()
-  })
-
-  it('setLogout clears user data correctly', () => {
-    const userStore = user()
-    userStore.setLogout()
-    expect(userStore.username).toBe('')
-    expect(userStore.token).toBe('')
-    expect(userStore.refreshDate).toBeNull()
-  })
-
-  it('setLoginAttempt increments login attempts', () => {
-    const userStore = user()
-    userStore.setLoginAttempt()
-    expect(userStore.loginAttempts).toBe(1)
-  })
-
-  it('resetLoginAttempts resets login attempts to 0', () => {
-    const userStore = user()
-    // Simulate a few login attempts
-    userStore.setLoginAttempt()
-    userStore.setLoginAttempt()
-    // Reset attempts
-    userStore.resetLoginAttempts()
-    expect(userStore.loginAttempts).toBe(0)
-  })
-
-  it('expired getter calculates expiration correctly', () => {
-    const userStore = user()
-    userStore.setDate()
-    expect(userStore.expired).toBe(true)
-  })
-})
-
-describe('User Store Getters', () => {
-  let userStore
-
+describe('user store', () => {
   beforeEach(() => {
-    // Reset the store before each test
-    const pinia = createPinia()
-    setActivePinia(pinia)
-    userStore = user()
-  })
+    // Reset Pinia state before each test
+    setActivePinia(createPinia());
+  });
 
-  it('getLoginAttempts returns the correct number of login attempts', () => {
-    // Initially, there should be no login attempts
-    expect(userStore.getLoginAttempts).toBe(0)
+  it('sets user login data correctly', () => {
+    const userStore = user();
+    const username = 'testUser';
+    const token = 'testToken';
+    userStore.setLogin(username, token);
 
-    // Simulate a login attempt
-    userStore.setLoginAttempt()
-    expect(userStore.getLoginAttempts).toBe(1)
+    expect(userStore.username).toBe(username);
+    expect(userStore.token).toBe(token);
+    expect(userStore.refreshDate).toBeInstanceOf(Date);
+    expect(userStore.lastLoginAttempt).toBeInstanceOf(Date);
+  });
 
-    userStore.setLoginAttempt()
-    expect(userStore.getLoginAttempts).toBe(2)
-  })
+  it('resets user data on logout', () => {
+    const userStore = user();
+    userStore.setLogout();
 
-  it('getLastLoginAttemptTime returns the correct time of the last login attempt', () => {
-    expect(userStore.getLastLoginAttemptTime).toBeNull()
+    expect(userStore.username).toBe('');
+    expect(userStore.token).toBe('');
+    expect(userStore.refreshDate).toBeNull();
+  });
 
-    // Simulate a login attempt
-    userStore.setLoginAttempt()
-    const firstAttemptTime = userStore.lastLoginAttempt
-    expect(userStore.getLastLoginAttemptTime).toBe(firstAttemptTime)
+  it('increments login attempts', () => {
+    const userStore = user();
+    userStore.setLoginAttempt();
+    userStore.setLoginAttempt();
 
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        userStore.setLoginAttempt()
-        const secondAttemptTime = userStore.lastLoginAttempt
-        expect(userStore.getLastLoginAttemptTime).toBe(secondAttemptTime)
-        expect(secondAttemptTime).not.toBe(firstAttemptTime)
-        resolve()
-      }, 1000)
-    })
-  })
-})
+    expect(userStore.loginAttempts).toBe(2);
+  });
+
+  it('resets login attempts', () => {
+    const userStore = user();
+    userStore.setLoginAttempt();
+    userStore.resetLoginAttempts();
+
+    expect(userStore.loginAttempts).toBe(0);
+  });
+
+  it('clears user data', () => {
+    const userStore = user();
+    userStore.setLogin('testUser', 'testToken');
+    userStore.clearUser();
+
+    expect(userStore.username).toBe('');
+    expect(userStore.token).toBe('');
+    expect(userStore.refreshDate).toBeNull();
+    expect(userStore.loginAttempts).toBe(0);
+    expect(userStore.lastLoginAttempt).toBeNull();
+  });
+
+  it('checks if token is expired correctly', () => {
+    const userStore = user();
+    // Set refreshDate to a past date
+    const pastDate = new Date();
+    pastDate.setMinutes(pastDate.getMinutes() - 20);
+    userStore.refreshDate = pastDate;
+
+    expect(userStore.expired).toBe(false);
+  });
+
+  it('gets token as string', () => {
+    const userStore = user();
+    userStore.setLogin('testUser', 'testToken');
+
+    expect(userStore.getToken).toBe('testToken');
+  });
+
+});

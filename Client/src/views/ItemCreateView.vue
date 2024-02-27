@@ -18,7 +18,7 @@
               <v-card-title>
                 Items
                 <v-spacer></v-spacer>
-                <v-btn color="primary" dark @click="showItemDialog = true">Add Item</v-btn>
+                <v-btn color="primary" id="additem" dark @click="showItemDialog = true">Add Item</v-btn>
               </v-card-title>
               <v-card-text>
                 <v-data-table :headers="itemHeaders" :items="filteredItems" :search="search">
@@ -61,7 +61,7 @@
               <v-card-title>
                 Categories
                 <v-spacer></v-spacer>
-                <v-btn color="primary" dark @click="showCategoryDialog = true">Add Category</v-btn>
+                <v-btn color="primary" dark @click="showCategoryDialog = true" id="addcategory">Add Category</v-btn>
               </v-card-title>
               <v-card-text>
                 <v-data-table :headers="categoryHeaders" :items="filteredCategories" :search="search">
@@ -137,8 +137,8 @@ export default {
     },
   },
   created() {
-    let data = '';
     let userData = user();
+    let data = '';
     let config = {
       method: 'get',
       maxBodyLength: Infinity,
