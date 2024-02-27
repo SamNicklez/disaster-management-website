@@ -7,7 +7,7 @@ class Category(db.Model):
     
 
 class Item(db.Model):
-    __tablename__ = 'items'
+    __tablename__ = 'item'
     ItemID = db.Column(db.Integer, primary_key=True)
     ItemName = db.Column(db.String(255), nullable=False)
     ItemDescription = db.Column(db.String(255))
