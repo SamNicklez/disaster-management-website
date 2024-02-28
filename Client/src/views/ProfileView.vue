@@ -3,21 +3,6 @@ import UserInfoComponent from "@/components/UserInfoComponent.vue";
 </script>
 
 <script>
-import axios from "axios";
-export default {
-  event: null,
-  methods: {
-
-  },
-  // Grab user data
-  created() {
-
-  },
-  async getAnswer() {
-    const { data } = await axios.get("https://yesno.wtf/api");
-    this.answer = data;
-  },
-}
 </script>
 
 <template>
