@@ -191,7 +191,6 @@ export default {
                     }
                 }).then((response) => {
                     if (response) {
-                        console.log("HERE")
                         this.dialog = true
                         loadingBar.loading = false;
                     }

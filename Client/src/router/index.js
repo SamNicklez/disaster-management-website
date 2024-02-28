@@ -138,6 +138,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   loadingBar.loading = true
+  scroll(0,0)
   if(alertStore.overRide) {
     alertStore.overRide = false
     next()
