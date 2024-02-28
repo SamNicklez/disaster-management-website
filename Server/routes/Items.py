@@ -6,6 +6,29 @@ from routes import admin_auth
 
 items_bp = Blueprint('Items', __name__)
 
+@items_bp.route('/CreateCategory', methods=['POST'])
+def create_category():
+
+    """
+    Creates a new category with the name provided in the request JSON.
+    Requires a JSON body with 'CategoryName'.
+    
+    Returns:
+        - Success message with status code 201 if the category is created successfully.
+        - Error message with status code 500 if there is an internal server error.
+    """
+    try:
+        data = request.get_json() 
+        new_category = Category(CategoryName=data['CategoryName'])
+        db.session.add(new_category)
+        db.session.commit()
+        return jsonify('success'), 201
+
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return jsonify({"error": "Internal Server Error"}), 500
+    
+
 @items_bp.route('/CreateItem', methods=['POST'])
 @admin_auth.login_required
 def create_item():
@@ -24,6 +47,7 @@ def create_item():
     - If an internal server error occurs, returns an error message and status code 500
     """
     try:
+        
         data = request.get_json()
         print(data)
         category = Category.query.filter_by(CategoryName=data['CategoryName']).first()
@@ -90,13 +114,27 @@ def get_items():
     """
     CategoryId = request.args.get('CategoryId', None)
 
-    if CategoryId is None:
-        return jsonify({"error": "CategoryId parameter is required"}), 400
+    """
+    Retrieves items filtered by the 'CategoryId' parameter from the query string.
+    
+    Parameters:
+        - CategoryId (query parameter): The ID of the category to filter items by.
+    
+    Returns:
+        - A JSON list of items belonging to the specified category, with status code 200.
+        - Error message with status code 400 if 'CategoryId' parameter is missing.
+        - Error message with status code 500 if there is an internal server error.
+    """
+
+    CategoryName = request.args.get('CategoryName', None)
+
+    if CategoryName is None:
+        return jsonify({"error": "CategoryName parameter is required"}), 400
     
     try:
         conn = db.engine.raw_connection()
         cursor = conn.cursor()
-        cursor.callproc('GetItemsByCategory', [CategoryId])
+        cursor.callproc('GetItemsByCategory', [CategoryName])
         items = cursor.fetchall()
         cursor.close()
         conn.close()
@@ -126,3 +164,155 @@ def get_all_items():
     except Exception as e:
         print(f"Error occurred: {str(e)}")
         return jsonify({"error": "Internal Server Error"}), 500
+
+
+@items_bp.route('/DeleteCategory', methods=['POST'])
+def delete_category():
+    
+    """
+    Deletes a category specified by 'CategoryName' in the request JSON. Marks category as inactive.
+    Requires a JSON body with 'CategoryName'.
+    
+    Returns
+        - Success message if the category is deleted successfully.
+        - Error message with status code 400 if 'CategoryName' is missing.
+        - Error message with status code 404 if the category is not found.
+        - Error message with status code 500 if there is a database error.
+    """
+
+    data = request.json
+
+    if 'CategoryName' not in data:
+        return jsonify({'error': 'CategoryName is required'}), 400
+    
+    CategoryName = data['CategoryName']
+    try:
+        category = Category.query.filter_by(CategoryName=CategoryName).first()
+    
+        if not category:
+            return jsonify({'error': 'Category not found'}), 404
+    
+        category.isActive = -1
+
+        items = Item.query.filter_by(CategoryId=category.CategoryId).all()
+        for item in items:
+            item.isActive = -1
+
+        db.session.commit()
+
+        return jsonify({'message': 'Category deleted successfully'})
+    except db.SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({'error': 'An error occurred while deleting the category'}), 500
+
+@items_bp.route('/DeleteItem', methods=['POST'])
+def delete_item():
+
+    """
+    Deletes an item specified by 'ItemName' in the request JSON. Marks the item as inactive.
+    Requires a JSON body with 'ItemName'.
+    
+    Returns:
+        - Success message if the item is deleted successfully.
+        - Error message with status code 400 if 'ItemName' is missing.
+        - Error message with status code 404 if the item is not found.
+        - Error message with status code 500 if there is a database error.
+    """
+
+    data = request.json
+
+    if 'ItemName' not in data:
+        return jsonify({'error': 'ItemName is required'}), 400
+    
+    ItemName = data['ItemName']
+
+    try:
+        item = Item.query.filter_by(ItemName=ItemName).first()
+        if not item:
+            return jsonify({'error': 'Item not found'}), 404
+        item.isActive = -1
+        db.session.commit()
+        return jsonify({'message': 'Item deleted successfully'})
+    
+    except db.SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({'error': 'An error occurred while deleting the item'}), 500
+
+@items_bp.route('/EditCategory', methods=['POST'])
+def edit_category():
+
+    """
+    Edits the name of an existing category. Requires JSON body with 'CategoryName' and 'NewCategoryName'.
+    
+    Returns:
+        - Success message if the category name is updated successfully.
+        - Error message with status code 400 if required data is missing.
+        - Error message with status code 404 if the category is not found.
+        - Error message with status code 500 if there is a database error.
+    """
+
+    data = request.json
+
+    if 'CategoryName' not in data or 'NewCategoryName' not in data:
+        return jsonify({'error': 'Category Name and new name are required'}), 400
+
+    CategoryName = data['CategoryName']
+    NewCategoryName = data['NewCategoryName']
+
+    try:
+        category = Category.query.filter_by(CategoryName=CategoryName).first()
+        if not category:
+            return jsonify({'error': 'Category not found'}), 404
+
+        category.CategoryName = NewCategoryName
+        db.session.commit()
+
+        return jsonify({'message': 'Category name updated successfully'})
+    
+    except db.SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({'error': 'An error occurred while updating the category name'}), 500
+    
+
+@items_bp.route('/EditItem', methods=['POST'])
+def edit_item():
+
+    """
+    Edits details of an existing item. Can update the item's name, description, and category ID.
+    Requires JSON body with 'ItemName' and optionally 'NewName', 'NewDescription', 'NewCategoryId'.
+    
+    Returns:
+        - Success message if the item details are updated successfully.
+        - Error message with status code 400 if 'ItemName' is missing.
+        - Error message with status code 404 if the item is not found.
+        - Error message with status code 500 if there is a database error.
+    """
+
+    data = request.json
+
+    if 'ItemName' not in data:
+        return jsonify({'error': 'ItemName is required'}), 400
+
+    ItemName = data['ItemName']
+    category = Category.query.filter_by(CategoryName = data['CategoryName']).first()
+    try:
+        item = Item.query.filter_by(ItemName=ItemName).first()
+        if not item:
+            return jsonify({'error': 'Item not found'}), 404
+
+        if 'NewName' in data:
+            item.ItemName = data['NewName']
+        
+        if 'NewDescription' in data:
+            item.ItemDescription = data['NewDescription']
+        
+        if 'CategoryName' in data:
+            item.CategoryId = category.CategoryId
+
+        db.session.commit()
+
+        return jsonify({'message': 'Item updated successfully'})
+    
+    except db.SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({'error': 'An error occurred while updating the item'}), 500
