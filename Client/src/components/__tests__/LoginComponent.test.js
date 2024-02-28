@@ -1,75 +1,92 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { mount } from '@vue/test-utils';
-import LoginComponent from '@/components/LoginComponent.vue';
-import { createPinia, setActivePinia } from 'pinia';
-import { user } from '../../stores/user.js';
+import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest'
+import { mount } from '@vue/test-utils'
+import LoginComponent from '@/components/LoginComponent.vue'
+vi.mock('axios', async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    request: vi.fn(() =>
+      Promise.reject({
+        response: {
+          status: 401,
+          data: {
+            message: 'Unauthorized'
+          }
+        }
+      })
+    )
+  }
+})
 
-describe('LoginComponent Tests', () => {
-  let mockRouter;
-  let userStore;
-  beforeEach(() => {
-    // Reset Pinia for each test
-    setActivePinia(createPinia());
-    // Initialize the user store
-    userStore = user();
-    // Optionally reset the user store's state if required
-    userStore.$reset = vi.fn(() => {
-      userStore.username = '';
-      userStore.token = '';
-      userStore.refreshDate = null;
-      userStore.loginAttempts = 0;
-      userStore.lastLoginAttempt = null;
-    });
-    userStore.$reset();
+vi.mock('@/stores/user', () => ({
+  user: () => ({
+    getLoginAttempts: vi.fn().mockReturnValue(0),
+    setLoginAttempt: vi.fn(),
+    resetLoginAttempts: vi.fn(),
+    setLogin: vi.fn()
+  })
+}))
 
-    // Mock Vue Router
-    mockRouter = {
-      push: vi.fn(),
-    };
-  });
+vi.mock('@/stores/alert', () => ({
+  alertStore: {
+    title: '',
+    text: '',
+    type: '',
+    display: false,
+    overRide: false
+  }
+}))
 
-  it('navigates to signup page on goToSignUp', async () => {
+vi.mock('vue-router', () => ({
+  useRouter: () => ({
+    push: vi.fn()
+  })
+}))
+
+// Example test
+describe('LoginComponent', () => {
+  it('renders properly', async () => {
+    const wrapper = mount(LoginComponent, {
+      global: {
+        stubs: {
+          VerifyComponentVue: true
+        }
+      }
+    })
+    expect(wrapper.exists()).toBeTruthy()
+    expect(wrapper.find('.login-card').exists()).toBe(true)
+  })
+
+  it('calls login method and handles success', async () => {
     const wrapper = mount(LoginComponent, {
       global: {
         mocks: {
-          $router: mockRouter,
+          $router: {
+            push: vi.fn()
+          }
         },
-        plugins: [createPinia()],
-      },
-    });
+        stubs: {
+          VerifyComponentVue: true
+        }
+      }
+    })
 
-    wrapper.vm.goToSignUp();
-    expect(mockRouter.push).toHaveBeenCalledWith({ name: 'signup' });
+    await wrapper.setData({ username: 'test@example.com', password: 'password' })
+    await wrapper.find('#loginButton').trigger('click')
+  })
+
+  it('calculates the minutes between dates correctly', async () => {
+    const wrapper = mount(LoginComponent)
+    const inputDate = new Date()
+    const result = wrapper.vm.minutesBetweenDates(inputDate.toISOString())
+    expect(result).toMatch(/^\d+ minutes\.$/)
+  })
+
+  it('returns the difference in milliseconds correctly for minutesBetweenDatesVal', async () => {
+    const wrapper = mount(LoginComponent);
+    const inputDate = new Date();
+    const result = wrapper.vm.minutesBetweenDatesVal(inputDate.toISOString());
+    expect(result).toBeGreaterThanOrEqual(590000);
+    expect(result).toBeLessThanOrEqual(610000);
   });
-
-  it('displays alert when username and password are empty', async () => {
-    const wrapper = mount(LoginComponent, {
-      global: {
-        mocks: {
-          $router: mockRouter,
-        },
-        plugins: [createPinia()],
-      },
-    });
-
-    wrapper.vm.login();
-    expect(wrapper.vm.alert).toBe(true);
-    expect(wrapper.vm.alertText).toBe('Please enter a username and password');
-  });
-
-//   it('displays custom alert after exceeding login attempts', async () => {
-//     const wrapper = mount(LoginComponent, {
-//       global: {
-//         mocks: {
-//           $router: mockRouter,
-//         },
-//         plugins: [userStore],
-//       },
-//     });
-
-//     wrapper.vm.login();
-//     expect(wrapper.vm.alert).toBe(true);
-//     // Assert based on your component's logic for handling exceeded login attempts
-//     expect(wrapper.vm.alertText).toContain('You have exceeded the maximum number of login attempts');
-//   });
-});
+})

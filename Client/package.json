@@ -17,6 +17,7 @@
   "dependencies": {
     "@mdi/font": "^7.4.47",
     "axios": "^1.6.7",
+    "axios-mock-adapter": "^1.22.0",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
     "vue": "^3.4.15",
@@ -42,5 +43,10 @@
     "vite": "^5.0.11",
     "vitest": "^1.2.2",
     "vitest-sonar-reporter": "^1.0.0"
-  }
+  },
+  "presets": [
+    [
+      "@babel/preset-env"
+    ]
+  ]
 }

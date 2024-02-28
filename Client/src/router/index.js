@@ -1,5 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { events } from '../stores/events.js'
+import { user } from '../stores/user.js'
+import axios from 'axios'
+import { loadingBar } from '../stores/loading.js'
+import { alertStore } from '@/stores/alert.js'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -10,27 +14,58 @@ const router = createRouter({
       component: () => import('../views/HomeView.vue')
     },
     {
-      //test
       path: '/login',
       name: 'login',
       component: () => import('../views/LoginView.vue'),
-      beforeEnter: () => {
-        // Need to check if user is already logged in, if so redirect to profile
-      },
+      beforeEnter: (to, from, next) => {
+        let userData = user()
+        let config = {
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: 'http://127.0.0.1:5000/users_bp/verifyUser',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + userData.getToken
+          }
+        }
+
+        axios
+          .request(config)
+          .then(() => {
+            loadingBar.loading = false
+            next('/logout')
+          })
+          .catch(() => {
+            loadingBar.loading = false
+            next()
+          })
+      }
     },
     {
       path: '/profile',
       name: 'profile',
       component: () => import('../views/ProfileView.vue'),
-      beforeEnter: () => {
-        // Logic to check if user is logged in, please check with server before routing
-        // if (localStorage.getItem('token') == null) {
-        //   return '/login'
-        // }
-        // else {
-        //   return true
-        // }
-      },
+      beforeEnter: (to, from, next) => {
+        let userData = user()
+        let config = {
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: 'http://127.0.0.1:5000/users_bp/verifyUser',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + userData.getToken
+          }
+        }
+
+        axios
+          .request(config)
+          .then(() => {
+            next()
+          })
+          .catch(() => {
+            next('/login')
+          })
+      }
     },
     {
       path: '/event/:id',
@@ -63,11 +98,58 @@ const router = createRouter({
       component: () => import('../views/SearchView.vue')
     },
     {
+      path: '/logout',
+      name: 'logout',
+      component: () => import('../views/LogoutView.vue')
+    },
+    {
+      path: '/createItem',
+      name: 'createItem',
+      component: () => import('../views/ItemCreateView.vue'),
+      beforeEnter: (to, from, next) => {
+        let userData = user()
+        let config = {
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: 'http://127.0.0.1:5000/users_bp/verifyUser',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + userData.getToken
+          }
+        }
+
+        axios
+          .request(config)
+          .then(() => {
+            next()
+          })
+          .catch(() => {
+            next('/login')
+          })
+      }
+    },
+    {
       path: '/:catchAll(.*)',
       name: '404',
       component: () => import('../views/NotFoundView.vue')
     }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  loadingBar.loading = true
+  if(alertStore.overRide) {
+    alertStore.overRide = false
+    next()
+  }
+  else{
+    alertStore.display = false
+    next()
+  }
+})
+
+router.afterEach(() => {
+  loadingBar.loading = false
 })
 
 export default router
