@@ -102,19 +102,6 @@ def get_categories():
 @admin_auth.login_required
 def get_items():
     """
-    Get items by category.
-
-    Inputs:
-    - Query parameter 'CategoryId': ID of the category to filter items by
-
-    Outputs:
-    - If successful, returns a JSON list of items with their IDs, names, category IDs, and descriptions, and status code 200
-    - If the 'CategoryId' parameter is missing, returns an error message and status code 400
-    - If an internal server error occurs, returns an error message and status code 500
-    """
-    CategoryId = request.args.get('CategoryId', None)
-
-    """
     Retrieves items filtered by the 'CategoryId' parameter from the query string.
     
     Parameters:
