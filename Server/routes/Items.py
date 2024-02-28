@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 from stores import db
 from models.Items import Item
 from models.Items import Category
+from routes import admin_auth
 
 items_bp = Blueprint('Items', __name__)
 
@@ -115,6 +116,27 @@ def get_itemsNew():
         print(f"Error occurred: {str(e)}")
         return jsonify({"error": "Internal Server Error"}), 500
     
+@items_bp.route('/GetAllItems', methods=['GET'])
+@admin_auth.login_required
+def get_all_items():    
+    """
+    Get all items with their corresponding category names.
+
+    Inputs: None
+
+    Outputs:
+    - If successful, returns a JSON list of items with their names, category names, and descriptions, and status code 200
+    - If an internal server error occurs, returns an error message and status code 500
+    """
+    try:
+        items = db.session.query(Item, Category.CategoryName).join(Category, Item.CategoryId == Category.CategoryId).all()
+        items_list = [{'name': item.ItemName, 'category': category_name, 'description': item.ItemDescription} for item, category_name in items]
+        return jsonify(items_list), 200
+    except Exception as e:
+        print(f"Error occurred: {str(e)}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
+
 @items_bp.route('/DeleteCategory', methods=['POST'])
 def delete_category():
     
