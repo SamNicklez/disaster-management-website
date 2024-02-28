@@ -18,4 +18,3 @@ import UserInfoComponent from "@/components/UserInfoComponent.vue";
   width: 55%;
 }
 </style>
-
