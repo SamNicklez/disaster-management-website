@@ -96,15 +96,15 @@ def get_itemsNew():
         - Error message with status code 500 if there is an internal server error.
     """
 
-    CategoryId = request.args.get('CategoryId', None)
+    CategoryName = request.args.get('CategoryName', None)
 
-    if CategoryId is None:
-        return jsonify({"error": "CategoryId parameter is required"}), 400
+    if CategoryName is None:
+        return jsonify({"error": "CategoryName parameter is required"}), 400
     
     try:
         conn = db.engine.raw_connection()
         cursor = conn.cursor()
-        cursor.callproc('GetItemsByCategory', [CategoryId])
+        cursor.callproc('GetItemsByCategory', [CategoryName])
         items = cursor.fetchall()
         cursor.close()
         conn.close()
@@ -132,7 +132,7 @@ def delete_category():
     data = request.json
 
     if 'CategoryName' not in data:
-        return jsonify({'error': 'CategoryId is required'}), 400
+        return jsonify({'error': 'CategoryName is required'}), 400
     
     CategoryName = data['CategoryName']
     try:
@@ -243,7 +243,7 @@ def edit_item():
         return jsonify({'error': 'ItemName is required'}), 400
 
     ItemName = data['ItemName']
-
+    category = Category.query.filter_by(CategoryName = data['CategoryName']).first()
     try:
         item = Item.query.filter_by(ItemName=ItemName).first()
         if not item:
@@ -255,8 +255,8 @@ def edit_item():
         if 'NewDescription' in data:
             item.ItemDescription = data['NewDescription']
         
-        if 'NewCategoryId' in data:
-            item.CategoryId = data['NewCategoryId']
+        if 'CategoryName' in data:
+            item.CategoryId = category.CategoryId
 
         db.session.commit()
 
