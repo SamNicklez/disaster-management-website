@@ -154,6 +154,8 @@ export default {
     search: '',
     items: [],
     categories: [],
+    editIndex: -1,
+    editCategoryIndex: -1,
     categoryArray: [],
     showItemDialog: false,
     showCategoryDialog: false,
@@ -219,7 +221,7 @@ export default {
         }
       })
       .catch((error) => {
-        console.log(error)
+        alertStore.showError(error.response.data.error)
       })
 
     let data2 = ''
@@ -241,7 +243,7 @@ export default {
         this.items = response.data
       })
       .catch((error) => {
-        console.log(error)
+        alertStore.showError(error.response.data.error)
       })
   },
   methods: {
@@ -280,12 +282,11 @@ export default {
 
         axios
           .request(config)
-          .then((response) => {
-            console.log(JSON.stringify(response.data))
+          .then(() => {
             this.items.splice(this.deleteItemIndex, 1)
           })
           .catch((error) => {
-            console.log(error)
+            alertStore.showError(error.response.data.error)
           })
       } else if (this.deleteType === 'category') {
         let userData = user()
@@ -306,12 +307,11 @@ export default {
 
         axios
           .request(config)
-          .then((response) => {
-            console.log(JSON.stringify(response.data))
+          .then(() => {
             this.categories.splice(this.deleteItemIndex, 1)
           })
           .catch((error) => {
-            console.log(error)
+            alertStore.showError(error.response.data.error)
           })
       }
       this.cancelDelete()
@@ -319,6 +319,7 @@ export default {
     editItem(item) {
       this.newItem = { ...item }
       this.showItemDialog = true
+      this.editIndex = this.items.findIndex((i) => i.name === item.name)
     },
 
     editCategory(category) {
@@ -327,13 +328,7 @@ export default {
     },
     addItem() {
       let userData = user()
-      const index = this.items.findIndex((i) => i.name === this.newItem.name)
-      if (index !== -1) {
-        //Existing Item Update
-        console.log(this.newItem)
-        this.items[index] = { ...this.newItem }
-      } else {
-        //Existing Item Update
+      if (this.editIndex === -1) {
         let data = JSON.stringify({
           ItemName: this.newItem.name,
           CategoryName: this.newItem.category,
@@ -353,29 +348,104 @@ export default {
 
         axios
           .request(config)
-          .then((response) => {
-            console.log(JSON.stringify(response.data))
+          .then(() => {
+            this.items.push({ ...this.newItem })
           })
           .catch((error) => {
-            console.log(error)
+            alertStore.showError(error.response.data.error)
           })
+      } else {
+        let data = JSON.stringify({
+          ItemName: this.items[this.editIndex].name,
+          CategoryName: this.newItem.category,
+          NewName: this.newItem.name,
+          NewDescription: this.newItem.description
+        })
 
-        console.log(this.newItem)
-        this.items.push({ ...this.newItem })
+        let config = {
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: 'http://127.0.0.1:5000/item/EditItem',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + userData.getToken
+          },
+          data: data
+        }
+
+        axios
+          .request(config)
+          .then(() => {
+            this.items[this.editIndex] = { ...this.newItem }
+          })
+          .catch((error) => {
+            alertStore.showError(error.response.data.error)
+          })
       }
       this.newItem = { name: '', category: '', description: '' }
       this.showItemDialog = false
+      this.editIndex = -1
     },
 
     addCategory() {
-      const index = this.categories.findIndex((c) => c.name === this.newCategory.name)
-      if (index !== -1) {
-        this.categories[index] = { ...this.newCategory }
+      let userData = user()
+      if (this.editCategoryIndex === -1) {
+        // Adding a new category
+        let name = this.newCategory.name
+        let data = JSON.stringify({
+          CategoryName: this.newCategory.name
+        })
+
+        let config = {
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: 'http://127.0.0.1:5000/item/CreateCategory',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + userData.getToken
+          },
+          data: data
+        }
+
+        axios
+          .request(config)
+          .then(() => {
+            this.categories.push({ name: name })
+          })
+          .catch((error) => {
+            alertStore.showError(error.response.data.error)
+          })
       } else {
-        this.categories.push({ ...this.newCategory })
+        // Editing an existing category
+        let data = JSON.stringify({
+          NewCategoryName: this.newCategory.name,
+          CategoryName: this.categories[this.editCategoryIndex].name
+        })
+
+        let config = {
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: 'http://127.0.0.1:5000/item/EditCategory',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + userData.getToken
+          },
+          data: data
+        }
+
+        axios
+          .request(config)
+          .then(() => {
+            this.categories[this.editCategoryIndex] = { ...this.newCategory }
+          })
+          .catch((error) => {
+            alertStore.showError(error.response.data.error)
+          })
       }
+      // Reset
       this.newCategory = { name: '' }
       this.showCategoryDialog = false
+      this.editCategoryIndex = -1 // Reset edit index for categories
     }
   }
 }

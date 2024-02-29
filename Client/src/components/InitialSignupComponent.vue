@@ -190,7 +190,6 @@ export default {
         password: this.password,
         roleid: parseInt(this.role)
       })
-
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
