@@ -101,16 +101,16 @@ export default {
         ) {
           if (userData.getLoginAttempts == 3) {
             userData.setLoginAttempt()
-            alertStore.title = 'Account Locked'
-            alertStore.text = `You have exceeded the maximum number of login attempts. Please try again in 10 minutes.`
-            alertStore.type = 'warning'
-            alertStore.display = true
+            alertStore.showWarning(
+              `You have exceeded the maximum number of login attempts. Please try again in 10 minutes.`,
+              'Account Locked'
+            )
             return
           } else {
-            alertStore.title = 'Account Locked'
-            alertStore.text = `You have exceeded the maximum number of login attempts. Please try again in ${this.minutesBetweenDates(this.userData.getLastLoginAttemptTime)}`
-            alertStore.type = 'warning'
-            alertStore.display = true
+            alertStore.showWarning(
+              `You have exceeded the maximum number of login attempts. Please try again in ${this.minutesBetweenDates(this.userData.getLastLoginAttemptTime)}`,
+              'Account Locked'
+            )
             return
           }
         } else {
@@ -138,34 +138,20 @@ export default {
             .then((response) => {
               console.log(JSON.stringify(response.data))
               userData.setLogin(this.username.toLowerCase(), response.data.token)
-              alertStore.title = 'Login Successful'
-              alertStore.text = `You have successfully logged in.`
-              alertStore.type = 'success'
-              alertStore.overRide = true
-              alertStore.display = true
+              alertStore.showSuccess(`You have successfully logged in.`, 'Login Successful', true)
               this.$router.push({ name: 'home' })
             })
             .catch((error) => {
               try {
                 if (error.response.status === 401) {
-                  alertStore.title = 'Invalid Credentials'
-                  alertStore.text = `Invalid username or password.`
-                  alertStore.type = 'warning'
-                  alertStore.display = true
+                  alertStore.showWarning(`Invalid username or password.`, 'Invalid Credentials')
                 } else if (error.response.status === 405) {
                   this.dialog = true
                 } else {
-                  alertStore.title = 'Error'
-                  alertStore.text = `An error occurred.`
-                  alertStore.type = 'warning'
-                  alertStore.display = true
+                  alertStore.showError(`An error occurred.`)
                 }
               } catch (error) {
-                console.log(error)
-                alertStore.title = 'Error'
-                alertStore.text = `An error occurred.`
-                alertStore.type = 'warning'
-                alertStore.display = true
+                alertStore.showError('an error occurred')
               }
             })
         }

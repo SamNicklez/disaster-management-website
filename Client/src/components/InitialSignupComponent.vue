@@ -205,20 +205,11 @@ export default {
         .catch((error) => {
           loadingBar.loading = false
           if (error.response.status === 409) {
-            alertStore.title = 'Account Exists'
-            alertStore.text = 'Account with that email already exists'
-            alertStore.type = 'warning'
-            alertStore.display = true
+            alertStore.showWarning('Account with that email already exists', 'Account Exists')
           } else if (error.response.status === 500) {
-            alertStore.title = 'Internal Server Error'
-            alertStore.text = 'An error occurred'
-            alertStore.type = 'error'
-            alertStore.display = true
+            alertStore.showError('An error occurred', 'Internal Server Error')
           } else {
-            alertStore.title = 'Error'
-            alertStore.text = 'An error occurred'
-            alertStore.type = 'error'
-            alertStore.display = true
+            alertStore.showError('An error occurred')
           }
         })
         .then((response) => {

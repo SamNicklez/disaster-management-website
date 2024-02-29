@@ -71,22 +71,21 @@ export default {
       axios
         .request(config)
         .then(() => {
-          alertStore.title = 'Signup Successful'
-          alertStore.text = `You have successfully signed up, please login to continue.`
-          alertStore.type = 'success'
-          alertStore.overRide = true
-          alertStore.display = true
+          alertStore.showSuccess(
+            `You have successfully signed up, please login to continue.`,
+            'Signup Successful',
+            true
+          )
           this.$router.push({ name: 'login' })
         })
         .catch((error) => {
           if (error.response.status === 401) {
-            this.alertText = 'Invalid verification code'
+            alertStore.showWarning('Invalid verification code', 'Invalid Code')
           } else if (error.response.status === 500) {
-            this.alertText = 'Internal server error'
+            alertStore.showError('Internal server error', 'Error')
           } else {
-            this.alertText = 'An error occurred'
+            alertStore.showError('An error occurred', 'Error')
           }
-          this.alert = true
         })
     }
   }

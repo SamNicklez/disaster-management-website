@@ -24,7 +24,6 @@ import { user } from '../stores/user.js'
 export default {
   methods: {
     logout() {
-      // Here you should clear the user data/session/token etc.
       let userData = user()
       userData.clearUser()
       this.$router.push({ name: 'login' })
