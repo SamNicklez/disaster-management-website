@@ -1,7 +1,6 @@
 // loading.js
-import { reactive } from 'vue';
+import { reactive } from 'vue'
 
 export const loadingBar = reactive({
-  loading: false,
-});
-
+  loading: false
+})

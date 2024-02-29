@@ -39,7 +39,7 @@ export const user = defineStore('user', {
     resetLoginAttempts() {
       this.loginAttempts = 0
     },
-    clearUser() { 
+    clearUser() {
       this.username = ''
       this.token = ''
       this.refreshDate = null

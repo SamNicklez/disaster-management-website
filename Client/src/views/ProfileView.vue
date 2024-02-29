@@ -1,13 +1,18 @@
 <script setup>
-import UserInfoComponent from "@/components/UserInfoComponent.vue";
+import UserInfoComponent from '@/components/UserInfoComponent.vue'
 </script>
 
-<script>
-</script>
+<script></script>
 
 <template>
   <div>
-    <v-card class="mx-auto pa-12 pb-8" id="card" elevation="8" rounded="lg" style="margin-bottom: 10vh; background-color: #E0DFD5;" >
+    <v-card
+      class="mx-auto pa-12 pb-8"
+      id="card"
+      elevation="8"
+      rounded="lg"
+      style="margin-bottom: 10vh; background-color: #e0dfd5"
+    >
       <UserInfoComponent />
     </v-card>
   </div>

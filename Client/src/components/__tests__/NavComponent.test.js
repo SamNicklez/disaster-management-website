@@ -47,11 +47,11 @@ describe('NavComponent', () => {
   })
 
   it('updates searchQuery on input', async () => {
-    wrapper.vm.searchQuery = 'disaster';
-    await wrapper.vm.$nextTick();
-    expect(wrapper.vm.searchQuery).toBe('disaster');
-  });
-  
+    wrapper.vm.searchQuery = 'disaster'
+    await wrapper.vm.$nextTick()
+    expect(wrapper.vm.searchQuery).toBe('disaster')
+  })
+
   it('populates notifications on bell icon click', async () => {
     const populateNotificationsSpy = vi.spyOn(wrapper.vm, 'populateNotifications')
     await wrapper.vm.populateNotifications()

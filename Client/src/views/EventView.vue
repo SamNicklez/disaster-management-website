@@ -1,8 +1,7 @@
 <script>
 export default {
   event: null,
-  methods: {
-  },
+  methods: {},
   created() {
     this.event = this.$route.params.event
   }
@@ -20,7 +19,7 @@ export default {
 
 <style scoped>
 .card {
-  background-color: #F06543;
+  background-color: #f06543;
   width: auto;
   height: auto;
   text-align: center;

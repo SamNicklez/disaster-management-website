@@ -1,34 +1,17 @@
-/**
- * Component for displaying user information and address information.
- *
- * Props:
- * - None
- *
- * Data:
- * - searchQuery: string - The search query for address autocomplete.
- * - addresses: array - The list of addresses returned from the autocomplete API.
- * - addressDetails: object - The details of the selected address.
- * - loading: boolean - Indicates if the autocomplete API is currently loading.
- * - location: object - The longitude and latitude of the selected address.
- * - username: string - The username of the user.
- * - email: string - The email of the user.
- * - role: string - The role of the user.
- * - phone_number: string - The phone number of the user.
- * - edit: boolean - Indicates if the user information is in edit mode.
- *
- * Methods:
- * - fetchAddresses: Fetches the addresses from the autocomplete API based on the search query.
- * - debounce: Debounces a function to limit the number of calls within a certain time frame.
- * - selectAddress: Selects an address from the autocomplete suggestions and updates the address details.
- * - checkClear: Clears the address details and location.
- * - toggleEdit: Toggles the edit mode for user information.
- * - createItem: Redirects to the create item page.
- *
- * Lifecycle Hooks:
- * - created: Initializes the debouncedFetchAddresses method.
- *
- * @name AddressAutocomplete
- */
+/** * Component for displaying user information and address information. * * Props: * - None * *
+Data: * - searchQuery: string - The search query for address autocomplete. * - addresses: array -
+The list of addresses returned from the autocomplete API. * - addressDetails: object - The details
+of the selected address. * - loading: boolean - Indicates if the autocomplete API is currently
+loading. * - location: object - The longitude and latitude of the selected address. * - username:
+string - The username of the user. * - email: string - The email of the user. * - role: string - The
+role of the user. * - phone_number: string - The phone number of the user. * - edit: boolean -
+Indicates if the user information is in edit mode. * * Methods: * - fetchAddresses: Fetches the
+addresses from the autocomplete API based on the search query. * - debounce: Debounces a function to
+limit the number of calls within a certain time frame. * - selectAddress: Selects an address from
+the autocomplete suggestions and updates the address details. * - checkClear: Clears the address
+details and location. * - toggleEdit: Toggles the edit mode for user information. * - createItem:
+Redirects to the create item page. * * Lifecycle Hooks: * - created: Initializes the
+debouncedFetchAddresses method. * * @name AddressAutocomplete */
 
 <template>
   <v-card class="mb-5" outlined tile>
@@ -37,16 +20,34 @@
     <v-container>
       <v-row>
         <v-col cols="12" md="6">
-          <v-text-field label="Username" v-model="username" :readonly="!edit" outlined dense></v-text-field>
+          <v-text-field
+            label="Username"
+            v-model="username"
+            :readonly="!edit"
+            outlined
+            dense
+          ></v-text-field>
         </v-col>
         <v-col cols="12" md="6">
-          <v-text-field label="Email" v-model="email" :readonly="!edit" outlined dense></v-text-field>
+          <v-text-field
+            label="Email"
+            v-model="email"
+            :readonly="!edit"
+            outlined
+            dense
+          ></v-text-field>
         </v-col>
         <v-col cols="12" md="6">
           <v-text-field label="Role" v-model="role" :readonly="!edit" outlined dense></v-text-field>
         </v-col>
         <v-col cols="12" md="6">
-          <v-text-field label="Phone Number" v-model="phone_number" :readonly="!edit" outlined dense></v-text-field>
+          <v-text-field
+            label="Phone Number"
+            v-model="phone_number"
+            :readonly="!edit"
+            outlined
+            dense
+          ></v-text-field>
         </v-col>
       </v-row>
       <v-btn :color="edit ? 'success' : 'primary'" @click="toggleEdit">
@@ -56,27 +57,70 @@
     </v-container>
     <v-card-title>Address Information</v-card-title>
     <v-container>
-      <v-text-field v-if="edit" class="mb-3" :loading="loading" outlined clearable label="Add Address"
-        v-model="searchQuery" @keyup="debouncedFetchAddresses" append-inner-icon="mdi-magnify"
-        @click:clear="checkClear"></v-text-field>
+      <v-text-field
+        v-if="edit"
+        class="mb-3"
+        :loading="loading"
+        outlined
+        clearable
+        label="Add Address"
+        v-model="searchQuery"
+        @keyup="debouncedFetchAddresses"
+        append-inner-icon="mdi-magnify"
+        @click:clear="checkClear"
+      ></v-text-field>
       <v-list v-if="addresses.length" dense>
-        <v-list-item v-for="address in addresses" :key="address.properties.place_id" @click="selectAddress(address)">
+        <v-list-item
+          v-for="address in addresses"
+          :key="address.properties.place_id"
+          @click="selectAddress(address)"
+        >
           <v-list-item-content>
             <v-list-item-title>{{ address.properties.formatted }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
-      <v-text-field readonly outlined label="Address" v-model="addressDetails.address" dense></v-text-field>
-      <v-text-field v-if="edit" outlined label="Address Line 2" v-model="addressDetails.addressLine2" dense></v-text-field>
-      <v-text-field readonly outlined label="City" v-model="addressDetails.city" dense></v-text-field>
-      <v-text-field readonly outlined label="State" v-model="addressDetails.state" dense></v-text-field>
-      <v-text-field readonly outlined label="Zipcode" v-model="addressDetails.zipcode" dense></v-text-field>
+      <v-text-field
+        readonly
+        outlined
+        label="Address"
+        v-model="addressDetails.address"
+        dense
+      ></v-text-field>
+      <v-text-field
+        v-if="edit"
+        outlined
+        label="Address Line 2"
+        v-model="addressDetails.addressLine2"
+        dense
+      ></v-text-field>
+      <v-text-field
+        readonly
+        outlined
+        label="City"
+        v-model="addressDetails.city"
+        dense
+      ></v-text-field>
+      <v-text-field
+        readonly
+        outlined
+        label="State"
+        v-model="addressDetails.state"
+        dense
+      ></v-text-field>
+      <v-text-field
+        readonly
+        outlined
+        label="Zipcode"
+        v-model="addressDetails.zipcode"
+        dense
+      ></v-text-field>
     </v-container>
   </v-card>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from 'axios'
 export default {
   name: 'AddressAutocomplete',
   data() {
@@ -88,7 +132,7 @@ export default {
         addressLine2: '',
         city: '',
         state: '',
-        zipcode: '',
+        zipcode: ''
       },
       loading: false,
       location: {
@@ -99,28 +143,29 @@ export default {
       email: 'snicklaus@uiowa.edu',
       role: 'ADMIN',
       phone_number: '319-555-5555',
-      edit: false,
-    };
+      edit: false
+    }
   },
   created() {
-    this.debouncedFetchAddresses = this.debounce(this.fetchAddresses, 500);
+    this.debouncedFetchAddresses = this.debounce(this.fetchAddresses, 500)
   },
   methods: {
     /**
      * Fetches addresses based on the search query.
      */
     fetchAddresses() {
-      if (this.searchQuery.length < 3) return;
+      if (this.searchQuery.length < 3) return
       this.loading = true
-      const apiKey = 'b82eb2aaf0654b3f9517b92e38c28146';
-      const url = `https://api.geoapify.com/v1/geocode/autocomplete?text=${this.searchQuery}&apiKey=${apiKey}`;
+      const apiKey = 'b82eb2aaf0654b3f9517b92e38c28146'
+      const url = `https://api.geoapify.com/v1/geocode/autocomplete?text=${this.searchQuery}&apiKey=${apiKey}`
 
-      axios.get(url)
-        .then(response => {
-          this.addresses = response.data.features;
-          this.loading = false;
+      axios
+        .get(url)
+        .then((response) => {
+          this.addresses = response.data.features
+          this.loading = false
         })
-        .catch(error => console.error(error));
+        .catch((error) => console.error(error))
     },
     /**
      * Debounces a function to limit the number of times it is called.
@@ -129,37 +174,36 @@ export default {
      * @returns {Function} - The debounced function.
      */
     debounce(func, wait) {
-      let timeout;
+      let timeout
       return function (...args) {
         const later = () => {
-          clearTimeout(timeout);
-          func.apply(this, args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-      };
+          clearTimeout(timeout)
+          func.apply(this, args)
+        }
+        clearTimeout(timeout)
+        timeout = setTimeout(later, wait)
+      }
     },
     /**
      * Selects an address from the autocomplete suggestions.
      * @param {Object} address - The selected address object.
      */
     selectAddress(address) {
-      console.log("Selected Address");
-      this.searchQuery = address.properties.formatted;
-      this.addresses = []; // Clear suggestions
+      console.log('Selected Address')
+      this.searchQuery = address.properties.formatted
+      this.addresses = [] // Clear suggestions
       // Example of parsing, adjust based on the actual API response and needs
       if (address.properties.street != null && address.properties.housenumber != null) {
-        this.addressDetails.address = address.properties.housenumber + " " + address.properties.street;
+        this.addressDetails.address =
+          address.properties.housenumber + ' ' + address.properties.street
+      } else if (address.properties.name != null) {
+        this.addressDetails.address = address.properties.name
+      } else {
+        this.addressDetails.address = 'FILL IN'
       }
-      else if (address.properties.name != null) {
-        this.addressDetails.address = address.properties.name;
-      }
-      else {
-        this.addressDetails.address = "FILL IN";
-      }
-      this.addressDetails.city = address.properties.city;
-      this.addressDetails.state = address.properties.state;
-      this.addressDetails.zipcode = address.properties.postcode;
+      this.addressDetails.city = address.properties.city
+      this.addressDetails.state = address.properties.state
+      this.addressDetails.zipcode = address.properties.postcode
     },
     /**
      * Clears the address details and location.
@@ -170,7 +214,7 @@ export default {
         addressLine2: '',
         city: '',
         state: '',
-        zipcode: '',
+        zipcode: ''
       }
       this.location = {
         longitude: '',
@@ -187,10 +231,10 @@ export default {
      * Redirects to the create item page.
      */
     createItem() {
-      this.$router.push({ name: 'createItem' });
+      this.$router.push({ name: 'createItem' })
     }
-  },
-};
+  }
+}
 </script>
 
 <style scoped>

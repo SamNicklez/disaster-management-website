@@ -5,9 +5,20 @@
         <v-btn text to="/" variant="plain" class="button">Disaster Donation</v-btn>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-text-field id="search" v-model="searchQuery" dense flat hide-details prepend-icon="mdi-magnify" @click:append="performSearch"
-        @keyup.enter="performSearch" variant="outlined" label="Search for an Event" class="mx-auto"
-        density="compact"></v-text-field>
+      <v-text-field
+        id="search"
+        v-model="searchQuery"
+        dense
+        flat
+        hide-details
+        prepend-icon="mdi-magnify"
+        @click:append="performSearch"
+        @keyup.enter="performSearch"
+        variant="outlined"
+        label="Search for an Event"
+        class="mx-auto"
+        density="compact"
+      ></v-text-field>
       <v-spacer></v-spacer>
       <v-spacer></v-spacer>
       <v-btn @click="openLogin">Login</v-btn>
@@ -21,7 +32,12 @@
           </v-btn>
         </template>
         <v-list lines="three" style="min-width: 25vw" v-if="this.notifications.length != 0">
-          <v-list-item v-for="(item, i) in notifications" :key="i" append-icon="mdi-close" @click="closeNoti(i)">
+          <v-list-item
+            v-for="(item, i) in notifications"
+            :key="i"
+            append-icon="mdi-close"
+            @click="closeNoti(i)"
+          >
             <v-list-item-title>{{ item.title }}</v-list-item-title>
             <v-list-item-subtitle>{{ item.description }}</v-list-item-subtitle>
           </v-list-item>
@@ -46,28 +62,28 @@ export default {
         { title: 'Notification 1', description: 'This is a notification' },
         { title: 'Notification 2', description: 'This is a notification' },
         { title: 'Notification 3', description: 'This is a notification' },
-        { title: 'Notification 4', description: 'This is a notification' },
-      ],
-    };
+        { title: 'Notification 4', description: 'This is a notification' }
+      ]
+    }
   },
   methods: {
     /**
      * Perform a search
      */
     performSearch() {
-      this.$router.push(`/search/${this.searchQuery}`);
+      this.$router.push(`/search/${this.searchQuery}`)
     },
     /**
      * Open the profile page
      */
     openProfile() {
-      this.$router.push('/profile');
+      this.$router.push('/profile')
     },
     /**
      * Open the login page
      */
     openLogin() {
-      this.$router.push('/login');
+      this.$router.push('/login')
     },
     /**
      * Populates the notifications
@@ -77,14 +93,14 @@ export default {
     },
     /**
      * Closes a notification
-     * @param {int} index 
+     * @param {int} index
      */
     closeNoti(index) {
-      this.notifications.splice(index, 1);
+      this.notifications.splice(index, 1)
       //Somewhere in here, ping server to mark notification as read
-    },
-  },
-};
+    }
+  }
+}
 </script>
 
 <style scoped>
