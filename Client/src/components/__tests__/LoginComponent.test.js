@@ -27,15 +27,6 @@ vi.mock('@/stores/user', () => ({
   })
 }))
 
-vi.mock('@/stores/alert', () => ({
-  alertStore: {
-    title: '',
-    text: '',
-    type: '',
-    display: false,
-    overRide: false
-  }
-}))
 
 vi.mock('vue-router', () => ({
   useRouter: () => ({
