@@ -3,5 +3,5 @@ import login from '../components/LoginComponent.vue'
 </script>
 
 <template>
-    <login />
+  <login />
 </template>

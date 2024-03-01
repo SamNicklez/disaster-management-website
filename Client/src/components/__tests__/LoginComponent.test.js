@@ -27,15 +27,6 @@ vi.mock('@/stores/user', () => ({
   })
 }))
 
-vi.mock('@/stores/alert', () => ({
-  alertStore: {
-    title: '',
-    text: '',
-    type: '',
-    display: false,
-    overRide: false
-  }
-}))
 
 vi.mock('vue-router', () => ({
   useRouter: () => ({
@@ -83,10 +74,10 @@ describe('LoginComponent', () => {
   })
 
   it('returns the difference in milliseconds correctly for minutesBetweenDatesVal', async () => {
-    const wrapper = mount(LoginComponent);
-    const inputDate = new Date();
-    const result = wrapper.vm.minutesBetweenDatesVal(inputDate.toISOString());
-    expect(result).toBeGreaterThanOrEqual(590000);
-    expect(result).toBeLessThanOrEqual(610000);
-  });
+    const wrapper = mount(LoginComponent)
+    const inputDate = new Date()
+    const result = wrapper.vm.minutesBetweenDatesVal(inputDate.toISOString())
+    expect(result).toBeGreaterThanOrEqual(590000)
+    expect(result).toBeLessThanOrEqual(610000)
+  })
 })

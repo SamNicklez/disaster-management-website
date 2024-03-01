@@ -1,28 +1,18 @@
 <script setup>
-import UserInfoComponent from "@/components/UserInfoComponent.vue";
+import UserInfoComponent from '@/components/UserInfoComponent.vue'
 </script>
 
-<script>
-import axios from "axios";
-export default {
-  event: null,
-  methods: {
-
-  },
-  // Grab user data
-  created() {
-
-  },
-  async getAnswer() {
-    const { data } = await axios.get("https://yesno.wtf/api");
-    this.answer = data;
-  },
-}
-</script>
+<script></script>
 
 <template>
   <div>
-    <v-card class="mx-auto pa-12 pb-8" id="card" elevation="8" rounded="lg" style="margin-bottom: 10vh; background-color: #E0DFD5;" >
+    <v-card
+      class="mx-auto pa-12 pb-8"
+      id="card"
+      elevation="8"
+      rounded="lg"
+      style="margin-bottom: 10vh; background-color: #e0dfd5"
+    >
       <UserInfoComponent />
     </v-card>
   </div>
@@ -33,4 +23,3 @@ export default {
   width: 55%;
 }
 </style>
-

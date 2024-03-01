@@ -3,42 +3,48 @@ import Navbar from '@/components/NavComponent.vue'
 </script>
 
 <script>
-import { loadingBar } from './stores/loading.js';
-import { alertStore } from './stores/alert';
+import { loadingBar } from './stores/loading.js'
+import { alertStore } from './stores/alert'
 
 export default {
   computed: {
     loading() {
-      return loadingBar.loading;
+      return loadingBar.loading
     },
     alertText() {
-      return alertStore.text;
+      return alertStore.text
     },
     isAlert() {
-      return alertStore.display;
+      return alertStore.display
     },
     alertType() {
-      return alertStore.type;
+      return alertStore.type
     },
     alertTitle() {
-      return alertStore.title;
-    },
-  },
-};
+      return alertStore.title
+    }
+  }
+}
 </script>
 
 <template>
   <v-app>
     <v-main>
       <v-progress-linear
-      :active="loading"
-      indeterminate
-      color="orange"
-      height="10"
-      top
-    ></v-progress-linear>
+        :active="loading"
+        indeterminate
+        color="orange"
+        height="10"
+        top
+      ></v-progress-linear>
       <Navbar />
-      <v-alert :text="alertText" :title="alertTitle" v-if="isAlert" :type="alertType" style="margin:auto; max-width: 90%; min-height: 5vh; margin-bottom: 2.5vh;"></v-alert>
+      <v-alert
+        :text="alertText"
+        :title="alertTitle"
+        v-if="isAlert"
+        :type="alertType"
+        style="margin: auto; max-width: 90%; min-height: 5vh; margin-bottom: 2.5vh"
+      ></v-alert>
       <router-view />
     </v-main>
   </v-app>
@@ -52,11 +58,11 @@ html,
   padding: 0;
   width: 100%;
   height: 100%;
-  background-color: #E8E9EB;
+  background-color: #e8e9eb;
 }
 
 #template {
-  background-color: #E8E9EB;
+  background-color: #e8e9eb;
 }
 
 #app {
@@ -64,24 +70,23 @@ html,
   flex-direction: column;
   min-width: 100%;
   min-height: 100%;
-  background-color: #E8E9EB;
+  background-color: #e8e9eb;
 }
 
 .main {
   flex: 1;
   overflow: auto;
-  background-color: #E8E9EB;
+  background-color: #e8e9eb;
 }
 
 @font-face {
   font-style: normal;
   font-display: auto;
-  font-family: "Poppins";
+  font-family: 'Poppins';
   src: url('/public/Poppins-Regular.ttf');
 }
 
 .v-application__wrap {
-  background-color: #E8E9EB;
+  background-color: #e8e9eb;
 }
 </style>
-

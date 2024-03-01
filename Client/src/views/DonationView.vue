@@ -1,15 +1,13 @@
-<script setup>
-
-</script>
+<script setup></script>
 
 <template>
   <div class="card">
     Event page
-    <br>
+    <br />
 
-    <br>
+    <br />
     <v-btn to="/">Home</v-btn>
-    <br>
+    <br />
     <v-btn to="/login">Login</v-btn>
   </div>
 </template>

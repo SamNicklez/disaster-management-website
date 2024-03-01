@@ -1,5 +1,5 @@
 <script setup>
-import InitialSignupComponent from '@/components/InitialSignupComponent.vue';
+import InitialSignupComponent from '@/components/InitialSignupComponent.vue'
 </script>
 
 <template>

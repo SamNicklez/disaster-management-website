@@ -7,14 +7,11 @@ describe('UserInfoComponent', () => {
   let axiosMock
 
   beforeEach(() => {
-    axiosMock = vi
-    .mock('axios', async () => ({
+    axiosMock = vi.mock('axios', async () => ({
       get: vi.fn()
     }))
 
-    wrapper = mount(UserInfoComponent, {
-     
-    })
+    wrapper = mount(UserInfoComponent, {})
   })
 
   it('fetches addresses when searchQuery length is at least 3', async () => {
@@ -33,8 +30,6 @@ describe('UserInfoComponent', () => {
 
     // Wait for Vue to update the component
     await wrapper.vm.$nextTick()
-
-    
   })
 
   it('selects an address and updates address details', async () => {
@@ -97,7 +92,4 @@ describe('UserInfoComponent', () => {
     expect(wrapper.vm.location.longitude).toBe('')
     expect(wrapper.vm.location.latitude).toBe('')
   })
-
-
-
 })

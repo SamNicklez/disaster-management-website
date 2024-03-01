@@ -19,6 +19,14 @@ def create_category():
     """
     try:
         data = request.get_json() 
+        category = Category.query.filter_by(CategoryName=data['CategoryName']).first()
+        if category:
+            if category.isActive == 1:
+                return jsonify({"error": "Category already exists"}), 405
+            else:
+                category.isActive = 1
+                db.session.commit()
+                return jsonify('success'), 201
         new_category = Category(CategoryName=data['CategoryName'])
         db.session.add(new_category)
         db.session.commit()
@@ -52,8 +60,16 @@ def create_item():
         print(data)
         category = Category.query.filter_by(CategoryName=data['CategoryName']).first()
         item = Item.query.filter_by(ItemName=data['ItemName']).first()
+
         if item:
-            return jsonify({"error": "Item already exists"}), 400
+            if item.isActive == 1:
+                return jsonify({"error": "Item already exists"}), 405
+            else:
+                item.isActive = 1
+                item.ItemDescription = data['ItemDescription']
+                item.CategoryId = category.CategoryId
+                db.session.commit()
+                return ('success')
         if not category:
                 new_category = Category(CategoryName=data['CategoryName'])
                 db.session.add(new_category)
@@ -102,19 +118,6 @@ def get_categories():
 @admin_auth.login_required
 def get_items():
     """
-    Get items by category.
-
-    Inputs:
-    - Query parameter 'CategoryId': ID of the category to filter items by
-
-    Outputs:
-    - If successful, returns a JSON list of items with their IDs, names, category IDs, and descriptions, and status code 200
-    - If the 'CategoryId' parameter is missing, returns an error message and status code 400
-    - If an internal server error occurs, returns an error message and status code 500
-    """
-    CategoryId = request.args.get('CategoryId', None)
-
-    """
     Retrieves items filtered by the 'CategoryId' parameter from the query string.
     
     Parameters:
@@ -158,7 +161,8 @@ def get_all_items():
     - If an internal server error occurs, returns an error message and status code 500
     """
     try:
-        items = db.session.query(Item, Category.CategoryName).join(Category, Item.CategoryId == Category.CategoryId).all()
+        items = db.session.query(Item, Category.CategoryName).join(Category, Item.CategoryId == Category.CategoryId).filter(Item.isActive == 1).all()
+
         items_list = [{'name': item.ItemName, 'category': category_name, 'description': item.ItemDescription} for item, category_name in items]
         return jsonify(items_list), 200
     except Exception as e:
@@ -167,6 +171,7 @@ def get_all_items():
 
 
 @items_bp.route('/DeleteCategory', methods=['POST'])
+@admin_auth.login_required
 def delete_category():
     
     """
@@ -206,6 +211,7 @@ def delete_category():
         return jsonify({'error': 'An error occurred while deleting the category'}), 500
 
 @items_bp.route('/DeleteItem', methods=['POST'])
+@admin_auth.login_required
 def delete_item():
 
     """
@@ -239,6 +245,7 @@ def delete_item():
         return jsonify({'error': 'An error occurred while deleting the item'}), 500
 
 @items_bp.route('/EditCategory', methods=['POST'])
+@admin_auth.login_required
 def edit_category():
 
     """
@@ -275,6 +282,7 @@ def edit_category():
     
 
 @items_bp.route('/EditItem', methods=['POST'])
+@admin_auth.login_required
 def edit_item():
 
     """
@@ -289,6 +297,7 @@ def edit_item():
     """
 
     data = request.json
+    print(data)
 
     if 'ItemName' not in data:
         return jsonify({'error': 'ItemName is required'}), 400
@@ -297,22 +306,32 @@ def edit_item():
     category = Category.query.filter_by(CategoryName = data['CategoryName']).first()
     try:
         item = Item.query.filter_by(ItemName=ItemName).first()
-        if not item:
-            return jsonify({'error': 'Item not found'}), 404
+        itemCheck = Item.query.filter_by(ItemName=data['NewName']).first()
+        
+        if itemCheck:
+            item.isActive = -1
+            itemCheck.isActive = 1
+            itemCheck.ItemDescription = data['NewDescription']
+            itemCheck.CategoryId = category.CategoryId
+        else:
+            if not item:
+                return jsonify({'error': 'Item not found'}), 404
 
-        if 'NewName' in data:
-            item.ItemName = data['NewName']
-        
-        if 'NewDescription' in data:
-            item.ItemDescription = data['NewDescription']
-        
-        if 'CategoryName' in data:
-            item.CategoryId = category.CategoryId
+            if 'NewName' in data:
+                item.ItemName = data['NewName']
+            
+            if 'NewDescription' in data:
+                item.ItemDescription = data['NewDescription']
+            
+            if 'CategoryName' in data:
+                item.CategoryId = category.CategoryId
+
+            item.isActive = 1
 
         db.session.commit()
 
         return jsonify({'message': 'Item updated successfully'})
     
-    except db.SQLAlchemyError as e:
+    except Exception as e:
         db.session.rollback()
         return jsonify({'error': 'An error occurred while updating the item'}), 500

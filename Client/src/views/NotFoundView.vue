@@ -5,7 +5,7 @@ export default {
      * Routes to the home page
      */
     goHome() {
-      this.$router.push('/');
+      this.$router.push('/')
     }
   }
 }
@@ -18,8 +18,12 @@ export default {
         <v-card class="elevation-12" outlined>
           <v-card-text>
             <div class="d-flex justify-center">
-              <v-img contain max-width="200" src="https://cdn-icons-png.flaticon.com/512/2748/2748558.png"
-                alt="404 Error"></v-img>
+              <v-img
+                contain
+                max-width="200"
+                src="https://cdn-icons-png.flaticon.com/512/2748/2748558.png"
+                alt="404 Error"
+              ></v-img>
             </div>
             <h1 class="text-center">Ope! Page not found.</h1>
             <p class="text-center">The page you are looking for doesn't exist or has been moved.</p>
