@@ -297,6 +297,7 @@ def edit_item():
     """
 
     data = request.json
+    print(data)
 
     if 'ItemName' not in data:
         return jsonify({'error': 'ItemName is required'}), 400
@@ -305,22 +306,32 @@ def edit_item():
     category = Category.query.filter_by(CategoryName = data['CategoryName']).first()
     try:
         item = Item.query.filter_by(ItemName=ItemName).first()
-        if not item:
-            return jsonify({'error': 'Item not found'}), 404
+        itemCheck = Item.query.filter_by(ItemName=data['NewName']).first()
+        
+        if itemCheck:
+            item.isActive = -1
+            itemCheck.isActive = 1
+            itemCheck.ItemDescription = data['NewDescription']
+            itemCheck.CategoryId = category.CategoryId
+        else:
+            if not item:
+                return jsonify({'error': 'Item not found'}), 404
 
-        if 'NewName' in data:
-            item.ItemName = data['NewName']
-        
-        if 'NewDescription' in data:
-            item.ItemDescription = data['NewDescription']
-        
-        if 'CategoryName' in data:
-            item.CategoryId = category.CategoryId
+            if 'NewName' in data:
+                item.ItemName = data['NewName']
+            
+            if 'NewDescription' in data:
+                item.ItemDescription = data['NewDescription']
+            
+            if 'CategoryName' in data:
+                item.CategoryId = category.CategoryId
+
+            item.isActive = 1
 
         db.session.commit()
 
         return jsonify({'message': 'Item updated successfully'})
     
-    except db.SQLAlchemyError as e:
+    except Exception as e:
         db.session.rollback()
         return jsonify({'error': 'An error occurred while updating the item'}), 500
