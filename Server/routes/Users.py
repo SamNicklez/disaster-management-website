@@ -155,3 +155,37 @@ def verify():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
+    
+@users_bp.route('/editProfile', methods=['POST'])
+def editProfile():
+    """
+    Edit a user's profile based on the provided fields.
+    """
+    try:
+        data = request.get_json()
+        
+        print(data["email"])
+        user = User.query.filter_by(Email=data["email"]).first()
+
+        if not user:
+            return jsonify({"error": "User not found"}), 403
+
+        # Update provided fields
+        if 'phone_number' in data:
+            user.phone_number = data['phone_number']
+        if 'address' in data:
+            user.address = data['address']
+        if 'addressLine2' in data:
+            user.addressLine2 = data['addressLine2']
+        if 'city' in data:
+            user.city = data['city']
+        if 'state' in data:
+            user.state = data['state']
+        if 'zipcode' in data:
+            user.zipcode = data['zipcode']
+        
+        db.session.commit()
+        return jsonify({"message": "Profile updated successfully"}), 200
+
+    except Exception as e:
+        return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500

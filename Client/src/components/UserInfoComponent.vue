@@ -150,6 +150,45 @@ export default {
     this.debouncedFetchAddresses = this.debounce(this.fetchAddresses, 500)
   },
   methods: {
+
+    editProfile() {
+      const data = JSON.stringify({
+        email: this.email,
+        phone_number: this.phone_number,
+        address: this.addressDetails.address,
+        addressLine2: this.addressDetails.addressLine2,
+        city: this.addressDetails.city,
+        state: this.addressDetails.state,
+        zipcode: this.addressDetails.zipcode,
+      });
+
+      const config = {
+        method: 'post',
+        url: 'http://127.0.0.1:5000/users_bp/editProfile',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data: data
+      };
+
+      axios.request(config)
+        .then((response) => {
+          alert('Profile updated successfully');
+ 
+        })
+        .catch((error) => {
+          if (error.response) {
+            
+            console.error('An error occurred:', error.message);
+           
+          } else {
+            console.error('The request was made but no response was received');
+          }
+        });
+  },
+
+
+
     /**
      * Fetches addresses based on the search query.
      */
@@ -224,9 +263,15 @@ export default {
     /**
      * Toggles the edit mode.
      */
-    toggleEdit() {
-      this.edit = !this.edit
-    },
+     async toggleEdit() {
+    if (this.edit) {
+      await this.editProfile();
+    }
+    this.edit = !this.edit; 
+  }
+
+
+,
     /**
      * Redirects to the create item page.
      */
