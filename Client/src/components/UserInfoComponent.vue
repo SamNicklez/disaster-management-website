@@ -13,6 +13,7 @@ details and location. * - toggleEdit: Toggles the edit mode for user information
 Redirects to the create item page. * * Lifecycle Hooks: * - created: Initializes the
 debouncedFetchAddresses method. * * @name AddressAutocomplete */
 
+
 <template>
   <v-card class="mb-5" outlined tile>
     <v-btn @click="createItem">Make Item</v-btn>
@@ -121,6 +122,7 @@ debouncedFetchAddresses method. * * @name AddressAutocomplete */
 
 <script>
 import axios from 'axios'
+import { user } from '../stores/user.js'
 export default {
   name: 'AddressAutocomplete',
   data() {
@@ -152,40 +154,41 @@ export default {
   methods: {
 
     editProfile() {
-      const data = JSON.stringify({
-        email: this.email,
-        phone_number: this.phone_number,
-        address: this.addressDetails.address,
-        addressLine2: this.addressDetails.addressLine2,
-        city: this.addressDetails.city,
-        state: this.addressDetails.state,
-        zipcode: this.addressDetails.zipcode,
+      let userData = user()  
+
+    
+      if (!userData.token) {
+        alertStore.showError('You must be logged in to update your profile.')
+        return
+      }
+
+      let data = JSON.stringify({
+        email: userData.email, 
+     
       });
 
-      const config = {
+      let config = {
         method: 'post',
+        maxBodyLength: Infinity,
         url: 'http://127.0.0.1:5000/users_bp/editProfile',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ` + userData.getToken,  
         },
         data: data
       };
 
       axios.request(config)
-        .then((response) => {
-          alert('Profile updated successfully');
- 
+        .then(response => {
+          console.log(JSON.stringify(response.data))
+
         })
-        .catch((error) => {
-          if (error.response) {
-            
-            console.error('An error occurred:', error.message);
-           
-          } else {
-            console.error('The request was made but no response was received');
-          }
+        .catch(error => {
+          // Handle error
+          console.error("Error updating profile:", error);
         });
-  },
+    }, 
+
 
 
 
@@ -264,7 +267,7 @@ export default {
      * Toggles the edit mode.
      */
      async toggleEdit() {
-    if (this.edit) {
+    if (this.edit) {      
       await this.editProfile();
     }
     this.edit = !this.edit; 

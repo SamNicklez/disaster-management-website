@@ -130,6 +130,7 @@ def verifyAdmin():
         return jsonify({"error": "Internal Server Error"}), 500
     
 @users_bp.route('/verify', methods=['POST'])
+@token_auth.login_required
 def verify():
     """
     Verify a user using a verification code.
@@ -161,14 +162,23 @@ def editProfile():
     """
     Edit a user's profile based on the provided fields.
     """
+
+    auth_header = request.headers.get('Authorization')
+    tpken = None
+    if auth_header and auth_header.startswith('Bearer '):
+        token = auth_header.split(" ")[1]
+    if token is None:
+            return jsonify({"error": "User must be logged in"}), 401    
     try:
+        decoded = jwt.decode(token, "secret", algorithms=["HS256"])
+        
+    
         data = request.get_json()
         
-        print(data["email"])
-        user = User.query.filter_by(Email=data["email"]).first()
-
+        user = User.query.filter_by(UserId = decoded["id"]).first()
+        
         if not user:
-            return jsonify({"error": "User not found"}), 403
+            return jsonify({"error": "User not found"}), 404
 
         # Update provided fields
         if 'phone_number' in data:
@@ -184,6 +194,8 @@ def editProfile():
         if 'zipcode' in data:
             user.zipcode = data['zipcode']
         
+        user.phone_number = 111111
+        db.session.flush()
         db.session.commit()
         return jsonify({"message": "Profile updated successfully"}), 200
 
