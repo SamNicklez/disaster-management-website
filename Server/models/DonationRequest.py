@@ -16,5 +16,5 @@ class ItemRequest(db.Model):
 
     request_item_id = db.Column(db.Integer, primary_key=True)
     request_id = db.Column(db.Integer, db.ForeignKey('request.request_id'), nullable=True)
-    event_item_id = db.Column(db.Integer, nullable=True)
+    item_id = db.Column(db.Integer, nullable=True)
     quantity = db.Column(db.Integer, nullable=True)
