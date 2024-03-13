@@ -1,4 +1,4 @@
-<script setup></script>
+gi<script setup></script>
 
 <template>
   <div class="card">
