@@ -163,8 +163,12 @@ export default {
       }
 
       let data = JSON.stringify({
-        email: userData.email, 
-     
+        phone_number: this.phone_number,
+        address: this.addressDetails.address,
+        addressLine2: this.addressDetails.addressLine2,
+        city: this.addressDetails.city,
+        state: this.addressDetails.state,
+        zipcode: this.addressDetails.zipcode
       });
 
       let config = {

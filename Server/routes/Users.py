@@ -109,6 +109,7 @@ def verifyUser():
     - If the user is verified successfully, returns a JSON object with a success message.
     - If there is an internal server error, returns a JSON object with an error message.
     """
+    
     try:
         return jsonify({"message": "User verified successfully"}), 200
     except Exception as e:
@@ -164,7 +165,7 @@ def editProfile():
     """
 
     auth_header = request.headers.get('Authorization')
-    tpken = None
+    token = None
     if auth_header and auth_header.startswith('Bearer '):
         token = auth_header.split(" ")[1]
     if token is None:
@@ -174,6 +175,7 @@ def editProfile():
         
     
         data = request.get_json()
+        print(data)
         
         user = User.query.filter_by(UserId = decoded["id"]).first()
         
@@ -194,9 +196,12 @@ def editProfile():
         if 'zipcode' in data:
             user.zipcode = data['zipcode']
         
-        user.phone_number = 111111
-        db.session.flush()
+        print(user)
+        print(user.phone_number)
         db.session.commit()
+        
+        
+        
         return jsonify({"message": "Profile updated successfully"}), 200
 
     except Exception as e:
