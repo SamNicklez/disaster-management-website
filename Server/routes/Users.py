@@ -131,7 +131,6 @@ def verifyAdmin():
         return jsonify({"error": "Internal Server Error"}), 500
     
 @users_bp.route('/verify', methods=['POST'])
-@token_auth.login_required
 def verify():
     """
     Verify a user using a verification code.
@@ -147,7 +146,6 @@ def verify():
     try:
         data = request.get_json()
         user = User.query.filter_by(Email=data["email"]).first()
-        print(user.IsVerified, data["verification"])
         if user.IsVerified == data["verification"]:
             user.IsVerified = 1
             db.session.commit()
@@ -163,19 +161,14 @@ def editProfile():
     """
     Edit a user's profile based on the provided fields.
     """
-
     auth_header = request.headers.get('Authorization')
-    token = None
-    if auth_header and auth_header.startswith('Bearer '):
-        token = auth_header.split(" ")[1]
+    token = token = auth_header.split(" ")[1] if auth_header and auth_header.startswith('Bearer ') else None
+
     if token is None:
-            return jsonify({"error": "User must be logged in"}), 401    
+            return jsonify({"error": "User is not logged in"}), 401    
     try:
         decoded = jwt.decode(token, "secret", algorithms=["HS256"])
-        
-    
         data = request.get_json()
-        print(data)
         
         user = User.query.filter_by(UserId = decoded["id"]).first()
         
@@ -184,20 +177,16 @@ def editProfile():
 
         # Update provided fields
         if 'phone_number' in data:
-            user.phone_number = data['phone_number']
+            user.PhoneNumber = data['phone_number']
         if 'address' in data:
-            user.address = data['address']
-        if 'addressLine2' in data:
-            user.addressLine2 = data['addressLine2']
+            user.Address = data['address'] + ' ' + data['addressLine2']
         if 'city' in data:
-            user.city = data['city']
+            user.City = data['city']
         if 'state' in data:
-            user.state = data['state']
+            user.State = data['state']
         if 'zipcode' in data:
-            user.zipcode = data['zipcode']
+            user.ZipCode = data['zipcode']
         
-        print(user)
-        print(user.phone_number)
         db.session.commit()
         
         
