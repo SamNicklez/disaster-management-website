@@ -3,7 +3,6 @@ import { mount, flushPromises } from '@vue/test-utils'
 import Component from '@/views/ItemCreateView.vue'
 import axios from 'axios'
 
-// Mock the axios module
 vi.mock('axios', () => ({
   __esModule: true,
   default: {
@@ -15,7 +14,6 @@ vi.mock('axios', () => ({
   }
 }))
 
-// Optionally, mock other modules if needed
 vi.mock('@/stores/user.js', () => ({
   user: () => ({
     getToken: () => 'mocked-token'

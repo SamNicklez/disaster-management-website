@@ -1,12 +1,3 @@
-/** * Component: InitialSignupComponent * Description: This component represents the initial sign-up
-form for users. * It allows users to enter their email, password, and confirm password. * It also
-provides password requirements and allows users to select their role. * Once the form is submitted,
-it sends a request to the server for user registration. * If successful, it displays a verification
-dialog. * If there are any errors, it displays appropriate error messages. * * Props: * - None * *
-Events: * - None * * Slots: * - None * * Dependencies: * - VerifyComponentVue: A child component
-that displays the verification dialog. * - axios: A library for making HTTP requests. * -
-alertStore: A store for managing alert messages. * - loadingBar: A store for managing loading state.
-* * @component InitialSignupComponent */
 <template>
   <VerifyComponentVue v-if="dialog" :email="username" :login="false" />
   <div class="signup-card">

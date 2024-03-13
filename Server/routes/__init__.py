@@ -5,6 +5,8 @@ import jwt
 
 admin_auth = HTTPTokenAuth()
 token_auth = HTTPTokenAuth()
+recipient_auth = HTTPTokenAuth()
+donor_auth = HTTPTokenAuth()
     
 
 @token_auth.verify_token
@@ -46,4 +48,43 @@ def verify_status(token):
         return False
         
 
+@recipient_auth.verify_token
+def verify_status(token):
+    """
+    Verify if a user is a recipient based on the token.
+
+    Args:
+        token (str): The token to be verified.
+
+    Returns:
+        bool: True if the user is a recipient, False otherwise.
+    """
+    try:
+        decoded_token = jwt.decode(token, "secret", algorithms=["HS256"])
+        if(decoded_token["RoleID"] == 3):
+            return True
+        else:
+            return False
+    except Exception:
+        return False
+
+@donor_auth.verify_token
+def verify_status(token):
+    """
+    Verify if a user is a donor based on the token.
+
+    Args:
+        token (str): The token to be verified.
+
+    Returns:
+        bool: True if the user is a donor, False otherwise.
+    """
+    try:
+        decoded_token = jwt.decode(token, "secret", algorithms=["HS256"])
+        if(decoded_token["RoleID"] == 2):
+            return True
+        else:
+            return False
+    except Exception:
+        return False
         

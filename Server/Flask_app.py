@@ -7,16 +7,10 @@ from routes.Events import events_bp
 import os
 
 app = Flask(__name__)
-# CORS(app)
-# app.config['SQLALCHEMY_DATABASE_URI'] =f'mysql://root:{os.getenv("DB_PASSWORD")}@localhost:3306/theapp'
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# app.secret_key = os.getenv("SECRET_KEY")
-# db.init_app(app)
-
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] ='mysql://root:newSQLIowa00@localhost:3306/theapp'
+CORS(app)
+app.config['SQLALCHEMY_DATABASE_URI'] =f'mysql://root:{os.getenv("DB_PASSWORD")}@localhost:3306/theapp'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = os.getenv("SECRET_KEY")
 db.init_app(app)
 
 app.register_blueprint(users_bp, url_prefix='/users_bp')

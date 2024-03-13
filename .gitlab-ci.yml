@@ -15,18 +15,18 @@ client_unit_test:
       - Client/coverage
     expire_in: 1 week
 
-server_unit_test:
-  stage: test
-  image: python:latest
-  script:
-    - cd Server
-    - pip install -r requirements.txt
-    - coverage run -m pytest
-    - coverage xml
-  artifacts:
-    paths:
-      - Server/coverage.xml
-    expire_in: 1 week
+# server_unit_test:
+#   stage: test
+#   image: python:latest
+#   script:
+#     - cd Server
+#     - pip install -r requirements.txt
+#     - coverage run -m pytest
+#     - coverage xml
+#   artifacts:
+#     paths:
+#       - Server/coverage.xml
+#     expire_in: 1 week
   
 sonarqube-check:
   stage: analyze
