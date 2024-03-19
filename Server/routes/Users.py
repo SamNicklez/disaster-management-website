@@ -179,7 +179,9 @@ def editProfile():
         if 'phone_number' in data:
             user.PhoneNumber = data['phone_number']
         if 'address' in data:
-            user.Address = data['address'] + ' ' + data['addressLine2']
+            address = data.get('address', '')
+            addressLine2 = data.get('addressLine2', '')
+            user.Address = data['address'] + ' ' + data['addressLine2'] if addressLine2 else address
         if 'city' in data:
             user.City = data['city']
         if 'state' in data:
@@ -191,6 +193,7 @@ def editProfile():
         return jsonify({"message": "Profile updated successfully"}), 200
 
     except Exception as e:
+        print(str(e))
         return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500
 @users_bp.route('/getProfile', methods=['GET'])
 def getProfile():
@@ -213,7 +216,6 @@ def getProfile():
         decoded = jwt.decode(token, "secret", algorithms=["HS256"])
         user = User.query.filter_by(UserId=decoded["id"]).first()
         role_name = Role.query.filter_by(RoleID=decoded["RoleID"]).first()
-        print(role_name)
 
         if not user:
             return jsonify({"error": "User not found"}), 404
@@ -223,7 +225,7 @@ def getProfile():
         user_data = {
             # "username": user.Username,
             "email": user.Email,
-            "role": role_name,
+            "role": role_name.Name,
             "phone_number": user.PhoneNumber,
             "address": user.Address,
             "city": user.City,
@@ -234,5 +236,4 @@ def getProfile():
         return jsonify(user_data), 200
 
     except Exception as e:
-        print(str(e))
         return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500
