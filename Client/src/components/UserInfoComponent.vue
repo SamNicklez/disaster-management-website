@@ -142,17 +142,19 @@ export default {
         latitude: ''
       },
       username: 'temp',
-      email: 'snicklaus@uiowa.edu',
-      role: 'ADMIN',
-      phone_number: '319-555-5555',
+      email: '',
+      role: '',
+      phone_number: '',
       edit: false
     }
   },
   created() {
     this.debouncedFetchAddresses = this.debounce(this.fetchAddresses, 500)
+    this.fetchUserProfile()
   },
-  methods: {
 
+  methods: {
+    
     editProfile() {
       let userData = user()  
 
@@ -251,6 +253,42 @@ export default {
       this.addressDetails.state = address.properties.state
       this.addressDetails.zipcode = address.properties.postcode
     },
+
+    fetchUserProfile() {
+      let userData = user();
+      if (!userData.token) {
+        alertStore.showError('You must be logged in to view your profile.');
+        return;
+      }
+
+      const config = {
+        headers: {
+          'Authorization': `Bearer ${userData.getToken}`, 
+        }
+      };
+
+      axios.get('http://127.0.0.1:5000/users_bp/getProfile', config)
+        .then(response => {
+          const data = response.data;
+          this.username = data.username;
+          this.email = data.email;
+          this.role = data.role;
+          this.phone_number = data.phone_number;
+
+          this.addressDetails = {
+            address: data.address,
+            addressLine2: data.addressLine2,
+            city: data.city,
+            state: data.state,
+            zipcode: data.zipcode
+          };
+        })
+        .catch(error => {
+          console.error("Error fetching user profile:", error);
+          
+        });
+    },
+  
     /**
      * Clears the address details and location.
      */

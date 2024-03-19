@@ -175,7 +175,7 @@ def editProfile():
         if not user:
             return jsonify({"error": "User not found"}), 404
 
-        # Update provided fields
+
         if 'phone_number' in data:
             user.PhoneNumber = data['phone_number']
         if 'address' in data:
@@ -188,10 +188,51 @@ def editProfile():
             user.ZipCode = data['zipcode']
         
         db.session.commit()
-        
-        
-        
         return jsonify({"message": "Profile updated successfully"}), 200
 
     except Exception as e:
+        return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500
+@users_bp.route('/getProfile', methods=['GET'])
+def getProfile():
+    auth_header = request.headers.get('Authorization')
+    token = auth_header.split(" ")[1] if auth_header and auth_header.startswith('Bearer ') else None
+    # role_name = ""
+    # if user.role == 1:
+    #     role_name = "Admin"
+    # elif user.role == 2:
+    #     role_name = "Donor"
+    # elif user.role == 3:
+    #     role_name = "Recipient"
+    # else:
+    #     return jsonify({"error": f"Invalid Role"}), 500
+
+    if token is None:
+        return jsonify({"error": "User is not logged in"}), 401
+
+    try:
+        decoded = jwt.decode(token, "secret", algorithms=["HS256"])
+        user = User.query.filter_by(UserId=decoded["id"]).first()
+        role_name = Role.query.filter_by(RoleID=decoded["RoleID"]).first()
+        print(role_name)
+
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+        
+
+
+        user_data = {
+            # "username": user.Username,
+            "email": user.Email,
+            "role": role_name,
+            "phone_number": user.PhoneNumber,
+            "address": user.Address,
+            "city": user.City,
+            "state": user.State,
+            "zipcode": user.ZipCode
+        }
+
+        return jsonify(user_data), 200
+
+    except Exception as e:
+        print(str(e))
         return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500
