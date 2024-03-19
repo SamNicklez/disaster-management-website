@@ -5,6 +5,8 @@ from models.Roles import Role
 from werkzeug.security import generate_password_hash
 from routes import users_bp
 import jwt
+import sys
+sys.path.append('/Users/deepikamitta/PycharmProjects/software-engineering-project-team-3')
 
 # Create a test client
 @pytest.fixture
