@@ -6,6 +6,7 @@ from models.Items import Item, Category
 from stores import db
 from datetime import datetime
 import jwt
+import os
 
 token = jwt.encode({"id": 1, "RoleID": 1, "DateCreated": datetime.now().isoformat()}, "secret", algorithm="HS256")
 headers = {
@@ -17,7 +18,7 @@ def app():
     app = Flask(__name__)
     app.register_blueprint(items_bp)
     app.config['TESTING'] = True
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://root:Killroy123@localhost:3306/theapp'
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://root:{os.getenv("DB_PASSWORD")}@localhost:3306/theapp'
     db.init_app(app)
     with app.app_context():
         db.create_all()
