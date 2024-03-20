@@ -1,19 +1,18 @@
 <script>
 export default {
-  event: null,
+  event_id: null,
   methods: {},
   created() {
-    this.event = this.$route.params.event
+    this.event_id = this.$route.params.id
   }
 }
 </script>
 
 <template>
   <div class="card">
-    <h1>{{ this.event.name }}</h1>
-    <h2>{{ this.event.location }}</h2>
-    <h3>{{ this.event.date }} at {{ this.event.time }}</h3>
-    <p>{{ this.event.description }}</p>
+    Test
+    <br>
+    EVENT ID {{ event_id }}
   </div>
 </template>
 

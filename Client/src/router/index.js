@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { events } from '../stores/events.js'
 import { user } from '../stores/user.js'
 import axios from 'axios'
 import { loadingBar } from '../stores/loading.js'
@@ -70,16 +69,6 @@ const router = createRouter({
     {
       path: '/event/:id',
       name: 'event',
-      beforeEnter: (to, from, next) => {
-        const eventData = events()
-        let event = eventData.getEvent(to.params.id)
-        if (event != null && event != undefined) {
-          to.params.event = event
-          next()
-        } else {
-          next('/notfound')
-        }
-      },
       component: () => import('../views/EventView.vue')
     },
     {
