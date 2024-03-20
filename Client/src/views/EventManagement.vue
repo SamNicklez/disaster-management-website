@@ -20,7 +20,6 @@
 
     <v-card-text>
       <v-text-field v-model="search" label="Search Events" outlined clearable></v-text-field>
-
       <v-data-table :headers="eventHeaders" :items="filteredEvents" :search="search">
         <template v-slot:[`item.action`]="{ item }">
           <v-btn text @click="confirmDeleteEvent(item)" class="mx-2">
@@ -35,12 +34,56 @@
       </v-data-table>
     </v-card-text>
 
-    <v-dialog v-model="showEventDialog" max-width="600px">
+    <v-dialog v-model="showEventDialog" max-width="800px">
       <v-card>
-        <v-card-title>{{ editingEvent ? 'Edit Event' : 'Add Event' }}</v-card-title>
+        <v-card-title>Event Management</v-card-title>
         <v-card-text>
           <v-text-field v-model="newEvent.event_name" label="Event Name" outlined></v-text-field>
           <v-textarea v-model="newEvent.description" label="Description" outlined></v-textarea>
+          <v-text-field
+            class="mb-3"
+            :loading="loading"
+            outlined
+            clearable
+            label="Location"
+            v-model="searchQuery"
+            @keyup="debouncedFetchAddresses"
+            append-inner-icon="mdi-magnify"
+            @click:clear="checkClear"
+          ></v-text-field>
+          <v-list v-if="addresses.length" dense class="mx-auto">
+            <v-list-item
+              v-for="address in addresses"
+              :key="address.properties.place_id"
+              @click="selectAddress(address)"
+            >
+              <v-list-item-title>{{ address.properties.formatted }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+          <v-autocomplete
+            v-model="chips"
+            :items="items"
+            label="Your favorite hobbies"
+            prepend-icon="mdi-filter-variant"
+            variant="solo"
+            chips
+            clearable
+            multiple
+          >
+            <template v-slot:selection="{ attrs, item, select, selected }">
+              <v-chip
+                v-bind="attrs"
+                :model-value="selected"
+                closable
+                @click="select"
+                @click:close="remove(item)"
+              >
+                <strong>{{ item }}</strong
+                >&nbsp;
+                <span>(interest)</span>
+              </v-chip>
+            </template>
+          </v-autocomplete>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -63,32 +106,44 @@ export default {
     events: [],
     showEventDialog: false,
     showDeleteDialog: false,
-    deleteType: null,
     deleteEventIndex: null,
+    loading: false,
     newEvent: {
-      name: '',
-      date: '',
-      description: ''
+      event_name: '',
+      description: '',
+      start_date: '',
+      location: '',
+      longitude: '',
+      lattiude: '',
+      item_names: []
     },
     eventHeaders: [
       { title: 'Event Name', key: 'event_name' },
+      { title: 'Event Location', key: 'location' },
       { title: 'Event Date', key: 'start_date', sortable: true },
       { title: 'Event Description', key: 'description', sortable: false },
       { title: 'Actions', key: 'action', sortable: false },
       { title: 'Edit', key: 'edit', sortable: false }
-    ]
+    ],
+    searchQuery: '',
+    addresses: [],
+    chips: ['Programming', 'Playing video games', 'Watching movies', 'Sleeping'],
+    items: ['Streaming', 'Eating'],
   }),
   computed: {
     filteredEvents() {
       return this.search
-        ? this.events.filter((e) =>
-            Object.values(e).some((v) => v.toLowerCase().includes(this.search.toLowerCase()))
+        ? this.events.filter((event) =>
+            Object.values(event).some((value) =>
+              String(value).toLowerCase().includes(this.search.toLowerCase())
+            )
           )
         : this.events
     }
   },
   created() {
     this.fetchEvents()
+    this.debouncedFetchAddresses = this.debounce(this.fetchAddresses, 500)
   },
   methods: {
     fetchEvents() {
@@ -113,12 +168,15 @@ export default {
         })
     },
     confirmDeleteEvent(event) {
-      this.deleteType = 'event'
       this.deleteEventIndex = this.events.indexOf(event)
       this.showDeleteDialog = true
     },
-    confirmDelete() {},
-    addEditEvent() {},
+    confirmDelete() {
+      console.log('Deleting event')
+    },
+    addEditEvent() {
+      console.log('Adding or editing event')
+    },
     editEvent(event) {
       this.newEvent = { ...event }
       this.showEventDialog = true
@@ -136,14 +194,13 @@ export default {
       this.loading = true
       const apiKey = 'b82eb2aaf0654b3f9517b92e38c28146'
       const url = `https://api.geoapify.com/v1/geocode/autocomplete?text=${this.searchQuery}&apiKey=${apiKey}`
-
       axios
         .get(url)
         .then((response) => {
           this.addresses = response.data.features
           this.loading = false
         })
-        .catch((error) => console.error(error))
+        .catch((error) => alertStore.showError(error.message))
     },
     /**
      * Debounces a function to limit the number of times it is called.
@@ -167,37 +224,18 @@ export default {
      * @param {Object} address - The selected address object.
      */
     selectAddress(address) {
-      console.log('Selected Address')
       this.searchQuery = address.properties.formatted
       this.addresses = [] // Clear suggestions
-      // Example of parsing, adjust based on the actual API response and needs
-      if (address.properties.street != null && address.properties.housenumber != null) {
-        this.addressDetails.address =
-          address.properties.housenumber + ' ' + address.properties.street
-      } else if (address.properties.name != null) {
-        this.addressDetails.address = address.properties.name
-      } else {
-        this.addressDetails.address = 'FILL IN'
-      }
-      this.addressDetails.city = address.properties.city
-      this.addressDetails.state = address.properties.state
-      this.addressDetails.zipcode = address.properties.postcode
+      this.newEvent.longitude = address.properties.lon
+      this.newEvent.lattiude = address.properties.lat
+      this.newEvent.location = address.properties.city + ', ' + address.properties.state
     },
     /**
      * Clears the address details and location.
      */
     checkClear() {
-      this.addressDetails = {
-        address: '',
-        addressLine2: '',
-        city: '',
-        state: '',
-        zipcode: ''
-      }
-      this.location = {
-        longitude: '',
-        latitude: ''
-      }
+      ;(this.newEvent.location = ''), (this.newEvent.longitude = ''), (this.newEvent.lattiude = '')
+      this.addresses = []
     },
     formatDate(dateString) {
       const date = new Date(dateString)
@@ -205,6 +243,9 @@ export default {
       const day = date.getDate()
       const year = date.getFullYear()
       return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`
+    },
+    remove (item) {
+        this.chips.splice(this.chips.indexOf(item), 1)
     },
   }
 }
