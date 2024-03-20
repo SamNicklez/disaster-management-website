@@ -123,7 +123,7 @@ def get_all_events():
 def get_event_by_id():
     
     event_id = request.args.get('event_id', None)
-
+    print(event_id)
     try:
         conn = db.engine.raw_connection()
         cursor = conn.cursor()
@@ -141,7 +141,7 @@ def get_event_by_id():
                 "longitude": event[4],
                 "start_date": event[5].strftime("%Y-%m-%d %H:%M:%S"),
                 "description": event[7],
-                "items": event[8].split(',')
+                "items": event[8].split(',') if event[8] else []
             }
 
             return jsonify({"event": serialized_event}), 200
@@ -197,4 +197,20 @@ def create_item_request():
 
     except Exception as e:
         db.session.rollback()
+        return jsonify({'error': 'An unexpected error occurred', 'details': str(e)}), 500
+    
+@events_bp.route('/DeleteEvent', methods=['GET'])
+@admin_auth.login_required
+def delete_event():
+    # Updates the event's end_date to the current date
+    try:
+        event_id = request.args.get('event_id')
+        event = DisasterEvent.query.get(event_id)
+        if event:
+            event.end_date = datetime.now()
+            db.session.commit()
+            return jsonify({'message': 'Event deleted successfully'}), 200
+        else:
+            return jsonify({'error': 'Event not found'}), 404
+    except Exception as e:
         return jsonify({'error': 'An unexpected error occurred', 'details': str(e)}), 500

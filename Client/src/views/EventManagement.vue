@@ -26,11 +26,6 @@
             <v-icon small color="red">mdi-delete</v-icon>
           </v-btn>
         </template>
-        <template v-slot:[`item.edit`]="{ item }">
-          <v-btn text @click="editEvent(item)" class="mx-2">
-            <v-icon small color="blue">mdi-pencil</v-icon>
-          </v-btn>
-        </template>
       </v-data-table>
     </v-card-text>
 
@@ -63,9 +58,7 @@
           <v-autocomplete
             v-model="chips"
             :items="items"
-            label="Your favorite hobbies"
-            prepend-icon="mdi-filter-variant"
-            variant="solo"
+            label="Items allowed to be requested"
             chips
             clearable
             multiple
@@ -106,11 +99,14 @@ export default {
     events: [],
     showEventDialog: false,
     showDeleteDialog: false,
+    showEditDialog: false,
     deleteEventIndex: null,
     loading: false,
     newEvent: {
+      event_id: '',
       event_name: '',
       description: '',
+      showable_description: '',
       start_date: '',
       location: '',
       longitude: '',
@@ -121,14 +117,13 @@ export default {
       { title: 'Event Name', key: 'event_name' },
       { title: 'Event Location', key: 'location' },
       { title: 'Event Date', key: 'start_date', sortable: true },
-      { title: 'Event Description', key: 'description', sortable: false },
+      { title: 'Event Description', key: 'showable_description', sortable: false },
       { title: 'Actions', key: 'action', sortable: false },
-      { title: 'Edit', key: 'edit', sortable: false }
     ],
     searchQuery: '',
     addresses: [],
-    chips: ['Programming', 'Playing video games', 'Watching movies', 'Sleeping'],
-    items: ['Streaming', 'Eating'],
+    chips: [],
+    items: []
   }),
   computed: {
     filteredEvents() {
@@ -145,6 +140,26 @@ export default {
     this.fetchEvents()
     this.debouncedFetchAddresses = this.debounce(this.fetchAddresses, 500)
   },
+  mounted() {
+    let userData = user()
+    let token = userData.token
+    let config = {
+      method: 'get',
+      maxBodyLength: Infinity,
+      url: 'http://127.0.0.1:5000/item/GetAllItems',
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    }
+    axios
+      .request(config)
+      .then((response) => {
+        this.items = response.data.map((item) => item.name)
+      })
+      .catch((error) => {
+        alertStore.showError(error.message)
+      })
+  },
   methods: {
     fetchEvents() {
       let config = {
@@ -152,13 +167,13 @@ export default {
         maxBodyLength: Infinity,
         url: 'http://127.0.0.1:5000/event/GetAllEvents'
       }
-
       axios
         .request(config)
         .then((response) => {
           for (let event of response.data.events) {
             event.start_date = this.formatDate(event.start_date)
             event.description = event.description || 'No Description'
+            event.showable_description = this.truncateName(event.description, 20)
             event.event_name = event.event_name || 'No Name'
           }
           this.events = response.data.events
@@ -174,17 +189,35 @@ export default {
     confirmDelete() {
       console.log('Deleting event')
     },
-    addEditEvent() {
-      console.log('Adding or editing event')
-    },
     editEvent(event) {
-      this.newEvent = { ...event }
-      this.showEventDialog = true
+        let userData = user()
+        let token = userData.token
+        this.newEvent = { ...event }
+        console.log(this.newEvent)
+        let config = {
+          method: 'get',
+          maxBodyLength: Infinity,
+          url: 'http://127.0.0.1:5000/event/GetEventById?event_id=' + event.event_id,
+          headers: {
+            Authorization:
+              'Bearer ' + token
+          }
+        }
+        axios
+          .request(config)
+          .then((response) => {
+            this.chips = response.data.event.items
+            this.showEventDialog = true
+          })
+          .catch((error) => {
+            alertStore.showError(error.message)
+          })
     },
     resetEventDialog() {
       this.newEvent = { name: '', date: '', description: '' }
       this.showEventDialog = false
       this.editIndex = -1
+      this.chips = []
     },
     /**
      * Fetches addresses based on the search query.
@@ -225,7 +258,7 @@ export default {
      */
     selectAddress(address) {
       this.searchQuery = address.properties.formatted
-      this.addresses = [] // Clear suggestions
+      this.addresses = []
       this.newEvent.longitude = address.properties.lon
       this.newEvent.lattiude = address.properties.lat
       this.newEvent.location = address.properties.city + ', ' + address.properties.state
@@ -244,9 +277,16 @@ export default {
       const year = date.getFullYear()
       return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`
     },
-    remove (item) {
-        this.chips.splice(this.chips.indexOf(item), 1)
+    remove(item) {
+      this.chips.splice(this.chips.indexOf(item), 1)
     },
+    truncateName(name, maxLength) {
+      if (!name) return name
+      if (name.length > maxLength) {
+        return name.substring(0, maxLength) + '...'
+      }
+      return name
+    }
   }
 }
 </script>
