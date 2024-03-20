@@ -1,12 +1,19 @@
-# import pytest
-# from flask import Flask, jsonify
-# from models.Users import User
-# from models.Roles import Role
-# from werkzeug.security import generate_password_hash
-# from routes import users_bp
-# import datetime
-# import jwt
+import pytest
+from flask import Flask, jsonify
+from models.Users import User
+from models.Roles import Role
+from werkzeug.security import generate_password_hash
+from routes.Users import users_bp
+from datetime import datetime
+import jwt
+
+
 # # Create a test client
+# token = jwt.encode({"id": 1, "RoleID": 1, "DateCreated": datetime.now().isoformat()}, "secret", algorithm="HS256")
+# headers = {
+#         'Authorization': f'Bearer {token}'
+#     }
+
 # @pytest.fixture
 # def app():
 #     app = Flask(__name__)
