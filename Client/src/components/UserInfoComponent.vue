@@ -16,7 +16,8 @@ debouncedFetchAddresses method. * * @name AddressAutocomplete */
 
 <template>
   <v-card class="mb-5" outlined tile>
-    <v-btn @click="createItem">Make Item</v-btn>
+    <v-btn @click="createItem">Item/Category Management</v-btn>
+    <v-btn @click="routeEvent">Event Management</v-btn>
     <v-card-title>User Information</v-card-title>
     <v-container>
       <v-row>
@@ -322,6 +323,12 @@ export default {
      */
     createItem() {
       this.$router.push({ name: 'createItem' })
+    },
+    /**
+     * Redirects to the event management page.
+     */
+    routeEvent() {
+      this.$router.push({ name: 'eventManagement' })
     }
   }
 }

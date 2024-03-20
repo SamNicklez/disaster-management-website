@@ -3,6 +3,7 @@ from flask_cors import CORS
 from stores import db
 from routes.Items import items_bp
 from routes.Users import users_bp
+from routes.Events import events_bp
 import os
 
 app = Flask(__name__)
@@ -14,7 +15,7 @@ db.init_app(app)
 
 app.register_blueprint(users_bp, url_prefix='/users_bp')
 app.register_blueprint(items_bp, url_prefix='/item')
-
+app.register_blueprint(events_bp, url_prefix='/event')
 
 @app.route("/")
 def home():
