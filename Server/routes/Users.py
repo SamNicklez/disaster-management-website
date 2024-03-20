@@ -109,6 +109,7 @@ def verifyUser():
     - If the user is verified successfully, returns a JSON object with a success message.
     - If there is an internal server error, returns a JSON object with an error message.
     """
+    
     try:
         return jsonify({"message": "User verified successfully"}), 200
     except Exception as e:
@@ -145,7 +146,6 @@ def verify():
     try:
         data = request.get_json()
         user = User.query.filter_by(Email=data["email"]).first()
-        print(user.IsVerified, data["verification"])
         if user.IsVerified == data["verification"]:
             user.IsVerified = 1
             db.session.commit()
@@ -155,3 +155,85 @@ def verify():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
+    
+@users_bp.route('/editProfile', methods=['POST'])
+def editProfile():
+    """
+    Edit a user's profile based on the provided fields.
+    """
+    auth_header = request.headers.get('Authorization')
+    token = token = auth_header.split(" ")[1] if auth_header and auth_header.startswith('Bearer ') else None
+
+    if token is None:
+            return jsonify({"error": "User is not logged in"}), 401    
+    try:
+        decoded = jwt.decode(token, "secret", algorithms=["HS256"])
+        data = request.get_json()
+        
+        user = User.query.filter_by(UserId = decoded["id"]).first()
+        
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+
+        if 'phone_number' in data:
+            user.PhoneNumber = data['phone_number']
+        if 'address' in data:
+            address = data.get('address', '')
+            addressLine2 = data.get('addressLine2', '')
+            user.Address = data['address'] + ' ' + data['addressLine2'] if addressLine2 else address
+        if 'city' in data:
+            user.City = data['city']
+        if 'state' in data:
+            user.State = data['state']
+        if 'zipcode' in data:
+            user.ZipCode = data['zipcode']
+        
+        db.session.commit()
+        return jsonify({"message": "Profile updated successfully"}), 200
+
+    except Exception as e:
+        print(str(e))
+        return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500
+@users_bp.route('/getProfile', methods=['GET'])
+def getProfile():
+    auth_header = request.headers.get('Authorization')
+    token = auth_header.split(" ")[1] if auth_header and auth_header.startswith('Bearer ') else None
+    # role_name = ""
+    # if user.role == 1:
+    #     role_name = "Admin"
+    # elif user.role == 2:
+    #     role_name = "Donor"
+    # elif user.role == 3:
+    #     role_name = "Recipient"
+    # else:
+    #     return jsonify({"error": f"Invalid Role"}), 500
+
+    if token is None:
+        return jsonify({"error": "User is not logged in"}), 401
+
+    try:
+        decoded = jwt.decode(token, "secret", algorithms=["HS256"])
+        user = User.query.filter_by(UserId=decoded["id"]).first()
+        role_name = Role.query.filter_by(RoleID=decoded["RoleID"]).first()
+
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+        
+
+
+        user_data = {
+            # "username": user.Username,
+            "email": user.Email,
+            "role": role_name.Name,
+            "phone_number": user.PhoneNumber,
+            "address": user.Address,
+            "city": user.City,
+            "state": user.State,
+            "zipcode": user.ZipCode
+        }
+
+        return jsonify(user_data), 200
+
+    except Exception as e:
+        return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500
