@@ -18,36 +18,19 @@ def app():
     app = Flask(__name__)
     app.register_blueprint(items_bp)
     app.config['TESTING'] = True
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://root:{os.getenv("DB_PASSWORD")}@localhost:3306/theapp'
     db.init_app(app)
     with app.app_context():
-        # Create the database and the database tables
         db.create_all()
-
-        connection = db.engine.connect()
-        transaction = connection.begin()
-
-        # Use a nested transaction (SAVEPOINT)
-        db.session.begin_nested()
-
-        # Option to add setup data here, e.g., db.session.add(test_data)
-
-        yield app.test_client()  # This provides a way to test your application
-
-        # After the test is done, rollback any changes
-        db.session.remove()  # Close the session
-        transaction.rollback()  # Rollback the outer transaction
-        connection.close()
-        
-        # Drop all tables after the test is complete
-        db.drop_all()
-
+        yield app.test_client()
+        db.session.query(Item).delete()
+        db.session.query(Category).delete()
+        db.session.commit()
     return app.test_client()
 
 # Test case for creating a new item
 def test_create_item(app):
-    data = {"CategoryName": "Category 1", "ItemName": "Item 110", "ItemDescription": "Description 1"}
+    data = {"CategoryName": "Category 1", "ItemName": "Item 2", "ItemDescription": "Description 1"}
     response = app.post("/CreateItem", json=data, headers=headers)
     assert response.status_code == 200
     assert response.data == b"success"
