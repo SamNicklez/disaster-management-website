@@ -5,13 +5,15 @@
       <v-row>
         <v-col cols="12" sm="6" v-for="event in this.events" :key="event.event_id">
           <v-card @click="goToEvent(event.event_id)" class="ma-1" hoverable id="card">
-            <v-card-title style="font-size: 2em">{{ event.event_name }}</v-card-title>
+            <v-card-title style="font-size: 2em">{{
+              this.truncateName(event.event_name, 40) || 'Title Not Found'
+            }}</v-card-title>
             <v-card-text style="font-size: 1.1em">
               <div>
-                <b>{{ event.location }}</b>
+                <b>{{ this.truncateName(event.location, 60) || 'Location Not Found' }}</b>
               </div>
-              <div>{{ this.formatDate(event.start_date) }}</div>
-              <div>{{ event.description }}</div>
+              <div>{{ this.formatDate(event.start_date) || 'Date Not Found' }}</div>
+              <div>{{ this.truncateName(event.description, 60) || 'No Description' }}</div>
             </v-card-text>
           </v-card>
         </v-col>
@@ -67,6 +69,12 @@ export default {
       const day = date.getDate()
       const year = date.getFullYear()
       return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`
+    },
+    truncateName(name, maxLength) {
+      if (name.length > maxLength) {
+        return name.substring(0, maxLength) + '...'
+      }
+      return name
     }
   }
 }
