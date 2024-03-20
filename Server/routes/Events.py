@@ -51,9 +51,11 @@ def create_event():
 
     except SQLAlchemyError as e:
         db.session.rollback()
+        print(e)
         return jsonify({"error": "Failed to create event", "details": str(e)}), 500
 
     except Exception as e:
+        print(e)
         return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
 
 @events_bp.route("/CreateEventItem", methods=["POST"])
