@@ -108,6 +108,7 @@
 <script>
 import axios from 'axios'
 import { user } from '../stores/user.js'
+import { alertStore } from '../stores/alert'
 export default {
   name: 'AddressAutocomplete',
   data() {
@@ -173,7 +174,6 @@ export default {
           console.log(JSON.stringify(response.data))
         })
         .catch((error) => {
-          // Handle error
           console.error('Error updating profile:', error)
         })
     },

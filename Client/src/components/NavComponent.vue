@@ -71,7 +71,7 @@ export default {
      * Perform a search
      */
     performSearch() {
-      this.$router.push(`/search/${this.searchQuery}`)
+      this.$router.push({ name: 'search', params: { query: this.searchQuery } })
     },
     /**
      * Open the profile page

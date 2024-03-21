@@ -214,3 +214,18 @@ def delete_event():
             return jsonify({'error': 'Event not found'}), 404
     except Exception as e:
         return jsonify({'error': 'An unexpected error occurred', 'details': str(e)}), 500
+
+@events_bp.route('/search', methods=['GET'])
+def search_events():
+    try:
+        search_query = request.args.get('query', '')
+        print(search_query)
+        if search_query:
+            search_statement = db.text("MATCH(event_name, description, location) AGAINST(:query IN NATURAL LANGUAGE MODE)")
+            results = DisasterEvent.query.filter(search_statement, DisasterEvent.end_date != None).params(query=search_query).all()
+            return jsonify([event.to_dict() for event in results])
+        else:
+            return jsonify({'error': 'No search query provided'}), 400
+    except Exception as e:
+        print(e)
+        return jsonify({'error': 'An unexpected error occurred', 'details': str(e)}), 500

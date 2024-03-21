@@ -51,7 +51,6 @@ export default {
       .request(config)
       .then((response) => {
         this.eventData = response.data.events.slice(0, 10)
-        console.log(this.eventData)
       })
       .catch((error) => {
         console.log(error)

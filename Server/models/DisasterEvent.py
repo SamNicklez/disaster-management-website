@@ -15,6 +15,17 @@ class DisasterEvent(db.Model):
     requests = db.relationship('DonationRequest', backref='event', lazy=True)
     items = db.relationship('EventItem', backref='event', lazy=True)
 
+    def to_dict(self):
+        return {
+            'event_id': self.event_id,
+            'event_name': self.event_name,
+            'description': self.description,
+            'location': self.location,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'start_date': self.start_date,
+        }
+
 class EventItem(db.Model):
     __tablename__ = 'eventitem'
 
