@@ -174,7 +174,7 @@ export default {
           this.events = response.data.events
         })
         .catch((error) => {
-          console.log(error)
+          alertStore.showError(error.message)
         })
     },
     confirmDeleteEvent(event) {
@@ -182,7 +182,28 @@ export default {
       this.showDeleteDialog = true
     },
     confirmDelete() {
-      console.log('Deleting event')
+      let userData = user()
+      let token = userData.token
+      let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: 'http://127.0.0.1:5000/event/DeleteEvent?event_id=' + this.events[this.deleteEventIndex].event_id,
+        headers: {
+          Authorization:
+            'Bearer ' + token
+        }
+      }
+
+      axios
+        .request(config)
+        .then(() => {
+          this.events.splice(this.deleteEventIndex, 1)
+          alertStore.showSuccess('Event deleted successfully')
+        })
+        .catch((error) => {
+          alertStore.showError(error.message)
+        })
+      this.showDeleteDialog = false
     },
     resetEventDialog() {
       this.newEvent = { name: '', date: '', description: '' }
