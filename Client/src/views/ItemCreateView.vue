@@ -356,14 +356,15 @@ export default {
         axios
           .request(config)
           .then(() => {
-            this.items.push({name: name, category: category, description: description})
+            this.items.push({ name: name, category: category, description: description })
           })
           .catch((error) => {
             alertStore.showError(error.response.data.error)
-          }).finally(() => {
-              this.newItem = { name: '', category: '', description: '' }
-              this.showItemDialog = false
-              this.editIndex = -1
+          })
+          .finally(() => {
+            this.newItem = { name: '', category: '', description: '' }
+            this.showItemDialog = false
+            this.editIndex = -1
           })
       } else {
         let category = this.newItem.category
@@ -390,14 +391,15 @@ export default {
         axios
           .request(config)
           .then(() => {
-            this.items[index] = {name: newName, category: category, description: description}
+            this.items[index] = { name: newName, category: category, description: description }
           })
           .catch((error) => {
             alertStore.showError(error.response.data.error)
-          }).finally(() => {
-              this.newItem = { name: '', category: '', description: '' }
-              this.showItemDialog = false
-              this.editIndex = -1
+          })
+          .finally(() => {
+            this.newItem = { name: '', category: '', description: '' }
+            this.showItemDialog = false
+            this.editIndex = -1
           })
       }
     },
@@ -431,7 +433,8 @@ export default {
           })
           .catch((error) => {
             alertStore.showError(error.response.data.error)
-          }).finally (() => {
+          })
+          .finally(() => {
             this.newCategory = { name: '' }
             this.showCategoryDialog = false
             this.editCategoryIndex = -1 // Reset edit index for categories
@@ -462,7 +465,8 @@ export default {
           })
           .catch((error) => {
             alertStore.showError(error.response.data.error)
-          }).finally (() => {
+          })
+          .finally(() => {
             this.newCategory = { name: '' }
             this.showCategoryDialog = false
             this.editCategoryIndex = -1 // Reset edit index for categories

@@ -1,19 +1,3 @@
-/** * Component for displaying user information and address information. * * Props: * - None * *
-Data: * - searchQuery: string - The search query for address autocomplete. * - addresses: array -
-The list of addresses returned from the autocomplete API. * - addressDetails: object - The details
-of the selected address. * - loading: boolean - Indicates if the autocomplete API is currently
-loading. * - location: object - The longitude and latitude of the selected address. * - username:
-string - The username of the user. * - email: string - The email of the user. * - role: string - The
-role of the user. * - phone_number: string - The phone number of the user. * - edit: boolean -
-Indicates if the user information is in edit mode. * * Methods: * - fetchAddresses: Fetches the
-addresses from the autocomplete API based on the search query. * - debounce: Debounces a function to
-limit the number of calls within a certain time frame. * - selectAddress: Selects an address from
-the autocomplete suggestions and updates the address details. * - checkClear: Clears the address
-details and location. * - toggleEdit: Toggles the edit mode for user information. * - createItem:
-Redirects to the create item page. * * Lifecycle Hooks: * - created: Initializes the
-debouncedFetchAddresses method. * * @name AddressAutocomplete */
-
-
 <template>
   <v-card class="mb-5" outlined tile>
     <v-btn @click="createItem">Item/Category Management</v-btn>
@@ -155,11 +139,9 @@ export default {
   },
 
   methods: {
-    
     editProfile() {
-      let userData = user()  
+      let userData = user()
 
-    
       if (!userData.token) {
         alertStore.showError('You must be logged in to update your profile.')
         return
@@ -172,7 +154,7 @@ export default {
         city: this.addressDetails.city,
         state: this.addressDetails.state,
         zipcode: this.addressDetails.zipcode
-      });
+      })
 
       let config = {
         method: 'post',
@@ -180,24 +162,21 @@ export default {
         url: 'http://127.0.0.1:5000/users_bp/editProfile',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ` + userData.getToken,  
+          Authorization: `Bearer ` + userData.getToken
         },
         data: data
-      };
+      }
 
-      axios.request(config)
-        .then(response => {
+      axios
+        .request(config)
+        .then((response) => {
           console.log(JSON.stringify(response.data))
-
         })
-        .catch(error => {
+        .catch((error) => {
           // Handle error
-          console.error("Error updating profile:", error);
-        });
-    }, 
-
-
-
+          console.error('Error updating profile:', error)
+        })
+    },
 
     /**
      * Fetches addresses based on the search query.
@@ -256,25 +235,26 @@ export default {
     },
 
     fetchUserProfile() {
-      let userData = user();
+      let userData = user()
       if (!userData.token) {
-        alertStore.showError('You must be logged in to view your profile.');
-        return;
+        alertStore.showError('You must be logged in to view your profile.')
+        return
       }
 
       const config = {
         headers: {
-          'Authorization': `Bearer ${userData.getToken}`, 
+          Authorization: `Bearer ${userData.getToken}`
         }
-      };
+      }
 
-      axios.get('http://127.0.0.1:5000/users_bp/getProfile', config)
-        .then(response => {
-          const data = response.data;
-          this.username = data.username;
-          this.email = data.email;
-          this.role = data.role;
-          this.phone_number = data.phone_number;
+      axios
+        .get('http://127.0.0.1:5000/users_bp/getProfile', config)
+        .then((response) => {
+          const data = response.data
+          this.username = data.username
+          this.email = data.email
+          this.role = data.role
+          this.phone_number = data.phone_number
 
           this.addressDetails = {
             address: data.address,
@@ -282,14 +262,13 @@ export default {
             city: data.city,
             state: data.state,
             zipcode: data.zipcode
-          };
+          }
         })
-        .catch(error => {
-          console.error("Error fetching user profile:", error);
-          
-        });
+        .catch((error) => {
+          console.error('Error fetching user profile:', error)
+        })
     },
-  
+
     /**
      * Clears the address details and location.
      */
@@ -309,15 +288,13 @@ export default {
     /**
      * Toggles the edit mode.
      */
-     async toggleEdit() {
-    if (this.edit) {      
-      await this.editProfile();
-    }
-    this.edit = !this.edit; 
-  }
+    async toggleEdit() {
+      if (this.edit) {
+        await this.editProfile()
+      }
+      this.edit = !this.edit
+    },
 
-
-,
     /**
      * Redirects to the create item page.
      */

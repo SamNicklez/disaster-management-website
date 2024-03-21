@@ -11,7 +11,7 @@ export default {
 <template>
   <div class="card">
     Test
-    <br>
+    <br />
     EVENT ID {{ event_id }}
   </div>
 </template>
