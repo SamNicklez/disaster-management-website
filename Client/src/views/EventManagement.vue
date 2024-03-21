@@ -31,7 +31,7 @@
 
     <v-dialog v-model="showEventDialog" max-width="800px">
       <v-card>
-        <v-card-title>Event Management</v-card-title>
+        <v-card-title>Add an Event</v-card-title>
         <v-card-text>
           <v-text-field v-model="newEvent.event_name" label="Event Name" outlined></v-text-field>
           <v-textarea v-model="newEvent.description" label="Description" outlined></v-textarea>
@@ -56,7 +56,7 @@
             </v-list-item>
           </v-list>
           <v-autocomplete
-            v-model="chips"
+            v-model="newEvent.item_names"
             :items="items"
             label="Items allowed to be requested"
             chips
@@ -64,13 +64,7 @@
             multiple
           >
             <template v-slot:selection="{ attrs, item, select, selected }">
-              <v-chip
-                v-bind="attrs"
-                :model-value="selected"
-                closable
-                @click="select"
-                @click:close="remove(item)"
-              >
+              <v-chip v-bind="attrs" :model-value="selected" closable @click="select">
                 <strong>{{ item }}</strong
                 >&nbsp;
                 <span>(interest)</span>
@@ -81,7 +75,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="resetEventDialog()">Cancel</v-btn>
-          <v-btn color="blue darken-1" text @click="addEditEvent()">Save</v-btn>
+          <v-btn color="blue darken-1" text @click="addEvent()">Save</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -95,6 +89,8 @@ import { alertStore } from '../stores/alert.js'
 
 export default {
   data: () => ({
+    sortBy: 'start_date',
+    sortDesc: false,
     search: '',
     events: [],
     showEventDialog: false,
@@ -118,11 +114,10 @@ export default {
       { title: 'Event Location', key: 'location' },
       { title: 'Event Date', key: 'start_date', sortable: true },
       { title: 'Event Description', key: 'showable_description', sortable: false },
-      { title: 'Actions', key: 'action', sortable: false },
+      { title: 'Actions', key: 'action', sortable: false }
     ],
     searchQuery: '',
     addresses: [],
-    chips: [],
     items: []
   }),
   computed: {
@@ -189,30 +184,6 @@ export default {
     confirmDelete() {
       console.log('Deleting event')
     },
-    editEvent(event) {
-        let userData = user()
-        let token = userData.token
-        this.newEvent = { ...event }
-        console.log(this.newEvent)
-        let config = {
-          method: 'get',
-          maxBodyLength: Infinity,
-          url: 'http://127.0.0.1:5000/event/GetEventById?event_id=' + event.event_id,
-          headers: {
-            Authorization:
-              'Bearer ' + token
-          }
-        }
-        axios
-          .request(config)
-          .then((response) => {
-            this.chips = response.data.event.items
-            this.showEventDialog = true
-          })
-          .catch((error) => {
-            alertStore.showError(error.message)
-          })
-    },
     resetEventDialog() {
       this.newEvent = { name: '', date: '', description: '' }
       this.showEventDialog = false
@@ -277,15 +248,63 @@ export default {
       const year = date.getFullYear()
       return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`
     },
-    remove(item) {
-      this.chips.splice(this.chips.indexOf(item), 1)
-    },
     truncateName(name, maxLength) {
       if (!name) return name
       if (name.length > maxLength) {
         return name.substring(0, maxLength) + '...'
       }
       return name
+    },
+    addEvent() {
+      if (
+        this.newEvent.event_name === '' ||
+        this.newEvent.description === '' ||
+        this.newEvent.location === '' ||
+        this.newEvent.item_names.length === 0
+      ) {
+        this.showEventDialog = false
+        alertStore.showError('Empty fields are not allowed')
+      } else {
+        let userData = user()
+        let token = userData.token
+        let data = JSON.stringify({
+          event_name: this.newEvent.event_name,
+          location: this.newEvent.location,
+          latitude: this.newEvent.lattiude,
+          longitude: this.newEvent.longitude,
+          description: this.newEvent.description,
+          item_names: this.newEvent.item_names
+        })
+
+        let config = {
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: 'http://127.0.0.1:5000/event/CreateEvent',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + token
+          },
+          data: data
+        }
+
+        axios
+          .request(config)
+          .then(() => {
+            this.events.push({
+              event_name: this.newEvent.event_name,
+              location: this.newEvent.location,
+              start_date: new Date().toLocaleDateString(),
+              description: this.newEvent.description,
+              showable_description: this.truncateName(this.newEvent.description, 20)
+            })
+            alertStore.showSuccess('Event added successfully')
+            this.showEventDialog = false
+          })
+          .catch((error) => {
+            this.showEventDialog = false
+            alertStore.showError(error.message)
+          })
+      }
     }
   }
 }

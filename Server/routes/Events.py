@@ -110,7 +110,7 @@ def get_all_events():
                 "latitude": event[3],
                 "longitude": event[4],
                 "start_date": event[5],
-                "description": event[6]
+                "description": event[7]
             }
             serialized_events.append(serialized_event)
 
