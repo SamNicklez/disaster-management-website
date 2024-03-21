@@ -1,44 +1,29 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
-import EventView from '@/views/EventView.vue'
+import { createRouter, createWebHistory } from 'vue-router'
+import EventView from '../../views/EventView.vue'
+
+const routes = [
+  { path: '/event/:id', component: EventView }
+]
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes
+})
 
 describe('EventView.vue', () => {
-  let wrapper
-  const mockRoute = {
-    params: {
-      event: {
-        name: 'Sample Event',
-        location: 'Sample Location',
-        date: '2024-02-28',
-        time: '10:00',
-        description: 'This is a sample event description.'
-      }
-    }
-  }
-  const mockRouter = {
-    push: vi.fn()
-  }
+  it('sets event_id from route params on creation', async () => {
+    router.push('/event/123')
+    await router.isReady()
 
-  beforeEach(() => {
-    wrapper = mount(EventView, {
+    const wrapper = mount(EventView, {
       global: {
-        mocks: {
-          $route: mockRoute,
-          $router: mockRouter
-        }
+        plugins: [router]
       }
     })
-  })
 
-  it('displays event details correctly', () => {
-    expect(wrapper.text()).toContain('Sample Event')
-    expect(wrapper.text()).toContain('Sample Location')
-    expect(wrapper.text()).toContain('2024-02-28')
-    expect(wrapper.text()).toContain('10:00')
-    expect(wrapper.text()).toContain('This is a sample event description.')
-  })
-
-  it('loads event details on creation', () => {
-    expect(wrapper.vm.event).toEqual(mockRoute.params.event)
+    // Check if event_id is set correctly
+    expect(wrapper.vm.event_id).toBe('123')
   })
 })

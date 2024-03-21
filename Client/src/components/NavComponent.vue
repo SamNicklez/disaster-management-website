@@ -72,6 +72,7 @@ export default {
      */
     performSearch() {
       this.$router.push({ name: 'search', params: { query: this.searchQuery } })
+      this.searchQuery = ''
     },
     /**
      * Open the profile page
