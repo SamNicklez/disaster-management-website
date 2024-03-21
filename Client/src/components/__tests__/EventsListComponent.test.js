@@ -55,9 +55,11 @@ describe('EventsListComponent.vue', () => {
           plugins: [router]
         }
       })
-
       const formattedDate = wrapper.vm.formatDate('2023-03-21')
-      expect(formattedDate).toBe('03/20/2023' || '03/21/2023')
+      const expectedDates = ['03/21/2023', '03/20/2023'] // Extendable to more dates if necessary
+
+      // Check if the formatted date is one of the expected dates
+      expect(expectedDates.includes(formattedDate)).toBe(true)
     })
   })
 
@@ -119,8 +121,8 @@ describe('EventsListComponent.vue', () => {
     expect(mockRouterPush).toHaveBeenCalledWith({
       name: 'event',
       params: {
-        id: testId,
-      },
+        id: testId
+      }
     })
   })
 })
