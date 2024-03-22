@@ -7,7 +7,9 @@ admin_auth = HTTPTokenAuth()
 token_auth = HTTPTokenAuth()
 recipient_auth = HTTPTokenAuth()
 donor_auth = HTTPTokenAuth()
-    
+
+
+# NOTE TO ALL, THE VERIFY FUNCTIONS ALSO RETURN TRUE IF THE USER IS AN ADMIN
 
 @token_auth.verify_token
 def verify_token(token):
@@ -61,7 +63,7 @@ def verify_status(token):
     """
     try:
         decoded_token = jwt.decode(token, "secret", algorithms=["HS256"])
-        if(decoded_token["RoleID"] == 3):
+        if(decoded_token["RoleID"] == 3 or decoded_token["RoleID"] == 1):
             return True
         else:
             return False
@@ -81,7 +83,7 @@ def verify_status(token):
     """
     try:
         decoded_token = jwt.decode(token, "secret", algorithms=["HS256"])
-        if(decoded_token["RoleID"] == 2):
+        if(decoded_token["RoleID"] == 2 or decoded_token["RoleID"] == 1):
             return True
         else:
             return False

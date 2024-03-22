@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request, session
 from routes import token_auth
 from routes import admin_auth
+from routes import donor_auth
 from models.Users import User
 from models.Roles import Role
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -156,6 +157,21 @@ def verify():
         print(f"Error: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
     
+@users_bp.route('/verifyDonor', methods=['POST'])
+@donor_auth.login_required
+def verifyDonor():
+    """
+    Verify a donor user.
+
+    Outputs:
+    - If the donor user is verified successfully, returns a JSON object with a success message.
+    - If there is an internal server error, returns a JSON object with an error message.
+    """
+    try:
+        return jsonify({"message": "User verified successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": "Internal Server Error"}), 500
+    
 @users_bp.route('/editProfile', methods=['POST'])
 def editProfile():
     """
@@ -195,6 +211,8 @@ def editProfile():
     except Exception as e:
         print(str(e))
         return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500
+    
+    
 @users_bp.route('/getProfile', methods=['GET'])
 def getProfile():
     auth_header = request.headers.get('Authorization')

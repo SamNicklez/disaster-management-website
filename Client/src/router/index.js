@@ -144,6 +144,32 @@ const router = createRouter({
       }
     },
     {
+      path: '/pledge',
+      name: 'pledge',
+      component: () => import('../views/PledgeView.vue'),
+      beforeEnter: (to, from, next) => {
+        let userData = user()
+        let config = {
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: 'http://127.0.0.1:5000/users_bp/verifyUser',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + userData.getToken
+          }
+        }
+
+        axios
+          .request(config)
+          .then(() => {
+            next()
+          })
+          .catch(() => {
+            next('/login')
+          })
+      }
+    },
+    {
       path: '/:catchAll(.*)',
       name: '404',
       component: () => import('../views/NotFoundView.vue')
