@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
-import MyComponent from '@/views/EventManagement.vue'
+import EventManagement from '@/views/EventManagement.vue'
 import { createPinia, setActivePinia } from 'pinia'
 
 vi.mock('@/stores/user', () => ({
@@ -17,13 +17,13 @@ vi.mock('@/stores/alert', () => ({
   }
 }))
 
-describe('MyComponent', () => {
+describe('EventManagement', () => {
   let wrapper
 
   beforeEach(() => {
     const pinia = createPinia()
     setActivePinia(pinia)
-    wrapper = mount(MyComponent, {
+    wrapper = mount(EventManagement, {
       global: {
         plugins: [pinia]
       }
@@ -220,7 +220,7 @@ describe('MyComponent', () => {
     expect(wrapper.vm.addresses).toEqual([])
   })
   it('handles errors when the event deletion fails', async () => {
-    const wrapper = mount(MyComponent, {})
+    const wrapper = mount(EventManagement, {})
 
     await wrapper.setData({
       events: [{ event_id: '1', event_name: 'Test Event' }],
