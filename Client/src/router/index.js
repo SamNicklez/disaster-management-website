@@ -152,7 +152,7 @@ const router = createRouter({
         let config = {
           method: 'post',
           maxBodyLength: Infinity,
-          url: 'http://127.0.0.1:5000/users_bp/verifyUser',
+          url: 'http://127.0.0.1:5000/users_bp/verifyDonor',
           headers: {
             'Content-Type': 'application/json',
             Authorization: 'Bearer ' + userData.getToken

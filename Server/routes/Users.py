@@ -167,6 +167,7 @@ def verifyDonor():
     - If the donor user is verified successfully, returns a JSON object with a success message.
     - If there is an internal server error, returns a JSON object with an error message.
     """
+    print("HERE")
     try:
         return jsonify({"message": "User verified successfully"}), 200
     except Exception as e:

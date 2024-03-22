@@ -42,13 +42,13 @@ def verify_status(token):
     """
     try:
         decoded_token = jwt.decode(token, "secret", algorithms=["HS256"])
-        if(decoded_token["RoleID"] == 1):
+        if (decoded_token["RoleID"] == 1):
             return True
         else:
             return False
     except Exception:
         return False
-        
+
 
 @recipient_auth.verify_token
 def verify_status(token):
@@ -63,12 +63,13 @@ def verify_status(token):
     """
     try:
         decoded_token = jwt.decode(token, "secret", algorithms=["HS256"])
-        if(decoded_token["RoleID"] == 3 or decoded_token["RoleID"] == 1):
+        if (decoded_token["RoleID"] == 3 or decoded_token["RoleID"] == 1):
             return True
         else:
             return False
     except Exception:
         return False
+
 
 @donor_auth.verify_token
 def verify_status(token):
@@ -83,10 +84,9 @@ def verify_status(token):
     """
     try:
         decoded_token = jwt.decode(token, "secret", algorithms=["HS256"])
-        if(decoded_token["RoleID"] == 2 or decoded_token["RoleID"] == 1):
+        if (decoded_token["RoleID"] == 2 or decoded_token["RoleID"] == 1):
             return True
         else:
             return False
     except Exception:
         return False
-        
