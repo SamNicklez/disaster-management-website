@@ -113,7 +113,8 @@ const router = createRouter({
             next()
           })
           .catch(() => {
-            next('/login')
+            alertStore.showInfo('You must be an admin to access that page','Access Error',true)
+            next('/')
           })
       }
     },
@@ -139,7 +140,8 @@ const router = createRouter({
             next()
           })
           .catch(() => {
-            next('/login')
+            alertStore.showInfo('You must be an admin to access that page','Access Error',true)
+            next('/')
           })
       }
     },
@@ -165,7 +167,8 @@ const router = createRouter({
             next()
           })
           .catch(() => {
-            next('/login')
+            alertStore.showInfo('You must be a donor to access that page','Access Error',true)
+            next('/')
           })
       }
     },
