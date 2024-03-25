@@ -1,6 +1,6 @@
 from stores import db
 
-class Category(db.Model):
+class Pledge(db.Model):
     __tablename__ = 'pledges'
     pledge_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, nullable=False)
