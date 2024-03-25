@@ -1,7 +1,6 @@
 from flask import Blueprint, jsonify, request
 from stores import db
 from models.Items import Item
-from models.Items import Category
 from models.Pledges import Pledge
 from routes import donor_auth
 import jwt
