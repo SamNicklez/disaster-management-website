@@ -10,6 +10,7 @@ import json
 
 events_bp = Blueprint('Event', __name__)
 
+
 @events_bp.route("/CreateEvent", methods=["POST"])
 @admin_auth.login_required
 def create_event():
@@ -22,7 +23,7 @@ def create_event():
         start_date = datetime.now()
         end_date = None
         description = data.get("description")
-        item_names = data.get("item_names", []) 
+        item_names = data.get("item_names", [])
 
         new_event = DisasterEvent(
             event_name=event_name,
@@ -45,7 +46,7 @@ def create_event():
                     item_id=item.ItemID
                 )
                 db.session.add(new_event_item)
-        
+
         db.session.commit()
 
         return jsonify({"message": "Event created successfully"}), 201
@@ -58,6 +59,7 @@ def create_event():
     except Exception as e:
         print(e)
         return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
+
 
 @events_bp.route("/CreateEventItem", methods=["POST"])
 @admin_auth.login_required
@@ -75,11 +77,11 @@ def create_event_item():
             item = Item.query.filter_by(ItemName=item_name).first()
             if item:
                 event_item = EventItem(
-                    event_id = event_id,
-                    item_id = item.ItemID
+                    event_id=event_id,
+                    item_id=item.ItemID
                 )
             db.session.add(event_item)
-        
+
         db.session.commit()
 
         return jsonify({"message": "Item names added successfully"}), 201
@@ -99,7 +101,7 @@ def get_all_events():
         cursor = conn.cursor()
         cursor.callproc('GetAllEvents')
         events = cursor.fetchall()
-        cursor.close() 
+        cursor.close()
         conn.close()
 
         serialized_events = []
@@ -120,9 +122,10 @@ def get_all_events():
     except Exception as e:
         return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
 
+
 @events_bp.route("/GetEventById", methods=["GET"])
 def get_event_by_id():
-    
+
     event_id = request.args.get('event_id', None)
     print(event_id)
     try:
@@ -130,7 +133,7 @@ def get_event_by_id():
         cursor = conn.cursor()
         cursor.callproc('GetEventById', [event_id])
         event = cursor.fetchone()
-        cursor.close() 
+        cursor.close()
         conn.close()
 
         if event:
@@ -146,48 +149,49 @@ def get_event_by_id():
             }
 
             return jsonify({"event": serialized_event}), 200
-        
+
         else:
             return jsonify({"error": "Event not found"}), 404
-    
+
     except Exception as e:
         return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
+
 
 @events_bp.route('/CreateItemRequest', methods=['POST'])
 def create_item_request():
     try:
         data = request.get_json()
-        
+
         event_id = data.get('event_id')
         user_id = data.get('user_id')
-        items = data.get('item_names')  
+        items = data.get('item_names')
 
         event = DisasterEvent.query.filter_by(event_id=event_id).first()
         if not event:
             return jsonify({'error': 'Event not found'}), 404
 
         donation_request = DonationRequest(
-            event_id=event_id, 
-            user_id=user_id, 
-            is_fulfilled=0, 
+            event_id=event_id,
+            user_id=user_id,
+            is_fulfilled=0,
             created_date=datetime.now()
         )
-        
+
         db.session.add(donation_request)
         db.session.commit()
 
         for item_data in items:
-            item_name = item_data.get('item_name') 
-            quantity = item_data.get('quantity')  
+            item_name = item_data.get('item_name')
+            quantity = item_data.get('quantity')
 
             item = Item.query.filter_by(ItemName=item_name).first()
             if not item:
-                db.session.rollback() 
+                db.session.rollback()
                 return jsonify({'error': f'Item "{item_name}" not found'}), 404
 
             new_item_request = ItemRequest(
                 request_id=donation_request.request_id,
-                item_id=item.ItemID,  
+                item_id=item.ItemID,
                 quantity=quantity
             )
             db.session.add(new_item_request)
@@ -199,7 +203,8 @@ def create_item_request():
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': 'An unexpected error occurred', 'details': str(e)}), 500
-    
+
+
 @events_bp.route('/DeleteEvent', methods=['GET'])
 @admin_auth.login_required
 def delete_event():
@@ -216,20 +221,31 @@ def delete_event():
     except Exception as e:
         return jsonify({'error': 'An unexpected error occurred', 'details': str(e)}), 500
 
+
 @events_bp.route('/search', methods=['GET'])
 def search_events():
     try:
         search_query = request.args.get('query', '')
-        print(search_query)
         if search_query:
-            search_statement = db.text("MATCH(event_name, description, location) AGAINST(:query IN NATURAL LANGUAGE MODE)")
-            results = DisasterEvent.query.filter(search_statement, DisasterEvent.end_date != None).params(query=search_query).all()
-            return jsonify([event.to_dict() for event in results])
+            boolean_search_query = f'{search_query}*'
+            search_statement = db.text(
+                # Natural Language Mode conditions
+                "(MATCH(event_name) AGAINST(:query IN NATURAL LANGUAGE MODE)) OR "
+                "(MATCH(description) AGAINST(:query IN NATURAL LANGUAGE MODE)) OR "
+                "(MATCH(location) AGAINST(:query IN NATURAL LANGUAGE MODE)) OR "
+                # Boolean Mode conditions (for partial matches)
+                "(MATCH(event_name) AGAINST(:boolean_query IN BOOLEAN MODE)) OR "
+                "(MATCH(description) AGAINST(:boolean_query IN BOOLEAN MODE)) OR "
+                "(MATCH(location) AGAINST(:boolean_query IN BOOLEAN MODE))"
+            )
+            results = DisasterEvent.query.filter(search_statement).params(query=search_query, boolean_query=boolean_search_query).all()
+            return jsonify([event.to_dict() for event in results if event.end_date is None])
         else:
             return jsonify({'error': 'No search query provided'}), 400
     except Exception as e:
         print(e)
         return jsonify({'error': 'An unexpected error occurred', 'details': str(e)}), 500
+
 
 @events_bp.route("/GetAllItemRequestsByEventId", methods=["GET"])
 def get_all_item_requests_by_event_id():
@@ -241,12 +257,12 @@ def get_all_item_requests_by_event_id():
         conn = db.engine.raw_connection()
         cursor = conn.cursor()
         cursor.callproc('GetRequestsByEventID', [event_id])
-        event_details = cursor.fetchone()  
+        event_details = cursor.fetchone()
         cursor.close()
         conn.close()
 
         if event_details:
-            
+
             serialized_event = {
                 "event_id": event_details[0],
                 "event_name": event_details[1],
@@ -257,13 +273,14 @@ def get_all_item_requests_by_event_id():
                 "end_date": event_details[6].strftime("%Y-%m-%d") if event_details[6] else None,
                 "description": event_details[7],
             }
-            
-            requests_data = json.loads(event_details[8]) if event_details[8] else []
+
+            requests_data = json.loads(
+                event_details[8]) if event_details[8] else []
             if requests_data and len(requests_data) == 1 and requests_data[0].get('request_id') is None:
                 requests_data = []
             serialized_event['requests'] = requests_data
             return jsonify(serialized_event), 200
-        
+
         else:
             return jsonify({"error": "Event not found"}), 404
 

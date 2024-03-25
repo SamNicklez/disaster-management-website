@@ -24,6 +24,7 @@ class DisasterEvent(db.Model):
             'latitude': self.latitude,
             'longitude': self.longitude,
             'start_date': self.start_date,
+            'end_date': self.end_date,
         }
 
 class EventItem(db.Model):
