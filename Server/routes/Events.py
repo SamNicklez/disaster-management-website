@@ -6,6 +6,7 @@ from models.Items import Item
 from routes import admin_auth
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
+import json
 
 events_bp = Blueprint('Event', __name__)
 
@@ -229,3 +230,42 @@ def search_events():
     except Exception as e:
         print(e)
         return jsonify({'error': 'An unexpected error occurred', 'details': str(e)}), 500
+
+@events_bp.route("/GetAllItemRequestsByEventId", methods=["GET"])
+def get_all_item_requests_by_event_id():
+    event_id = request.args.get('event_id', None)
+    if not event_id:
+        return jsonify({"error": "Event ID is required"}), 400
+
+    try:
+        conn = db.engine.raw_connection()
+        cursor = conn.cursor()
+        cursor.callproc('GetRequestsByEventID', [event_id])
+        event_details = cursor.fetchone()  
+        cursor.close()
+        conn.close()
+
+        if event_details:
+            
+            serialized_event = {
+                "event_id": event_details[0],
+                "event_name": event_details[1],
+                "location": event_details[2],
+                "latitude": event_details[3],
+                "longitude": event_details[4],
+                "start_date": event_details[5].strftime("%Y-%m-%d") if event_details[5] else None,
+                "end_date": event_details[6].strftime("%Y-%m-%d") if event_details[6] else None,
+                "description": event_details[7],
+            }
+            
+            requests_data = json.loads(event_details[8]) if event_details[8] else []
+            if requests_data and len(requests_data) == 1 and requests_data[0].get('request_id') is None:
+                requests_data = []
+            serialized_event['requests'] = requests_data
+            return jsonify(serialized_event), 200
+        
+        else:
+            return jsonify({"error": "Event not found"}), 404
+
+    except Exception as e:
+        return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
