@@ -23,7 +23,6 @@ def verify_token(token):
         bool: True if the token is valid, False otherwise.
     """
     try:
-        print(token)
         jwt.decode(token, "secret", algorithms=["HS256"])
         return True
     except Exception:

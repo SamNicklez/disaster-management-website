@@ -4,13 +4,10 @@ from models.Users import User
 from models.Roles import Role
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
-import uuid
 from stores import db
-from collections.abc import Mapping
 from datetime import datetime
 import random
 import smtplib, ssl
-from email.message import EmailMessage
 import os
 
 
