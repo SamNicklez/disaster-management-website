@@ -19,10 +19,10 @@ def pledge():
         data = request.get_json()
         item_name = data['item_name']
         quantity = data['quantity']   
-        item = Item.query.filter_by(item_name=item_name).first()
+        item = Item.query.filter_by(ItemName=item_name).first()
         if item is None:
             return jsonify({'error': 'Item not found'}), 404
-        new_pledge = Pledge(user_id=user_id, item_id=item.item_id, quantity_given=quantity)
+        new_pledge = Pledge(user_id=user_id, item_id=item.ItemID, quantity_given=quantity)
         db.session.add(new_pledge)
         db.session.commit()
 
