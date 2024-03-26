@@ -1,108 +1,76 @@
 <template>
-  <v-card class="mb-5" outlined tile>
-    <v-btn @click="createItem">Item/Category Management</v-btn>
-    <v-btn @click="routeEvent">Event Management</v-btn>
-    <v-card-title>User Information</v-card-title>
-    <v-container>
-      <v-row>
-        <v-col cols="12" md="6">
-          <v-text-field
-            label="Username"
-            v-model="username"
-            :readonly="!edit"
-            outlined
-            dense
-          ></v-text-field>
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-text-field
-            label="Email"
-            v-model="email"
-            :readonly="!edit"
-            outlined
-            dense
-          ></v-text-field>
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-text-field label="Role" v-model="role" :readonly="!edit" outlined dense></v-text-field>
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-text-field
-            label="Phone Number"
-            v-model="phone_number"
-            :readonly="!edit"
-            outlined
-            dense
-          ></v-text-field>
-        </v-col>
-      </v-row>
-      <v-btn :color="edit ? 'success' : 'primary'" @click="toggleEdit">
-        <v-icon left>{{ edit ? 'mdi-content-save' : 'mdi-pencil' }}</v-icon>
-        {{ edit ? 'Save' : 'Edit' }}
-      </v-btn>
-    </v-container>
-    <v-card-title>Address Information</v-card-title>
-    <v-container>
-      <v-text-field
-        v-if="edit"
-        class="mb-3"
-        :loading="loading"
-        outlined
-        clearable
-        label="Add Address"
-        v-model="searchQuery"
-        @keyup="debouncedFetchAddresses"
-        append-inner-icon="mdi-magnify"
-        @click:clear="checkClear"
-      ></v-text-field>
-      <v-list v-if="addresses.length" dense>
-        <v-list-item
-          v-for="address in addresses"
-          :key="address.properties.place_id"
-          @click="selectAddress(address)"
-        >
-          <v-list-item-content>
-            <v-list-item-title>{{ address.properties.formatted }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-      <v-text-field
-        readonly
-        outlined
-        label="Address"
-        v-model="addressDetails.address"
-        dense
-      ></v-text-field>
-      <v-text-field
-        v-if="edit"
-        outlined
-        label="Address Line 2"
-        v-model="addressDetails.addressLine2"
-        dense
-      ></v-text-field>
-      <v-text-field
-        readonly
-        outlined
-        label="City"
-        v-model="addressDetails.city"
-        dense
-      ></v-text-field>
-      <v-text-field
-        readonly
-        outlined
-        label="State"
-        v-model="addressDetails.state"
-        dense
-      ></v-text-field>
-      <v-text-field
-        readonly
-        outlined
-        label="Zipcode"
-        v-model="addressDetails.zipcode"
-        dense
-      ></v-text-field>
-    </v-container>
-  </v-card>
+  <v-btn @click="createItem">Item/Category Management</v-btn>
+  <v-btn @click="routeEvent">Event Management</v-btn>
+  <v-card-title>User Profile</v-card-title>
+  <v-container>
+    <v-row>
+      <v-col cols="12" md="6">
+        <v-text-field label="Email" v-model="email" :readonly="!edit" outlined dense></v-text-field>
+      </v-col>
+      <v-col cols="12" md="6">
+        <v-text-field label="Role" v-model="role" :readonly="!edit" outlined dense></v-text-field>
+      </v-col>
+    </v-row>
+  </v-container>
+  <v-card-title>Address Information</v-card-title>
+  <v-container>
+    <v-text-field
+      v-if="edit"
+      class="mb-3"
+      :loading="loading"
+      outlined
+      clearable
+      label="Add Address"
+      v-model="searchQuery"
+      @keyup="debouncedFetchAddresses"
+      append-inner-icon="mdi-magnify"
+      @click:clear="checkClear"
+    ></v-text-field>
+    <v-list v-if="addresses.length" dense>
+      <v-list-item
+        v-for="address in addresses"
+        :key="address.properties.place_id"
+        @click="selectAddress(address)"
+      >
+        <v-list-item-title>{{ address.properties.formatted }}</v-list-item-title>
+      </v-list-item>
+    </v-list>
+    <v-text-field
+      readonly
+      outlined
+      label="Address"
+      v-model="addressDetails.address"
+      dense
+    ></v-text-field>
+    <v-text-field
+      v-if="edit"
+      outlined
+      label="Address Line 2"
+      v-model="addressDetails.addressLine2"
+      dense
+    ></v-text-field>
+    <v-text-field readonly outlined label="City" v-model="addressDetails.city" dense></v-text-field>
+    <v-text-field
+      readonly
+      outlined
+      label="State"
+      v-model="addressDetails.state"
+      dense
+    ></v-text-field>
+    <v-text-field
+      readonly
+      outlined
+      label="Zipcode"
+      v-model="addressDetails.zipcode"
+      dense
+    ></v-text-field>
+    <v-btn :color="edit ? 'success' : 'primary'" @click="toggleEdit">
+      <v-icon left>{{ edit ? 'mdi-content-save' : 'mdi-pencil' }}</v-icon>
+      {{ edit ? 'Save' : 'Edit' }}
+    </v-btn>
+  </v-container>
+  <v-card-title>Address Information</v-card-title>
+  <v-container> </v-container>
 </template>
 
 <script>
@@ -127,10 +95,8 @@ export default {
         longitude: '',
         latitude: ''
       },
-      username: 'temp',
       email: '',
       role: '',
-      phone_number: '',
       edit: false
     }
   },
@@ -142,21 +108,16 @@ export default {
   methods: {
     editProfile() {
       let userData = user()
-
-      if (!userData.token) {
-        alertStore.showError('You must be logged in to update your profile.')
-        return
-      }
-
       let data = JSON.stringify({
         phone_number: this.phone_number,
         address: this.addressDetails.address,
         addressLine2: this.addressDetails.addressLine2,
         city: this.addressDetails.city,
         state: this.addressDetails.state,
-        zipcode: this.addressDetails.zipcode
+        zipcode: this.addressDetails.zipcode,
+        longitude: this.location.longitude,
+        latitude: this.location.latitude
       })
-
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
@@ -170,11 +131,12 @@ export default {
 
       axios
         .request(config)
-        .then((response) => {
-          console.log(JSON.stringify(response.data))
+        .then(() => {
+          window.scrollTo(0, 0)
+          alertStore.showSuccess('Profile updated successfully')
         })
-        .catch((error) => {
-          console.error('Error updating profile:', error)
+        .catch(() => {
+          alertStore.showError('Failed to edit profile')
         })
     },
 
@@ -217,10 +179,9 @@ export default {
      * @param {Object} address - The selected address object.
      */
     selectAddress(address) {
-      console.log('Selected Address')
       this.searchQuery = address.properties.formatted
+      console.log(address.geometry.coordinates)
       this.addresses = [] // Clear suggestions
-      // Example of parsing, adjust based on the actual API response and needs
       if (address.properties.street != null && address.properties.housenumber != null) {
         this.addressDetails.address =
           address.properties.housenumber + ' ' + address.properties.street
@@ -232,40 +193,35 @@ export default {
       this.addressDetails.city = address.properties.city
       this.addressDetails.state = address.properties.state
       this.addressDetails.zipcode = address.properties.postcode
+      this.location.longitude = address.geometry.coordinates[0]
+      this.location.latitude = address.geometry.coordinates[1]
     },
 
     fetchUserProfile() {
       let userData = user()
-      if (!userData.token) {
-        alertStore.showError('You must be logged in to view your profile.')
-        return
-      }
-
-      const config = {
+      let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: 'http://127.0.0.1:5000/users_bp/getProfile',
         headers: {
-          Authorization: `Bearer ${userData.getToken}`
+          Authorization: 'Bearer ' + userData.getToken
         }
       }
-
       axios
-        .get('http://127.0.0.1:5000/users_bp/getProfile', config)
+        .request(config)
         .then((response) => {
-          const data = response.data
-          this.username = data.username
-          this.email = data.email
-          this.role = data.role
-          this.phone_number = data.phone_number
-
-          this.addressDetails = {
-            address: data.address,
-            addressLine2: data.addressLine2,
-            city: data.city,
-            state: data.state,
-            zipcode: data.zipcode
-          }
+          this.username = response.data.username
+          this.email = response.data.email
+          this.role = response.data.role
+          this.phone_number = response.data.phone_number
+          this.addressDetails.address = response.data.address
+          this.addressDetails.addressLine2 = response.data.addressLine2
+          this.addressDetails.city = response.data.city
+          this.addressDetails.state = response.data.state
+          this.addressDetails.zipcode = response.data.zipcode
         })
-        .catch((error) => {
-          console.error('Error fetching user profile:', error)
+        .catch(() => {
+          alertStore.showError('Failed to fetch user profile')
         })
     },
 

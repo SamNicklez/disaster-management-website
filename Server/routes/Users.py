@@ -67,6 +67,7 @@ def signup():
         db.session.commit()
         # Send user email for verification
         smtp_server = "smtp.gmail.com"
+
         port = 587  # For starttls
         sender_email = os.getenv("EMAIL")
         password = os.getenv("PASSWORD")
@@ -196,31 +197,34 @@ def editProfile():
     try:
         decoded = jwt.decode(token, "secret", algorithms=["HS256"])
         data = request.get_json()
+        print(data)
         
         user = User.query.filter_by(UserId = decoded["id"]).first()
         
         if not user:
             return jsonify({"error": "User not found"}), 404
-
-
-        if 'phone_number' in data:
+        if 'phone_number' in data and data['phone_number'] != '':
             user.PhoneNumber = data['phone_number']
-        if 'address' in data:
+        if 'address' in data and data['address'] != '':
             address = data.get('address', '')
             addressLine2 = data.get('addressLine2', '')
             user.Address = data['address'] + ' ' + data['addressLine2'] if addressLine2 else address
-        if 'city' in data:
+        if 'city' in data and data['city'] != '':
             user.City = data['city']
-        if 'state' in data:
+        if 'state' in data and data['state'] != '':
             user.State = data['state']
-        if 'zipcode' in data:
+        if 'zipcode' in data and data['zipcode'] != '':
             user.ZipCode = data['zipcode']
+        if 'latitude' in data and data['latitude'] != '':
+            user.Latitude = data['latitude']
+        if 'longitude' in data and data['longitude'] != '':
+            user.Longitude = data['longitude']
         
         db.session.commit()
         return jsonify({"message": "Profile updated successfully"}), 200
 
     except Exception as e:
-        print(str(e))
+        print(e)
         return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500
     
     

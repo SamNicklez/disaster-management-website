@@ -163,6 +163,7 @@ const router = createRouter({
         axios
           .request(config)
           .then(() => {
+            console.log(userData.getToken)
             next()
           })
           .catch(() => {
