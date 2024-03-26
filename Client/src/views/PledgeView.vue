@@ -1,10 +1,11 @@
 <template>
-  <v-container>
-    <v-form>
+  <v-container style="max-width: 60vw">
+    <v-form v-model="isFormValid">
       <v-autocomplete
         v-model="selectedItem"
         :items="item_names"
         label="Select an item to donate"
+        :rules = "[rules.text_required]"
         clearable
       ></v-autocomplete>
       <v-text-field v-model="itemDescription" label="Description" readonly></v-text-field>
@@ -18,7 +19,7 @@
         :rules="[rules.required, rules.integer, rules.positiveNumber]"
       ></v-text-field>
 
-      <v-btn color="primary" @click="submitDonation">Donate</v-btn>
+      <v-btn :disabled="!isFormValid" color="primary" @click="submitDonation">Donate</v-btn>
     </v-form>
   </v-container>
 </template>
@@ -35,7 +36,9 @@ export default {
     items: [],
     itemDescription: '',
     itemCategory: '',
+    isFormValid: false,
     rules: {
+      text_required: value => !!value || 'This field is required',
       required: (value) => !!value || 'Required.',
       integer: (value) => Number.isInteger(Number(value)) || 'Must be a whole number.',
       positiveNumber: (value) => value > 0 || 'Must be a positive number.'
@@ -74,30 +77,31 @@ export default {
     },
 
     submitDonation() {
-      let userData = user()
-      let data = JSON.stringify({
-        item_name: this.selectedItem,
-        quantity: this.quantity
-      })
-      let config = {
-        method: 'post',
-        maxBodyLength: Infinity,
-        url: 'http://127.0.0.1:5000/pledge/createPledge',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + userData.getToken
-        },
-        data: data
-      }
+      // let userData = user()
+      // let data = JSON.stringify({
+      //   item_name: this.selectedItem,
+      //   quantity: this.quantity
+      // })
+      // let config = {
+      //   method: 'post',
+      //   maxBodyLength: Infinity,
+      //   url: 'http://127.0.0.1:5000/pledge/createPledge',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     Authorization: 'Bearer ' + userData.getToken
+      //   },
+      //   data: data
+      // }
 
-      axios
-        .request(config)
-        .then(() => {
-          alertStore.showSuccess('Thank you for your donation! You will get a notification when and where you need to ship your supplies!')
-        })
-        .catch(() => {
-          alertStore.showError('Failed to submit donation')
-        })
+      // axios
+      //   .request(config)
+      //   .then(() => {
+      //     this.$router.push({ name: 'profile' })
+      //     alertStore.showSuccess('Thank you for your donation! You will get a notification when and where you need to ship your supplies!', 'Thanks!', true)
+      //   })
+      //   .catch(() => {
+      //     alertStore.showError('Failed to submit donation')
+      //   })
     },
     onItemSelect(itemName) {
       let item = this.items.find((item) => item.name === itemName)
