@@ -8,3 +8,13 @@ class Pledge(db.Model):
     quantity_given = db.Column(db.Integer, nullable=False)
     quantity_remaining = db.Column(db.Integer, nullable=False, default=0)
     is_fulfilled = db.Column(db.Integer, nullable=False, default=0)
+
+    def to_dict(self):
+        return {
+            'pledge_id': self.pledge_id,
+            'user_id': self.user_id,
+            'item_id': self.item_id,
+            'quantity_given': self.quantity_given,
+            'quantity_remaining': self.quantity_remaining,
+            'is_fulfilled': self.is_fulfilled
+        }

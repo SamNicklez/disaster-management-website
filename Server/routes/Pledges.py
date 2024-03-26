@@ -31,15 +31,15 @@ def pledge():
         return jsonify({'error': str(e)}), 500
     
 @pledges_bp.route('/getPledges', methods=['GET'])
-@donor_auth.login_required
+# @donor_auth.login_required
 def getPledges():
     try:
-        auth_header = request.headers.get('Authorization')
-        token = auth_header.split(" ")[1] if auth_header and auth_header.startswith('Bearer ') else None
-        if token is None:
-                return jsonify({"error": "User is not logged in"}), 401
-        user_id = (jwt.decode(token, "secret", algorithms=["HS256"]))["user_id"]
-        pledges = Pledge.query.filter_by(user_id=user_id).all()
+        # auth_header = request.headers.get('Authorization')
+        # token = auth_header.split(" ")[1] if auth_header and auth_header.startswith('Bearer ') else None
+        # if token is None:
+        #         return jsonify({"error": "User is not logged in"}), 401
+        # user_id = (jwt.decode(token, "secret", algorithms=["HS256"]))["user_id"]
+        pledges = Pledge.query.filter_by(user_id=1).all()
         return jsonify([pledge.to_dict() for pledge in pledges]), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
