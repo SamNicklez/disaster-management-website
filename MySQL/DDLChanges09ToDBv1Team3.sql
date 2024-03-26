@@ -58,7 +58,7 @@ CREATE TABLE `event` (
   `end_date` date DEFAULT NULL,
   `description` text,
   PRIMARY KEY (`event_id`),
-  FULLTEXT KEY `Event_Search` (`event_name`) /*!80000 INVISIBLE */,
+  FULLTEXT KEY `Event_Search` (`event_name`),
   FULLTEXT KEY `Location_Search` (`location`),
   FULLTEXT KEY `Description Search` (`description`)
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -662,4 +662,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-03-26  9:40:01
+-- Dump completed on 2024-03-26  9:47:58
