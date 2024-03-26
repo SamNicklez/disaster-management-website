@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 from stores import db
 from models.DisasterEvent import DisasterEvent, EventItem
 from models.DonationRequest import DonationRequest, ItemRequest
+from models.Response import Response, ResponseItem
 from models.Items import Item
 from routes import admin_auth
 from sqlalchemy.exc import SQLAlchemyError
@@ -208,7 +209,6 @@ def create_item_request():
 @events_bp.route('/DeleteEvent', methods=['GET'])
 @admin_auth.login_required
 def delete_event():
-    # Updates the event's end_date to the current date
     try:
         event_id = request.args.get('event_id')
         event = DisasterEvent.query.get(event_id)
@@ -283,6 +283,120 @@ def get_all_item_requests_by_event_id():
 
         else:
             return jsonify({"error": "Event not found"}), 404
+
+    except Exception as e:
+        return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
+
+@events_bp.route('/CreateResponse', methods=['POST'])
+def create_response():
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id')
+        request_id = data.get('request_id')
+        items = data.get('items') 
+        
+        new_response = Response(user_id=user_id, request_id=request_id)
+        db.session.add(new_response)
+        db.session.flush() 
+        
+        all_items_fulfilled = True
+        
+        requested_items = ItemRequest.query.filter_by(request_id=request_id).all()
+        requested_items_dict = {item.item_id: item.quantity for item in requested_items}
+
+        for item_data in items:
+            item_name = item_data.get('item_name')
+            quantity = item_data.get('quantity')
+
+            
+            item = Item.query.filter_by(ItemName=item_name).first()
+            if not item:
+                db.session.rollback()
+                return jsonify({'error': f'Item "{item_name}" not found'}), 404
+            
+            new_response_item = ResponseItem(response_id=new_response.response_id, item_id=item.ItemID, quantity=quantity)
+            db.session.add(new_response_item)
+
+            if item.ItemID in requested_items_dict and requested_items_dict[item.ItemID] > quantity:
+                all_items_fulfilled = False
+
+        if all_items_fulfilled and requested_items_dict:  
+            donation_request = DonationRequest.query.get(request_id)
+            if donation_request:
+                donation_request.is_fulfilled = True
+                db.session.add(donation_request)
+        
+        db.session.commit()
+        return jsonify({'message': 'Response created successfully'}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'An unexpected error occurred', 'details': str(e)}), 500
+
+@events_bp.route("/GetResponsesByRequestId", methods=["GET"])
+def get_responses_by_request_id():
+    request_id = request.args.get('request_id', None)
+    if not request_id:
+        return jsonify({"error": "Request ID is required"}), 400
+
+    try:
+        conn = db.engine.raw_connection()
+        cursor = conn.cursor()
+        cursor.callproc('GetResponsesByRequestIdJSON', [request_id])
+        results = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        responses = []
+        for result in results:
+            response_id, user_id, is_fulfilled, created_date, shipped_date, items_json = result
+            responses.append({
+                "response_id": response_id,
+                "user_id": user_id,
+                "is_fulfilled": bool(is_fulfilled),
+                "created_date": created_date.strftime("%Y-%m-%d %H:%M:%S") if created_date else None,
+                "shipped_date": shipped_date.strftime("%Y-%m-%d %H:%M:%S") if shipped_date else None,
+                "items": json.loads(items_json)  
+            })
+
+        if responses:
+            return jsonify({"responses": responses}), 200
+        else:
+            return jsonify({"error": "No responses found for the given request ID"}), 404
+
+    except Exception as e:
+        return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
+
+@events_bp.route("/GetResponsesByEventID", methods=["GET"])
+def get_responses_by_event_id():
+    event_id = request.args.get('event_id', None)
+    if not event_id:
+        return jsonify({"error": "Event ID is required"}), 400
+
+    try:
+        conn = db.engine.raw_connection()
+        cursor = conn.cursor()
+        cursor.callproc('GetResponsesByEventID', [event_id])
+        results = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        responses = []
+        for result in results:
+            response_id, request_id, user_id, is_fulfilled, created_date, shipped_date, items_json = result
+            responses.append({
+                "response_id": response_id,
+                "request_id": request_id,
+                "user_id": user_id,
+                "is_fulfilled": bool(is_fulfilled),
+                "created_date": created_date.strftime("%Y-%m-%d %H:%M:%S") if created_date else None,
+                "shipped_date": shipped_date.strftime("%Y-%m-%d %H:%M:%S") if shipped_date else None,
+                "items": json.loads(items_json)
+            })
+
+        if responses:
+            return jsonify({"responses": responses}), 200
+        else:
+            return jsonify({"error": "No responses found for the given event ID"}), 404
 
     except Exception as e:
         return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
