@@ -1,7 +1,5 @@
 from flask import Blueprint, jsonify, request, session
-from routes import token_auth
-from routes import admin_auth
-from routes import donor_auth
+from routes import token_auth, admin_auth, donor_auth
 from models.Users import User
 from models.Roles import Role
 from werkzeug.security import generate_password_hash, check_password_hash
