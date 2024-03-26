@@ -84,9 +84,10 @@ def verify_status(token):
     """
     try:
         decoded_token = jwt.decode(token, "secret", algorithms=["HS256"])
+        print(decoded_token)
         if (decoded_token["RoleID"] == 2 or decoded_token["RoleID"] == 1):
             return True
         else:
             return False
-    except Exception:
+    except Exception as e:
         return False

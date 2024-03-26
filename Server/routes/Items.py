@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 from stores import db
 from models.Items import Item
 from models.Items import Category
-from routes import admin_auth
+from routes import admin_auth, donor_auth
 
 items_bp = Blueprint('Items', __name__)
 
@@ -149,7 +149,7 @@ def get_items():
         return jsonify({"error": "Internal Server Error"}), 500
     
 @items_bp.route('/GetAllItems', methods=['GET'])
-@admin_auth.login_required
+@donor_auth.login_required
 def get_all_items():    
     """
     Get all items with their corresponding category names.

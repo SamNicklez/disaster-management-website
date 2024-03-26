@@ -15,7 +15,7 @@ def pledge():
         token = auth_header.split(" ")[1] if auth_header and auth_header.startswith('Bearer ') else None
         if token is None:
                 return jsonify({"error": "User is not logged in"}), 401
-        user_id = (jwt.decode(token, "secret", algorithms=["HS256"]))["user_id"]
+        user_id = (jwt.decode(token, "secret", algorithms=["HS256"]))["id"]
         data = request.get_json()
         item_name = data['item_name']
         quantity = data['quantity']   
@@ -28,6 +28,7 @@ def pledge():
 
         return jsonify({'message': 'Pledge created successfully'}), 200
     except Exception as e:
+        print(e)
         return jsonify({'error': str(e)}), 500
     
 @pledges_bp.route('/getPledges', methods=['GET'])

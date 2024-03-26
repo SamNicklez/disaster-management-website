@@ -160,7 +160,6 @@ const router = createRouter({
             Authorization: 'Bearer ' + userData.getToken
           }
         }
-
         axios
           .request(config)
           .then(() => {
