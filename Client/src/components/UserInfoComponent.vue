@@ -70,7 +70,12 @@
     </v-btn>
   </v-container>
   <v-card-title>Address Information</v-card-title>
-  <v-container> </v-container>
+  <v-container v-if="role == 'Donor'"> 
+    Is Donor
+  </v-container>
+  <v-container v-if="role == 'Recipient'"> 
+    Is Recipient
+  </v-container>
 </template>
 
 <script>

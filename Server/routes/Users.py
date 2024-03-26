@@ -185,6 +185,7 @@ def verifyRecipient():
     
     
 @users_bp.route('/editProfile', methods=['POST'])
+@token_auth.login_required
 def editProfile():
     """
     Edit a user's profile based on the provided fields.
@@ -229,6 +230,7 @@ def editProfile():
     
     
 @users_bp.route('/getProfile', methods=['GET'])
+@token_auth.login_required
 def getProfile():
     auth_header = request.headers.get('Authorization')
     token = auth_header.split(" ")[1] if auth_header and auth_header.startswith('Bearer ') else None
