@@ -315,29 +315,8 @@ def create_response():
         all_items_fulfilled = True
         
         requested_items = ItemRequest.query.filter_by(request_id=request_id).all()
-        requested_items_dict = {item.item_id: item.quantity for item in requested_items}
 
-        for item_data in items:
-            item_name = item_data.get('item_name')
-            quantity = item_data.get('quantity')
 
-            
-            item = Item.query.filter_by(ItemName=item_name).first()
-            if not item:
-                db.session.rollback()
-                return jsonify({'error': f'Item "{item_name}" not found'}), 404
-            
-            new_response_item = ResponseItem(response_id=new_response.response_id, item_id=item.ItemID, quantity=quantity)
-            db.session.add(new_response_item)
-
-            if item.ItemID in requested_items_dict and requested_items_dict[item.ItemID] > quantity:
-                all_items_fulfilled = False
-
-        if all_items_fulfilled and requested_items_dict:  
-            donation_request = DonationRequest.query.get(request_id)
-            if donation_request:
-                donation_request.is_fulfilled = True
-                db.session.add(donation_request)
         
         db.session.commit()
         return jsonify({'message': 'Response created successfully'}), 201

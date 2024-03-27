@@ -1,31 +1,51 @@
 <template>
-  <div>
-    <h3>Event Details</h3>
-    <div class="request">
-      <h4>Event ID: {{ event_id }}</h4>
-      <h4>Role: {{ role }}</h4>
+  <v-container style="max-width: 60%">
+    <div>
+      <h3>Event Details</h3>
+      <div class="request">
+        <h4>Disaster Type: {{ eventDetails.name }}</h4>
+        <h4>Location: {{ eventDetails.location }}</h4>
+        <h4>Started on: {{ eventDetails.date }}</h4>
+        <div v-if="role == 'Recipiant' || role == 'Admin'">
+          <v-btn color="primary" variant="outlined" style="margin-top: 1.5vh" @click="requestItems()">Request Items</v-btn>
+        </div>
+      </div>
     </div>
-  </div>
-  <div v-if="requests.length > 0">
-      <v-card-title>Current Items Needed</v-card-title>
+    <div v-if="requests.length > 0">
+      <v-card-title class="text-h5 py-3">Current Items Needed</v-card-title>
       <v-row>
-      <v-col cols="12" md="6" lg="3" v-for="(request, request_id) in requests" :key="request_id" class="my-2">
-        <v-card style="background-color: #f5f5f5;">
-          <v-card-title>Item Needed: {{ request.item_name }}</v-card-title>
-          <v-card-subtitle>Requested On: {{ request.date_requested }}</v-card-subtitle>
-          <v-card-text>
-            <div>Quantity Required: {{ request.quantity }}</div>
-          </v-card-text>
-          <div v-if="role == 'Donor' || role == 'Admin'">
-            <v-btn @click="pledgeItem(request.request_id, request.item_id, request.quantity)" color="primary">Pledge Item</v-btn>
-          </div>
-        </v-card>
-      </v-col>
+        <v-col
+          cols="12"
+          md="6"
+          v-for="(request, request_id) in requests"
+          :key="request_id"
+          class="my-2"
+        >
+          <v-card class="pa-3" elevation="2" style="background-color: #f5f5f5">
+            <v-card-title class="headline mb-1">Item Needed: {{ request.item_name }}</v-card-title>
+            <v-card-subtitle class="grey--text font-weight-light mb-2"
+              >Requested On: {{ request.date_requested }}</v-card-subtitle
+            >
+            <v-card-text class="body-1">
+              <div>Quantity Required: {{ request.quantity }}</div>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn
+                v-if="role == 'Donor' || role == 'Admin'"
+                @click="pledgeItem(request)"
+                color="primary"
+                variant="outlined"
+                >Fill Request</v-btn
+              >
+            </v-card-actions>
+          </v-card>
+        </v-col>
       </v-row>
     </div>
     <div v-else>
-      <v-card-title>No items needed at this time.</v-card-title>
+      <v-card-title>No items needed at this time, please check back later.</v-card-title>
     </div>
+  </v-container>
 </template>
 
 <script>
@@ -85,7 +105,7 @@ export default {
       if (!dateString) return 'N/A'
       const date = new Date(dateString)
       return date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
-    },
+    }
   },
   created() {
     this.event_id = this.$route.params.id
@@ -102,7 +122,6 @@ export default {
           Authorization: 'Bearer ' + token
         }
       }
-
       axios
         .request(config)
         .then((response) => {
@@ -148,5 +167,18 @@ export default {
 h3,
 h4 {
   color: #333;
+}
+
+.v-card {
+  transition: box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.v-card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.v-btn {
+  margin-top: auto; /* Aligns button to bottom if card content varies in height */
 }
 </style>
