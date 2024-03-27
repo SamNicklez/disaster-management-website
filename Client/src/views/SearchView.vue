@@ -51,7 +51,6 @@ export default {
       axios
         .request(config)
         .then((response) => {
-          console.log(response.data)
           this.eventData = response.data
         })
         .catch(() => {

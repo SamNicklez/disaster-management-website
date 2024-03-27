@@ -84,7 +84,7 @@ const router = createRouter({
     {
       path: '/search/:query',
       name: 'search',
-      component: () => import('../views/SearchView.vue')
+      component: () => import('../views/SearchView.vue'),
     },
     {
       path: '/logout',

@@ -14,7 +14,7 @@
               </div>
               <br />
               <div>{{ this.formatDate(event.start_date) || 'Date Not Found' }}</div>
-              <div>{{ this.truncateName(event.description, 60) || 'No Description' }}</div>
+              <div>{{ this.truncateName(event.description, 75) || 'No Description' }}</div>
             </v-card-text>
           </v-card>
         </v-col>
