@@ -204,8 +204,6 @@ def editProfile():
         
         if not user:
             return jsonify({"error": "User not found"}), 404
-        if 'phone_number' in data and data['phone_number'] != '':
-            user.PhoneNumber = data['phone_number']
         if 'address' in data and data['address'] != '':
             address = data.get('address', '')
             addressLine2 = data.get('addressLine2', '')

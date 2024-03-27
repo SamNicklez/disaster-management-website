@@ -20,6 +20,6 @@ import UserInfoComponent from '@/components/UserInfoComponent.vue'
 
 <style scoped>
 #card {
-  width: 65%;
+  width: 60%;
 }
 </style>

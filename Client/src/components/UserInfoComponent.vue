@@ -1,6 +1,4 @@
 <template>
-  <v-btn @click="createItem">Item/Category Management</v-btn>
-  <v-btn @click="routeEvent">Event Management</v-btn>
   <v-card-title>User Profile</v-card-title>
   <v-container>
     <v-row>
@@ -69,12 +67,49 @@
       {{ edit ? 'Save' : 'Edit' }}
     </v-btn>
   </v-container>
-  <v-card-title>Address Information</v-card-title>
-  <v-container v-if="role == 'Donor'"> 
-    Is Donor
-  </v-container>
-  <v-container v-if="role == 'Recipient'"> 
-    Is Recipient
+  <div v-if="role == 'Donor' || 'Admin'">
+    <div v-if="activePledges.length != 0">
+      <v-card-title>Your Active Pledges</v-card-title>
+      <v-row>
+      <v-col cols="12" md="6" lg="4" v-for="(pledge, pledge_id) in activePledges" :key="pledge_id" class="my-2">
+        <v-card style="background-color: #f5f5f5;">
+          <v-card-title>{{ pledge.item_name }}</v-card-title>
+          <v-card-text>
+            <div>Quantity Donated: {{ pledge.quantity_given }}</div>
+            <div>Quantity Remaining: {{ pledge.quantity_remaining }}</div>
+          </v-card-text>
+          <v-btn color="primary" @click="cancelpledge(pledge_id)">Cancel Pledge</v-btn>
+        </v-card>
+      </v-col>
+      </v-row>
+    </div>
+    <div v-if="pastPledges.length != 0">
+      <v-card-title>Your Past Pledges</v-card-title>
+      <v-row>
+      <v-col cols="12" md="6" lg="3" v-for="(pledge, pledge_id) in pastPledges" :key="pledge_id" class="my-2">
+        <v-card style="background-color: #f5f5f5;">
+          <v-card-title>{{ pledge.item_name }}</v-card-title>
+          <v-card-text>
+            <div>Quantity Given: {{ pledge.quantity_given }}</div>
+            <div>Quantity Remaining: {{ pledge.quantity_remaining }}</div>
+          </v-card-text>
+        </v-card>
+      </v-col>
+      </v-row>
+    </div>
+  </div>
+  <div v-if="role == 'Recipient' || 'Admin'">
+    <div v-if="activeRequests != 0">
+      <v-card-title>Your Requests</v-card-title>
+    </div>
+    <div v-if="pastRequests != 0">
+      <v-card-title>Your Past Requests</v-card-title>
+    </div>
+  </div>
+  <v-card-title v-if="role == 'Admin'">Admin Settings</v-card-title>
+  <v-container v-if="role == 'Admin'">
+    <v-btn @click="createItem" color="primary">Item/Category Management</v-btn>
+    <v-btn @click="routeEvent" color="primary">Event Management</v-btn>
   </v-container>
 </template>
 
@@ -102,11 +137,15 @@ export default {
       },
       email: '',
       role: '',
-      edit: false
+      edit: false,
+      activePledges: [],
+      activeRequests: [],
+      pastRequests: [],
+      pastPledges: []
     }
   },
   created() {
-    this.debouncedFetchAddresses = this.debounce(this.fetchAddresses, 500)
+    this.debouncedFetchAddresses = this.debounce(this.fetchAddresses, 250)
     this.fetchUserProfile()
   },
 
@@ -224,12 +263,56 @@ export default {
           this.addressDetails.city = response.data.city
           this.addressDetails.state = response.data.state
           this.addressDetails.zipcode = response.data.zipcode
+          if (response.data.role == 'Donor' || response.data.role == 'Admin') {
+            this.fetchDonorPledges()
+          }
+          if (response.data.role == 'Recipient' || response.data.role == 'Admin') {
+            this.fetchRecipientRequests()
+          }
         })
         .catch(() => {
           alertStore.showError('Failed to fetch user profile')
         })
     },
+    /**
+     * Fetches the donor's pledges.
+     */
+    fetchDonorPledges() {
+      let userData = user()
+      let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: 'http://127.0.0.1:5000/pledge/getUserPledges',
+        headers: {
+          Authorization: 'Bearer ' + userData.getToken
+        }
+      }
 
+      axios
+        .request(config)
+        .then((response) => {
+          for (let i = 0; i < response.data.length; i++) {
+            if (response.data[i].is_fulfilled == 0) {
+              this.activePledges.push(response.data[i])
+            } else {
+              this.pastPledges.push(response.data[i])
+            }
+          }
+          console.log(this.activePledges)
+        })
+        .catch(() => {
+          alertStore.showError('Failed to fetch user pledges')
+        })
+    },
+    /**
+     * Fetches the recipient's requests.
+     */
+    fetchRecipientRequests() {
+      let userData = user()
+    },
+    cancelpledge(pledge_id){
+      console.log(pledge_id)
+    },
     /**
      * Clears the address details and location.
      */

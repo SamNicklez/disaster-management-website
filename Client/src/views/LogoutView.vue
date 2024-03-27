@@ -4,7 +4,7 @@
       class="mx-auto pa-12 pb-8"
       elevation="8"
       rounded="lg"
-      style="max-width: 35em; margin-bottom: 10vh"
+      style="max-width: 50vh; margin-bottom: 50vh"
     >
       <div class="text-h5 text-center mb-8">Logout</div>
       <v-alert type="info" class="mb-8" dense> Are you sure you want to log out? </v-alert>

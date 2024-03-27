@@ -16,5 +16,5 @@ class Pledge(db.Model):
             'item_id': self.item_id,
             'quantity_given': self.quantity_given,
             'quantity_remaining': self.quantity_remaining,
-            'is_fulfilled': self.is_fulfilled
+            'is_fulfilled': self.is_fulfilled,
         }
