@@ -2,7 +2,7 @@ stages:
   - test
   - analyze
 
-client_unit_test:
+coverage_tests:
   stage: test
   image: node:latest
   script:
@@ -13,6 +13,7 @@ client_unit_test:
     paths:
       - Client/test-results.xml
       - Client/coverage
+      # - Server/coverage.xml
     expire_in: 1 week
 
 # server_unit_test:
