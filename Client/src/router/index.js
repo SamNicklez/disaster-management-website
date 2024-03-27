@@ -55,7 +55,6 @@ const router = createRouter({
             Authorization: 'Bearer ' + userData.getToken
           }
         }
-
         axios
           .request(config)
           .then(() => {
@@ -69,7 +68,27 @@ const router = createRouter({
     {
       path: '/event/:id',
       name: 'event',
-      component: () => import('../views/EventView.vue')
+      component: () => import('../views/EventView.vue'),
+      beforeEnter: (to, from, next) => {
+        let config = {
+          method: 'get',
+          maxBodyLength: Infinity,
+          url: 'http://127.0.0.1:5000/event/isEvent?event_id=' + to.params.id,
+        }
+        axios
+          .request(config)
+          .then((response) => {
+            if (response.data['is_event'] === false) {
+              next('/404')
+            }
+            else {
+              next()
+            }
+          })
+          .catch(() => {
+            next('/404')
+          })
+      }
     },
     {
       path: '/donation/:id',
@@ -84,7 +103,7 @@ const router = createRouter({
     {
       path: '/search/:query',
       name: 'search',
-      component: () => import('../views/SearchView.vue'),
+      component: () => import('../views/SearchView.vue')
     },
     {
       path: '/logout',
@@ -113,7 +132,7 @@ const router = createRouter({
             next()
           })
           .catch(() => {
-            alertStore.showInfo('You must be an admin to access that page','Access Error',true)
+            alertStore.showInfo('You must be an admin to access that page', 'Access Error', true)
             next('/')
           })
       }
@@ -140,7 +159,7 @@ const router = createRouter({
             next()
           })
           .catch(() => {
-            alertStore.showInfo('You must be an admin to access that page','Access Error',true)
+            alertStore.showInfo('You must be an admin to access that page', 'Access Error', true)
             next('/')
           })
       }
@@ -167,7 +186,7 @@ const router = createRouter({
             next()
           })
           .catch(() => {
-            alertStore.showInfo('You must be a donor to access that page','Access Error',true)
+            alertStore.showInfo('You must be a donor to access that page', 'Access Error', true)
             next('/')
           })
       }

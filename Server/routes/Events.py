@@ -4,9 +4,9 @@ from models.DisasterEvent import DisasterEvent, EventItem
 from models.DonationRequest import DonationRequest, ItemRequest
 from models.Response import Response, ResponseItem
 from models.Items import Item
-from routes import admin_auth
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
+from routes import admin_auth, donor_auth
 import json
 
 events_bp = Blueprint('Event', __name__)
@@ -94,6 +94,21 @@ def create_event_item():
     except Exception as e:
         return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
 
+@events_bp.route("/isEvent", methods=["GET"])
+def is_event():
+    event_id = request.args.get('event_id', None)
+    if not event_id:
+        return jsonify({"error": "Event ID is required"}), 400
+
+    try:
+        event = DisasterEvent.query.get(event_id)
+        if event:
+            return jsonify({"is_event": True}), 200
+        else:
+            return jsonify({"is_event": False}), 200
+
+    except Exception as e:
+        return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
 
 @events_bp.route("/GetAllEvents", methods=["GET"])
 def get_all_events():
@@ -267,10 +282,7 @@ def get_all_item_requests_by_event_id():
                 "event_id": event_details[0],
                 "event_name": event_details[1],
                 "location": event_details[2],
-                "latitude": event_details[3],
-                "longitude": event_details[4],
                 "start_date": event_details[5].strftime("%Y-%m-%d") if event_details[5] else None,
-                "end_date": event_details[6].strftime("%Y-%m-%d") if event_details[6] else None,
                 "description": event_details[7],
             }
 
@@ -288,6 +300,7 @@ def get_all_item_requests_by_event_id():
         return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
 
 @events_bp.route('/CreateResponse', methods=['POST'])
+@donor_auth.login_required
 def create_response():
     try:
         data = request.get_json()

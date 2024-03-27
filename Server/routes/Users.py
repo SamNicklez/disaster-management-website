@@ -7,7 +7,8 @@ import jwt
 from stores import db
 from datetime import datetime
 import random
-import smtplib, ssl
+import smtplib
+import ssl
 import os
 
 
@@ -30,21 +31,23 @@ def signin():
     """
     try:
         data = request.get_json()
-        
+
         user = User.query.filter_by(Email=data["email"]).first()
 
         if user and user.IsVerified != 1:
             return jsonify({"error": "User not verified"}), 405
         elif user and check_password_hash(user.Password, data["password"]) and user.IsVerified == 1:
-            encoded_token = jwt.encode({"id": user.UserId, "RoleID":user.RoleID, "DateCreated": datetime.now().isoformat()}, "secret", algorithm="HS256")
+            encoded_token = jwt.encode({"id": user.UserId, "RoleID": user.RoleID, "DateCreated": datetime.now(
+            ).isoformat()}, "secret", algorithm="HS256")
             return jsonify({"token": encoded_token}), 200
         else:
             return jsonify({"error": "Invalid email or password"}), 401
-    
+
     except Exception as e:
         print(f"Error: {str(e)}")
         return jsonify({"error": "Internal Server Error"}), 500
-    
+
+
 @users_bp.route('/signup', methods=['POST'])
 def signup():
     """
@@ -62,7 +65,8 @@ def signup():
         data = request.get_json()
         verify_token = random.randint(100000, 999999)
         hashed_password = generate_password_hash(data["password"])
-        new_user = User(Password=hashed_password, Email=data["email"],RoleID=data["roleid"], IsVerified=verify_token)
+        new_user = User(Password=hashed_password,
+                        Email=data["email"], RoleID=data["roleid"], IsVerified=verify_token)
         db.session.add(new_user)
         db.session.commit()
         # Send user email for verification
@@ -73,20 +77,21 @@ def signup():
         password = os.getenv("PASSWORD")
         context = ssl.create_default_context()
         try:
-            server = smtplib.SMTP(smtp_server,port)
+            server = smtplib.SMTP(smtp_server, port)
             server.ehlo()
             server.starttls(context=context)
             server.ehlo()
             server.login(sender_email, password)
-            server.sendmail(sender_email,data["email"], f"Subject: Email Verification Code\n\nYour verification code is {verify_token}")
+            server.sendmail(
+                sender_email, data["email"], f"Subject: Email Verification Code\n\nYour verification code is {verify_token}")
         except Exception as e:
             print(f"Error: {str(e)}")
             return jsonify({"error": "Internal Server Error"}), 500
         finally:
             server.quit()
-        
+
         return jsonify({"message": "User created successfully"}), 201
-    
+
     except Exception as e:
         print(str(e))
         if "Duplicate entry" in str(e):
@@ -106,12 +111,13 @@ def verifyUser():
     - If the user is verified successfully, returns a JSON object with a success message.
     - If there is an internal server error, returns a JSON object with an error message.
     """
-    
+
     try:
         return jsonify({"message": "User verified successfully"}), 200
     except Exception as e:
         return jsonify({"error": "Internal Server Error"}), 500
-    
+
+
 @users_bp.route('/verifyAdmin', methods=['POST'])
 @admin_auth.login_required
 def verifyAdmin():
@@ -126,7 +132,8 @@ def verifyAdmin():
         return jsonify({"message": "User verified successfully"}), 200
     except Exception as e:
         return jsonify({"error": "Internal Server Error"}), 500
-    
+
+
 @users_bp.route('/verify', methods=['POST'])
 def verify():
     """
@@ -152,7 +159,8 @@ def verify():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
-    
+
+
 @users_bp.route('/verifyDonor', methods=['POST'])
 @donor_auth.login_required
 def verifyDonor():
@@ -167,7 +175,8 @@ def verifyDonor():
         return jsonify({"message": "User verified successfully"}), 200
     except Exception as e:
         return jsonify({"error": "Internal Server Error"}), 500
-    
+
+
 @users_bp.route('/verifyRecipient', methods=['POST'])
 @recipient_auth.login_required
 def verifyRecipient():
@@ -182,8 +191,8 @@ def verifyRecipient():
         return jsonify({"message": "User verified successfully"}), 200
     except Exception as e:
         return jsonify({"error": "Internal Server Error"}), 500
-    
-    
+
+
 @users_bp.route('/editProfile', methods=['POST'])
 @token_auth.login_required
 def editProfile():
@@ -191,23 +200,25 @@ def editProfile():
     Edit a user's profile based on the provided fields.
     """
     auth_header = request.headers.get('Authorization')
-    token = token = auth_header.split(" ")[1] if auth_header and auth_header.startswith('Bearer ') else None
+    token = token = auth_header.split(
+        " ")[1] if auth_header and auth_header.startswith('Bearer ') else None
 
     if token is None:
-            return jsonify({"error": "User is not logged in"}), 401    
+        return jsonify({"error": "User is not logged in"}), 401
     try:
         decoded = jwt.decode(token, "secret", algorithms=["HS256"])
         data = request.get_json()
         print(data)
-        
-        user = User.query.filter_by(UserId = decoded["id"]).first()
-        
+
+        user = User.query.filter_by(UserId=decoded["id"]).first()
+
         if not user:
             return jsonify({"error": "User not found"}), 404
         if 'address' in data and data['address'] != '':
             address = data.get('address', '')
             addressLine2 = data.get('addressLine2', '')
-            user.Address = data['address'] + ' ' + data['addressLine2'] if addressLine2 else address
+            user.Address = data['address'] + ' ' + \
+                data['addressLine2'] if addressLine2 else address
         if 'city' in data and data['city'] != '':
             user.City = data['city']
         if 'state' in data and data['state'] != '':
@@ -218,20 +229,21 @@ def editProfile():
             user.Latitude = data['latitude']
         if 'longitude' in data and data['longitude'] != '':
             user.Longitude = data['longitude']
-        
+
         db.session.commit()
         return jsonify({"message": "Profile updated successfully"}), 200
 
     except Exception as e:
         print(e)
         return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500
-    
-    
+
+
 @users_bp.route('/getProfile', methods=['GET'])
 @token_auth.login_required
 def getProfile():
     auth_header = request.headers.get('Authorization')
-    token = auth_header.split(" ")[1] if auth_header and auth_header.startswith('Bearer ') else None
+    token = auth_header.split(
+        " ")[1] if auth_header and auth_header.startswith('Bearer ') else None
     # role_name = ""
     # if user.role == 1:
     #     role_name = "Admin"
@@ -252,8 +264,6 @@ def getProfile():
 
         if not user:
             return jsonify({"error": "User not found"}), 404
-        
-
 
         user_data = {
             # "username": user.Username,
@@ -267,6 +277,31 @@ def getProfile():
         }
 
         return jsonify(user_data), 200
+
+    except Exception as e:
+        return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500
+
+
+@users_bp.route('/getRole', methods=['GET'])
+@token_auth.login_required
+def getRole():
+    auth_header = request.headers.get('Authorization')
+    token = auth_header.split(
+        " ")[1] if auth_header and auth_header.startswith('Bearer ') else None
+    if token is None:
+        return jsonify({"error": "User is not logged in"}), 401
+
+    try:
+        decoded = jwt.decode(token, "secret", algorithms=["HS256"])
+        role = Role.query.filter_by(RoleID=decoded["RoleID"]).first()
+        if not role:
+            return jsonify({"error": "Role not found"}), 404
+
+        role_data = {
+            "role": role.Name
+        }
+
+        return jsonify(role_data), 200
 
     except Exception as e:
         return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500

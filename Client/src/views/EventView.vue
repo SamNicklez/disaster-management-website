@@ -1,114 +1,123 @@
 <template>
-  <div class="card">
-    <h2>{{ eventDetails.event_name }}</h2>
-    <p>Location: {{ eventDetails.location }}</p>
-    <p>Description: {{ eventDetails.description }}</p>
+  <div>
+    <h3>Event Details</h3>
+    <div class="request">
+      <h4>Event ID: {{ event_id }}</h4>
+      <h4>Role: {{ role }}</h4>
+    </div>
   </div>
-  <div class="request-button" v-if="isRecipient">
-    <v-btn color="secondary" @click="handleRequest">Request</v-btn>
-  </div>
-  <v-container>
-    <v-row>
-      <v-col cols="12" sm="6" md="4" lg="3" v-for="request in eventDetails.requests" :key="request.request_id">
-        <v-card class="ma-2">
+  <div v-if="requests.length > 0">
+      <v-card-title>Current Items Needed</v-card-title>
+      <v-row>
+      <v-col cols="12" md="6" lg="3" v-for="(request, request_id) in requests" :key="request_id" class="my-2">
+        <v-card style="background-color: #f5f5f5;">
+          <v-card-title>Item Needed: {{ request.item_name }}</v-card-title>
+          <v-card-subtitle>Requested On: {{ request.date_requested }}</v-card-subtitle>
           <v-card-text>
-            <p><b>Created:</b> {{ formatDate(request.created_date) }}</p>
-            <p><b>Fulfilled:</b> {{ request.is_fulfilled ? 'Yes' : 'No' }}</p>
-            <div v-if="request.items && request.items.length">
-              <v-list dense>
-                <v-subheader><b>Items Requested</b></v-subheader>
-                <v-list-item v-for="item in request.items" :key="item.requestitem_id">
-                  <v-list-item-content>
-                    {{ item.item_name }} : {{ item.quantity }}
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-            </div>
-            <div v-else>
-              No items requested.
-            </div>
-            <v-btn color="primary" class="mt-3" v-if="isDonor" @click="respondToRequest(request.request_id)">Respond to Request</v-btn>
+            <div>Quantity Required: {{ request.quantity }}</div>
           </v-card-text>
+          <div v-if="role == 'Donor' || role == 'Admin'">
+            <v-btn @click="pledgeItem(request.request_id, request.item_id, request.quantity)" color="primary">Pledge Item</v-btn>
+          </div>
         </v-card>
       </v-col>
-    </v-row>
-  </v-container>
+      </v-row>
+    </div>
+    <div v-else>
+      <v-card-title>No items needed at this time.</v-card-title>
+    </div>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from 'axios'
 import { user } from '../stores/user.js'
-
+import { alertStore } from '../stores/alert.js'
 export default {
   data() {
     return {
       event_id: null,
+      role: null,
       eventDetails: {},
-      isDonor: false,
-      isRecipient: false,
-    };
+      requests: []
+    }
   },
   methods: {
     fetchEventDetails() {
-      const config = {
+      let userData = user()
+      let token = userData.getToken
+      let config = {
         method: 'get',
-        url: `http://127.0.0.1:5000/event/GetAllItemRequestsByEventId?event_id=${this.event_id}`
-      };
-      
-      axios.request(config)
-        .then(response => {
-          this.eventDetails = response.data; 
+        maxBodyLength: Infinity,
+        url: 'http://127.0.0.1:5000/event/GetAllItemRequestsByEventId?event_id=' + this.event_id,
+        headers: {
+          Authorization: 'Bearer ' + token
+        }
+      }
+      axios
+        .request(config)
+        .then((response) => {
+          this.eventDetails = {
+            id: response.data.event_id,
+            name: response.data.event_name,
+            location: response.data.location,
+            date: this.formatDate(response.data.start_date)
+          }
+          this.requests = response.data.requests
+          let list = []
+          for (let i = 0; i < this.requests.length; i++) {
+            let json = {
+              request_id: this.requests[i].request_id,
+              item_name: this.requests[i].items[0].item_name,
+              item_id: this.requests[i].items[0].item_id,
+              quantity: this.requests[i].items[0].quantity,
+              request_item_id: this.requests[i].items[0].item_id,
+              date_requested: this.formatDate(this.requests[i].created_date)
+            }
+            list.push(json)
+          }
+          this.requests = list
         })
-        .catch(error => {
-          console.error('Error fetching event details:', error);
-        });
+        .catch(() => {
+          alertStore.showError('Error', 'An error occurred while fetching event details.')
+        })
     },
     formatDate(dateString) {
-      if (!dateString) return 'N/A';
-      const date = new Date(dateString);
-      return date.toLocaleDateString(undefined, {year: 'numeric', month: 'long', day: 'numeric'});
-    },
-
-    verifyUserRole() {
-      let userData = user();
-      const token = userData.getToken;
-      const headers = {
-        'Authorization': `Bearer ${token}`
-      };
-      axios.post('http://127.0.0.1:5000/users_bp/verifyDonor', {}, { headers: headers })
-      .then(response => {
-        this.isDonor = true; 
-      })
-      .catch(error => {
-        console.error('Error verifying user role:', error);
-        this.isDonor = false; 
-      });
-    },
-    verifyRecipientRole() {
-      let userData = user();
-      const token = userData.getToken;
-      const headers = {
-        'Authorization': `Bearer ${token}`
-      };
-      axios.post('http://127.0.0.1:5000/users_bp/verifyDonor', {}, { headers: headers })
-      .then(response => {
-        this.isRecipient = true;
-      })
-      .catch(error => {
-        console.error('Error verifying recipient role:', error);
-        this.isRecipient = false;
-      });
+      if (!dateString) return 'N/A'
+      const date = new Date(dateString)
+      return date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
     },
   },
   created() {
-    this.event_id = this.$route.params.id;
-    this.fetchEventDetails();
-    this.verifyUserRole();
-    this.verifyRecipientRole();
+    this.event_id = this.$route.params.id
   },
+  mounted() {
+    let userData = user()
+    let token = userData.getToken
+    if (token && token != null && token != undefined && token != '') {
+      let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: 'http://127.0.0.1:5000/users_bp/getRole',
+        headers: {
+          Authorization: 'Bearer ' + token
+        }
+      }
+
+      axios
+        .request(config)
+        .then((response) => {
+          this.role = response.data.role
+        })
+        .catch(() => {
+          alertStore.showError('Error', 'An error occurred while fetching your user role.')
+        })
+    } else {
+      this.role = 'None'
+    }
+    this.fetchEventDetails()
+  }
 }
 </script>
-
 
 <style scoped>
 .card {
@@ -136,8 +145,8 @@ export default {
   border-radius: 5px;
 }
 
-h3, h4 {
+h3,
+h4 {
   color: #333;
 }
-
 </style>
