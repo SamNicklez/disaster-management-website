@@ -68,6 +68,8 @@
     </v-btn>
   </v-container>
   <div v-if="role == 'Donor' || 'Admin'">
+    <v-card-title>Pledges</v-card-title>
+    <v-btn @click="routePledge" color="primary">Create a Pledge</v-btn>
     <div v-if="activePledges.length != 0">
       <v-card-title>Your Active Pledges</v-card-title>
       <v-row>
@@ -108,7 +110,7 @@
   </div>
   <v-card-title v-if="role == 'Admin'">Admin Settings</v-card-title>
   <v-container v-if="role == 'Admin'">
-    <v-btn @click="createItem" color="primary">Item/Category Management</v-btn>
+    <v-btn @click="createItem" color="primary" style="margin-right: 5vh">Items and Category Management</v-btn>
     <v-btn @click="routeEvent" color="primary">Event Management</v-btn>
   </v-container>
 </template>
@@ -308,7 +310,7 @@ export default {
      * Fetches the recipient's requests.
      */
     fetchRecipientRequests() {
-      let userData = user()
+      // let userData = user()
     },
     cancelpledge(pledge_id){
       console.log(pledge_id)
@@ -350,6 +352,9 @@ export default {
      */
     routeEvent() {
       this.$router.push({ name: 'eventManagement' })
+    },
+    routePledge(){
+      this.$router.push({ name: 'pledge' })
     }
   }
 }
