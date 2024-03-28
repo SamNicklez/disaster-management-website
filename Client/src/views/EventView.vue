@@ -86,11 +86,9 @@ export default {
           let list = []
           for (let i = 0; i < this.requests.length; i++) {
             let json = {
-              request_id: this.requests[i].request_id,
-              item_name: this.requests[i].items[0].item_name,
-              item_id: this.requests[i].items[0].item_id,
-              quantity: this.requests[i].items[0].quantity,
-              request_item_id: this.requests[i].items[0].item_id,
+              id: this.requests[i].request_id,
+              item_name: this.requests[i].item_name,
+              quantity: this.requests[i].quantity_remaining,
               date_requested: this.formatDate(this.requests[i].created_date)
             }
             list.push(json)

@@ -2,7 +2,8 @@ from flask import Blueprint, jsonify, request
 from stores import db
 from models.Items import Item
 from models.Items import Category
-from routes import admin_auth, donor_auth
+from models.DisasterEvent import EventItem
+from routes import admin_auth, donor_auth, recipient_auth
 
 items_bp = Blueprint('Items', __name__)
 
@@ -297,7 +298,6 @@ def edit_item():
     """
 
     data = request.json
-    print(data)
 
     if 'ItemName' not in data:
         return jsonify({'error': 'ItemName is required'}), 400
@@ -335,3 +335,15 @@ def edit_item():
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': 'An error occurred while updating the item'}), 500
+    
+@items_bp.route('/GetEventItems', methods=['GET'])
+@recipient_auth.login_required
+def get_event_items():
+    data = request.json
+    event_id = data['event_id']
+    Items = EventItem.query.filter_by(event_id=event_id, isActive = 1).all()
+    items_list = []
+    for item in Items:
+        tmp_item = Item.query.filter_by(ItemID=item.item_id).first()
+        items_list.append(tmp_item.to_dict())
+    return jsonify(items_list), 200

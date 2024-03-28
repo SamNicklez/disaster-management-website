@@ -1,13 +1,14 @@
 from flask import Blueprint, jsonify, request
 from stores import db
 from models.DisasterEvent import DisasterEvent, EventItem
-from models.DonationRequest import DonationRequest, ItemRequest
-from models.Response import Response, ResponseItem
+from models.DonationRequest import DonationRequest
+from models.Response import Response
 from models.Items import Item
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
-from routes import admin_auth, donor_auth
+from routes import admin_auth, donor_auth, recipient_auth
 import json
+import jwt
 
 events_bp = Blueprint('Event', __name__)
 
@@ -54,11 +55,9 @@ def create_event():
 
     except SQLAlchemyError as e:
         db.session.rollback()
-        print(e)
         return jsonify({"error": "Failed to create event", "details": str(e)}), 500
 
     except Exception as e:
-        print(e)
         return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
 
 
@@ -101,7 +100,7 @@ def is_event():
         return jsonify({"error": "Event ID is required"}), 400
 
     try:
-        event = DisasterEvent.query.get(event_id)
+        event = DisasterEvent.query.filter_by(event_id=event_id, end_date=None).first()
         if event:
             return jsonify({"is_event": True}), 200
         else:
@@ -143,7 +142,6 @@ def get_all_events():
 def get_event_by_id():
 
     event_id = request.args.get('event_id', None)
-    print(event_id)
     try:
         conn = db.engine.raw_connection()
         cursor = conn.cursor()
@@ -174,44 +172,37 @@ def get_event_by_id():
 
 
 @events_bp.route('/CreateItemRequest', methods=['POST'])
+@recipient_auth.login_required
 def create_item_request():
     try:
+        auth_header = request.headers.get('Authorization')
+        token = auth_header.split(" ")[1] if auth_header and auth_header.startswith('Bearer ') else None
+        if token is None:
+                return jsonify({"error": "User is not logged in"}), 401
+        user_id = (jwt.decode(token, "secret", algorithms=["HS256"]))["id"]
         data = request.get_json()
-
         event_id = data.get('event_id')
-        user_id = data.get('user_id')
-        items = data.get('item_names')
-
+        item = data.get('item_name')
+        quantity_requested = data.get('quantity_requested')
+        quantity_remaining = quantity_requested
+        item_id = Item.query.filter_by(ItemName=item).first().ItemID
+        event_item_id = EventItem.query.filter_by(event_id=event_id, item_id=item_id).first().event_item_id
+        if not event_item_id:
+            return jsonify({'error': 'Item not found in event'}), 404
         event = DisasterEvent.query.filter_by(event_id=event_id).first()
         if not event:
             return jsonify({'error': 'Event not found'}), 404
-
+        
         donation_request = DonationRequest(
             event_id=event_id,
             user_id=user_id,
+            event_item_id= event_item_id,
             is_fulfilled=0,
+            quantity_remaining=quantity_remaining,
+            quantity_requested=quantity_requested,
             created_date=datetime.now()
         )
-
         db.session.add(donation_request)
-        db.session.commit()
-
-        for item_data in items:
-            item_name = item_data.get('item_name')
-            quantity = item_data.get('quantity')
-
-            item = Item.query.filter_by(ItemName=item_name).first()
-            if not item:
-                db.session.rollback()
-                return jsonify({'error': f'Item "{item_name}" not found'}), 404
-
-            new_item_request = ItemRequest(
-                request_id=donation_request.request_id,
-                item_id=item.ItemID,
-                quantity=quantity
-            )
-            db.session.add(new_item_request)
-
         db.session.commit()
 
         return jsonify({'message': 'Item request created successfully'}), 201
@@ -258,7 +249,6 @@ def search_events():
         else:
             return jsonify({'error': 'No search query provided'}), 400
     except Exception as e:
-        print(e)
         return jsonify({'error': 'An unexpected error occurred', 'details': str(e)}), 500
 
 
@@ -275,26 +265,20 @@ def get_all_item_requests_by_event_id():
         event_details = cursor.fetchone()
         cursor.close()
         conn.close()
-
-        if event_details:
-
-            serialized_event = {
-                "event_id": event_details[0],
-                "event_name": event_details[1],
-                "location": event_details[2],
-                "start_date": event_details[5].strftime("%Y-%m-%d") if event_details[5] else None,
-                "description": event_details[7],
-            }
-
-            requests_data = json.loads(
-                event_details[8]) if event_details[8] else []
-            if requests_data and len(requests_data) == 1 and requests_data[0].get('request_id') is None:
-                requests_data = []
-            serialized_event['requests'] = requests_data
-            return jsonify(serialized_event), 200
-
-        else:
-            return jsonify({"error": "Event not found"}), 404
+        if not event_details:
+            return jsonify({"event_id": []}), 200
+        json_tmp = {
+            "event_id": event_details[0],
+            "event_name": event_details[1],
+            "location": event_details[2],
+            "start_date": event_details[3].strftime("%Y-%m-%d %H:%M:%S"),
+            "description": event_details[4],
+            "requests": []
+        }
+        if event_details[5]:
+            json_tmp["requests"] = json.loads(event_details[5])
+            
+        return json_tmp, 200
 
     except Exception as e:
         return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
@@ -304,20 +288,15 @@ def get_all_item_requests_by_event_id():
 def create_response():
     try:
         data = request.get_json()
-        user_id = data.get('user_id')
+        auth_header = request.headers.get('Authorization')
+        token = auth_header.split(" ")[1] if auth_header and auth_header.startswith('Bearer ') else None
+        if token is None:
+                return jsonify({"error": "User is not logged in"}), 401
+        user_id = (jwt.decode(token, "secret", algorithms=["HS256"]))["id"]
         request_id = data.get('request_id')
-        items = data.get('items') 
-        
-        new_response = Response(user_id=user_id, request_id=request_id)
+        request_quantity = DonationRequest.query.get(request_id).quantity_remaining
+        new_response = Response(user_id=user_id, request_id=request_id, is_fulfilled=0, quantity_donated=request_quantity, created_date=datetime.now())
         db.session.add(new_response)
-        db.session.flush() 
-        
-        all_items_fulfilled = True
-        
-        requested_items = ItemRequest.query.filter_by(request_id=request_id).all()
-
-
-        
         db.session.commit()
         return jsonify({'message': 'Response created successfully'}), 201
     except Exception as e:

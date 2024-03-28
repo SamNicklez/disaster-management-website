@@ -1,5 +1,4 @@
 from stores import db
-from models.DonationRequest import DonationRequest
 
 class DisasterEvent(db.Model):
     __tablename__ = 'event'
@@ -33,3 +32,12 @@ class EventItem(db.Model):
     event_item_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     event_id = db.Column(db.Integer, db.ForeignKey('event.event_id'), nullable=False)
     item_id = db.Column(db.Integer, db.ForeignKey('items.ItemID'), nullable=False)
+    isActive = db.Column(db.Integer, nullable=False, default=1)
+
+    def to_dict(self):
+        return {
+            'event_item_id': self.event_item_id,
+            'event_id': self.event_id,
+            'item_id': self.item_id,
+            'isActive': self.isActive
+        }
