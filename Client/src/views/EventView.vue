@@ -51,12 +51,52 @@
     <div v-else>
       <v-card-title>No items needed at this time, please check back later.</v-card-title>
     </div>
-    <v-dialog v-model="showDialog" persistent max-width="600px">
+    <v-dialog v-model="showDialog" persistent max-width="600px" style="width: 50%">
       <v-card>
+        <v-form ref="form" v-model="valid">
+          <!-- Bind the form validity to a data property -->
+          <div class="pa-5">
+            <v-autocomplete
+              v-model="selectedGood"
+              :items="goods"
+              item-text="name"
+              item-value="id"
+              label="Select a good"
+              single-line
+              clearable
+              :rules="[(v) => !!v || 'Item is required']"
+            ></v-autocomplete>
+
+            <v-text-field
+              v-model="quantity"
+              label="Quantity"
+              type="number"
+              min="1"
+              :rules="quantityRules"
+            ></v-text-field>
+          </div>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="showDialog = false">Cancel</v-btn>
+            <v-btn :disabled="!valid" color="blue darken-1" text @click="submitRequest()"
+              >Request</v-btn
+            >
+          </v-card-actions>
+        </v-form>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="confirmDialog" persistent max-width="300px">
+      <v-card>
+        <v-card-title class="text-h5"> Confirm Donation </v-card-title>
+        <v-card-text>
+          Do you want to proceed with this donation of {{ selectedRequest.quantity }}
+          {{ selectedRequest.item_name }}?
+        </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="showDialog = false">Cancel</v-btn>
-          <v-btn color="blue darken-1" text @click="submitRequest()">Submit</v-btn>
+          <v-btn color="grey darken-1" text @click="confirmDialog = false"> Cancel </v-btn>
+          <v-btn color="green darken-1" text @click="confirmRequest()"> Confirm </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -75,7 +115,19 @@ export default {
       eventDetails: {},
       requests: [],
       showDialog: false,
-      eventItems: []
+      confirmDialog: false,
+      eventItems: [],
+      valid: false,
+      selectedGood: null,
+      quantity: '',
+      selectedRequest: null,
+      goods: [],
+      quantityRules: [
+        (v) => !!v || 'Quantity is required',
+        (v) =>
+          (!isNaN(parseFloat(v)) && v > 0 && (v | 0) === parseFloat(v)) ||
+          'Quantity must be a positive integer'
+      ]
     }
   },
   methods: {
@@ -122,7 +174,38 @@ export default {
       return date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
     },
     submitRequest() {
-      console.log('Submitting request:')
+      let userData = user()
+      let token = userData.getToken
+      console.log('Submitting request:' + this.selectedGood + ' ' + this.quantity)
+      let data = JSON.stringify({
+        event_id: this.event_id,
+        item_name: this.selectedGood,
+        quantity_requested: this.quantity
+      })
+
+      let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: 'http://127.0.0.1:5000/event/CreateItemRequest',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + token
+        },
+        data: data
+      }
+
+      axios
+        .request(config)
+        .then(() => {
+          location.reload()
+        })
+        .catch(() => {
+          alertStore.showError('Error', 'An error occurred while submitting your request.')
+        })
+    },
+    pledgeItem(request) {
+      this.confirmDialog = true
+      this.selectedRequest = request
     },
     requestItems() {
       let userData = user()
@@ -132,20 +215,43 @@ export default {
         maxBodyLength: Infinity,
         url: 'http://127.0.0.1:5000/item/GetEventItems?event_id=' + this.event_id,
         headers: {
-          Authorization:
-            'Bearer ' + token
+          Authorization: 'Bearer ' + token
         }
       }
       axios
         .request(config)
         .then((response) => {
+          for (let i = 0; i < response.data.length; i++) {
+            this.goods.push(response.data[i].ItemName)
+          }
           this.showDialog = true
+        })
+        .catch(() => {
+          alertStore.showError('Error', 'An error occurred while fetching event items.')
+          this.showDialog = false
+        })
+    },
+    confirmRequest() {
+      let userData = user()
+      let token = userData.getToken
+      let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: 'http://127.0.0.1:5000/event/CreateResponse?request_id=' + this.selectedRequest.id,
+        headers: {
+          Authorization:
+            'Bearer ' + token
+        }
+      }
+
+      axios
+        .request(config)
+        .then((response) => {
           console.log(JSON.stringify(response.data))
         })
         .catch((error) => {
           console.log(error)
         })
-
     }
   },
   created() {

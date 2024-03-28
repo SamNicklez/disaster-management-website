@@ -208,7 +208,6 @@ def editProfile():
     try:
         decoded = jwt.decode(token, "secret", algorithms=["HS256"])
         data = request.get_json()
-        print(data)
 
         user = User.query.filter_by(UserId=decoded["id"]).first()
 

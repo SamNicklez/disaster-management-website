@@ -181,9 +181,9 @@ def create_item_request():
                 return jsonify({"error": "User is not logged in"}), 401
         user_id = (jwt.decode(token, "secret", algorithms=["HS256"]))["id"]
         data = request.get_json()
-        event_id = data.get('event_id')
+        event_id = int(data.get('event_id'))
         item = data.get('item_name')
-        quantity_requested = data.get('quantity_requested')
+        quantity_requested = int(data.get('quantity_requested'))
         quantity_remaining = quantity_requested
         item_id = Item.query.filter_by(ItemName=item).first().ItemID
         event_item_id = EventItem.query.filter_by(event_id=event_id, item_id=item_id).first().event_item_id
@@ -287,20 +287,23 @@ def get_all_item_requests_by_event_id():
 @donor_auth.login_required
 def create_response():
     try:
-        data = request.get_json()
+        request_id = int(request.args.get('request_id', None))
         auth_header = request.headers.get('Authorization')
         token = auth_header.split(" ")[1] if auth_header and auth_header.startswith('Bearer ') else None
         if token is None:
                 return jsonify({"error": "User is not logged in"}), 401
         user_id = (jwt.decode(token, "secret", algorithms=["HS256"]))["id"]
-        request_id = data.get('request_id')
-        request_quantity = DonationRequest.query.get(request_id).quantity_remaining
-        new_response = Response(user_id=user_id, request_id=request_id, is_fulfilled=0, quantity_donated=request_quantity, created_date=datetime.now())
+        request_tmp = DonationRequest.query.filter_by(request_id=request_id).first()
+        quantity = request_tmp.quantity_remaining
+        new_response = Response(user_id=user_id, request_id=request_id, is_fulfilled=0, quantity_donated=quantity, created_date=datetime.now())
+        request_tmp.quantity_remaining = 0
+        request_tmp.is_fulfilled = 1
         db.session.add(new_response)
         db.session.commit()
         return jsonify({'message': 'Response created successfully'}), 201
     except Exception as e:
         db.session.rollback()
+        print(e)
         return jsonify({'error': 'An unexpected error occurred', 'details': str(e)}), 500
 
 @events_bp.route("/GetResponsesByRequestId", methods=["GET"])
