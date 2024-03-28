@@ -339,11 +339,14 @@ def edit_item():
 @items_bp.route('/GetEventItems', methods=['GET'])
 @recipient_auth.login_required
 def get_event_items():
-    data = request.json
-    event_id = data['event_id']
-    Items = EventItem.query.filter_by(event_id=event_id, isActive = 1).all()
-    items_list = []
-    for item in Items:
-        tmp_item = Item.query.filter_by(ItemID=item.item_id).first()
-        items_list.append(tmp_item.to_dict())
-    return jsonify(items_list), 200
+    try:
+        event_id = request.args.get('event_id', None)
+        Items = EventItem.query.filter_by(event_id=event_id, isActive = 1).all()
+        items_list = []
+        for item in Items:
+            tmp_item = Item.query.filter_by(ItemID=item.item_id).first()
+            items_list.append(tmp_item.to_dict())
+        return jsonify(items_list), 200
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return jsonify({"error": "Internal Server Error"}), 500

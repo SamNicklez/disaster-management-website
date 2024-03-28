@@ -7,7 +7,13 @@
         <h4>Location: {{ eventDetails.location }}</h4>
         <h4>Started on: {{ eventDetails.date }}</h4>
         <div v-if="role == 'Recipiant' || role == 'Admin'">
-          <v-btn color="primary" variant="outlined" style="margin-top: 1.5vh" @click="requestItems()">Request Items</v-btn>
+          <v-btn
+            color="primary"
+            variant="outlined"
+            style="margin-top: 1.5vh"
+            @click="requestItems()"
+            >Request Items</v-btn
+          >
         </div>
       </div>
     </div>
@@ -45,6 +51,15 @@
     <div v-else>
       <v-card-title>No items needed at this time, please check back later.</v-card-title>
     </div>
+    <v-dialog v-model="showDialog" persistent max-width="600px">
+      <v-card>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="showDialog = false">Cancel</v-btn>
+          <v-btn color="blue darken-1" text @click="submitRequest()">Submit</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -58,7 +73,9 @@ export default {
       event_id: null,
       role: null,
       eventDetails: {},
-      requests: []
+      requests: [],
+      showDialog: false,
+      eventItems: []
     }
   },
   methods: {
@@ -103,6 +120,32 @@ export default {
       if (!dateString) return 'N/A'
       const date = new Date(dateString)
       return date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
+    },
+    submitRequest() {
+      console.log('Submitting request:')
+    },
+    requestItems() {
+      let userData = user()
+      let token = userData.getToken
+      let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: 'http://127.0.0.1:5000/item/GetEventItems?event_id=' + this.event_id,
+        headers: {
+          Authorization:
+            'Bearer ' + token
+        }
+      }
+      axios
+        .request(config)
+        .then((response) => {
+          this.showDialog = true
+          console.log(JSON.stringify(response.data))
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+
     }
   },
   created() {
