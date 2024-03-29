@@ -85,6 +85,14 @@ class TestUsers(unittest.TestCase):
             })
 
             self.assertEqual(response.status_code, 401)
+    
+    def test_verify_admin(self):
+        with patch('routes.admin_auth.login_required') as mock_login:
+            with patch('jwt.decode') as mock_jwt:
+                mock_login.return_value = lambda f: f
+                mock_jwt.return_value = {'RoleID': 1}
+                response = self.client.post('/verifyAdmin', headers={'Authorization': 'Bearer ' + 'mock_token'})
+                self.assertEqual(response.status_code, 200)
 
 
    
