@@ -62,7 +62,9 @@
           class="my-2"
         >
           <v-card class="pa-3" elevation="2" style="background-color: #f5f5f5">
-            <v-card-title class="headline mb-1">Item Requested: {{ request.item_name }}</v-card-title>
+            <v-card-title class="headline mb-1"
+              >Item Requested: {{ request.item_name }}</v-card-title
+            >
             <v-card-subtitle class="grey--text font-weight-light mb-2"
               >Requested On: {{ request.date_requested }}</v-card-subtitle
             >

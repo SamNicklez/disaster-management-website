@@ -73,7 +73,7 @@ export default {
     performSearch() {
       let route_name = this.$route.name
       this.$router.push({ name: 'search', params: { query: this.searchQuery } }).then(() => {
-        if (route_name === 'search'){
+        if (route_name === 'search') {
           this.$router.go()
         }
         this.searchQuery = ''

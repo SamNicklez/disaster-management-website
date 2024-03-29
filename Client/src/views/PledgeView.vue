@@ -96,7 +96,11 @@ export default {
         .request(config)
         .then(() => {
           this.$router.push({ name: 'profile' })
-          alertStore.showSuccess('Thank you for your donation! You will get a notification when and where you need to ship your supplies!', 'Thanks!', true)
+          alertStore.showSuccess(
+            'Thank you for your donation! You will get a notification when and where you need to ship your supplies!',
+            'Thanks!',
+            true
+          )
         })
         .catch(() => {
           alertStore.showError('Failed to submit donation')

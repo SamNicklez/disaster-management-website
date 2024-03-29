@@ -73,30 +73,44 @@
     <div v-if="activePledges.length != 0">
       <v-card-title>Your Active Pledges</v-card-title>
       <v-row>
-      <v-col cols="12" md="6" lg="4" v-for="(pledge, pledge_id) in activePledges" :key="pledge_id" class="my-2">
-        <v-card style="background-color: #f5f5f5;">
-          <v-card-title>{{ pledge.item_name }}</v-card-title>
-          <v-card-text>
-            <div>Quantity Donated: {{ pledge.quantity_given }}</div>
-            <div>Quantity Remaining: {{ pledge.quantity_remaining }}</div>
-          </v-card-text>
-          <v-btn color="primary" @click="cancelpledge(pledge_id)">Cancel Pledge</v-btn>
-        </v-card>
-      </v-col>
+        <v-col
+          cols="12"
+          md="6"
+          lg="4"
+          v-for="(pledge, pledge_id) in activePledges"
+          :key="pledge_id"
+          class="my-2"
+        >
+          <v-card style="background-color: #f5f5f5">
+            <v-card-title>{{ pledge.item_name }}</v-card-title>
+            <v-card-text>
+              <div>Quantity Donated: {{ pledge.quantity_given }}</div>
+              <div>Quantity Remaining: {{ pledge.quantity_remaining }}</div>
+            </v-card-text>
+            <v-btn color="primary" @click="cancelpledge(pledge_id)">Cancel Pledge</v-btn>
+          </v-card>
+        </v-col>
       </v-row>
     </div>
     <div v-if="pastPledges.length != 0">
       <v-card-title>Your Past Pledges</v-card-title>
       <v-row>
-      <v-col cols="12" md="6" lg="3" v-for="(pledge, pledge_id) in pastPledges" :key="pledge_id" class="my-2">
-        <v-card style="background-color: #f5f5f5;">
-          <v-card-title>{{ pledge.item_name }}</v-card-title>
-          <v-card-text>
-            <div>Quantity Given: {{ pledge.quantity_given }}</div>
-            <div>Quantity Remaining: {{ pledge.quantity_remaining }}</div>
-          </v-card-text>
-        </v-card>
-      </v-col>
+        <v-col
+          cols="12"
+          md="6"
+          lg="3"
+          v-for="(pledge, pledge_id) in pastPledges"
+          :key="pledge_id"
+          class="my-2"
+        >
+          <v-card style="background-color: #f5f5f5">
+            <v-card-title>{{ pledge.item_name }}</v-card-title>
+            <v-card-text>
+              <div>Quantity Given: {{ pledge.quantity_given }}</div>
+              <div>Quantity Remaining: {{ pledge.quantity_remaining }}</div>
+            </v-card-text>
+          </v-card>
+        </v-col>
       </v-row>
     </div>
   </div>
@@ -110,7 +124,9 @@
   </div>
   <v-card-title v-if="role == 'Admin'">Admin Settings</v-card-title>
   <v-container v-if="role == 'Admin'">
-    <v-btn @click="createItem" color="primary" style="margin-right: 5vh">Items and Category Management</v-btn>
+    <v-btn @click="createItem" color="primary" style="margin-right: 5vh"
+      >Items and Category Management</v-btn
+    >
     <v-btn @click="routeEvent" color="primary">Event Management</v-btn>
   </v-container>
 </template>
@@ -310,7 +326,7 @@ export default {
     fetchRecipientRequests() {
       // let userData = user()
     },
-    cancelpledge(pledge_id){
+    cancelpledge(pledge_id) {
       console.log(pledge_id)
     },
     /**
@@ -351,7 +367,7 @@ export default {
     routeEvent() {
       this.$router.push({ name: 'eventManagement' })
     },
-    routePledge(){
+    routePledge() {
       this.$router.push({ name: 'pledge' })
     }
   }

@@ -19,7 +19,7 @@ describe('NavComponent', () => {
       }
     })
   })
-  
+
   it('opens the profile page', async () => {
     wrapper.vm.openProfile()
     expect(mockRouterPush).toHaveBeenCalledWith('/profile')

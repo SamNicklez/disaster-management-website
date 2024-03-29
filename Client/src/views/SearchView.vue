@@ -29,7 +29,7 @@ export default {
   data() {
     return {
       eventData: [],
-      query: '',
+      query: ''
     }
   },
   computed: {
@@ -45,7 +45,7 @@ export default {
       let config = {
         method: 'get',
         maxBodyLength: Infinity,
-        url: 'http://127.0.0.1:5000/event/search?query=' + this.$route.params.query,
+        url: 'http://127.0.0.1:5000/event/search?query=' + this.$route.params.query
       }
 
       axios

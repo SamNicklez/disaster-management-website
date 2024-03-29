@@ -11,7 +11,7 @@ import UserInfoComponent from '@/components/UserInfoComponent.vue'
       id="card"
       elevation="8"
       rounded="lg"
-      style="margin-bottom: 10vh;"
+      style="margin-bottom: 10vh"
     >
       <UserInfoComponent />
     </v-card>

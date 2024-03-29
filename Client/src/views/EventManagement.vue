@@ -187,10 +187,11 @@ export default {
       let config = {
         method: 'get',
         maxBodyLength: Infinity,
-        url: 'http://127.0.0.1:5000/event/DeleteEvent?event_id=' + this.events[this.deleteEventIndex].event_id,
+        url:
+          'http://127.0.0.1:5000/event/DeleteEvent?event_id=' +
+          this.events[this.deleteEventIndex].event_id,
         headers: {
-          Authorization:
-            'Bearer ' + token
+          Authorization: 'Bearer ' + token
         }
       }
 

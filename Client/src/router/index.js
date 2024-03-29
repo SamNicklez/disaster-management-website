@@ -73,15 +73,14 @@ const router = createRouter({
         let config = {
           method: 'get',
           maxBodyLength: Infinity,
-          url: 'http://127.0.0.1:5000/event/isEvent?event_id=' + to.params.id,
+          url: 'http://127.0.0.1:5000/event/isEvent?event_id=' + to.params.id
         }
         axios
           .request(config)
           .then((response) => {
             if (response.data['is_event'] === false) {
               next('/404')
-            }
-            else {
+            } else {
               next()
             }
           })
