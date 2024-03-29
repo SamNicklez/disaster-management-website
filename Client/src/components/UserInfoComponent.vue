@@ -226,7 +226,6 @@ export default {
      */
     selectAddress(address) {
       this.searchQuery = address.properties.formatted
-      console.log(address.geometry.coordinates)
       this.addresses = [] // Clear suggestions
       if (address.properties.street != null && address.properties.housenumber != null) {
         this.addressDetails.address =
@@ -300,7 +299,6 @@ export default {
               this.pastPledges.push(response.data[i])
             }
           }
-          console.log(this.activePledges)
         })
         .catch(() => {
           alertStore.showError('Failed to fetch user pledges')

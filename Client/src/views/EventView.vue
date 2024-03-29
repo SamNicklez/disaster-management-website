@@ -51,6 +51,28 @@
     <div v-else>
       <v-card-title>No items needed at this time, please check back later.</v-card-title>
     </div>
+    <div v-if="finishedRequests.length > 0">
+      <v-card-title class="text-h5 py-3">Items Previously Requested</v-card-title>
+      <v-row>
+        <v-col
+          cols="12"
+          md="6"
+          v-for="(request, request_id) in finishedRequests"
+          :key="request_id"
+          class="my-2"
+        >
+          <v-card class="pa-3" elevation="2" style="background-color: #f5f5f5">
+            <v-card-title class="headline mb-1">Item Requested: {{ request.item_name }}</v-card-title>
+            <v-card-subtitle class="grey--text font-weight-light mb-2"
+              >Requested On: {{ request.date_requested }}</v-card-subtitle
+            >
+            <v-card-text class="body-1">
+              <div>Quantity Donated: {{ request.quantity }}</div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </div>
     <v-dialog v-model="showDialog" persistent max-width="600px" style="width: 50%">
       <v-card>
         <v-form ref="form" v-model="valid">
@@ -114,6 +136,7 @@ export default {
       role: null,
       eventDetails: {},
       requests: [],
+      finishedRequests: [],
       showDialog: false,
       confirmDialog: false,
       eventItems: [],
@@ -152,17 +175,30 @@ export default {
             date: this.formatDate(response.data.start_date)
           }
           this.requests = response.data.requests
-          let list = []
+          let unfinished_requests = []
+          let finished_requests = []
+          let json = {}
           for (let i = 0; i < this.requests.length; i++) {
-            let json = {
-              id: this.requests[i].request_id,
-              item_name: this.requests[i].item_name,
-              quantity: this.requests[i].quantity_remaining,
-              date_requested: this.formatDate(this.requests[i].created_date)
+            if (this.requests[i].quantity_remaining == 0) {
+              json = {
+                id: this.requests[i].request_id,
+                item_name: this.requests[i].item_name,
+                quantity: this.requests[i].quantity_requested,
+                date_requested: this.formatDate(this.requests[i].created_date)
+              }
+              finished_requests.push(json)
+            } else {
+              json = {
+                id: this.requests[i].request_id,
+                item_name: this.requests[i].item_name,
+                quantity: this.requests[i].quantity_remaining,
+                date_requested: this.formatDate(this.requests[i].created_date)
+              }
+              unfinished_requests.push(json)
             }
-            list.push(json)
           }
-          this.requests = list
+          this.requests = unfinished_requests
+          this.finishedRequests = finished_requests
         })
         .catch(() => {
           alertStore.showError('Error', 'An error occurred while fetching event details.')
@@ -176,7 +212,6 @@ export default {
     submitRequest() {
       let userData = user()
       let token = userData.getToken
-      console.log('Submitting request:' + this.selectedGood + ' ' + this.quantity)
       let data = JSON.stringify({
         event_id: this.event_id,
         item_name: this.selectedGood,
@@ -239,25 +274,23 @@ export default {
         maxBodyLength: Infinity,
         url: 'http://127.0.0.1:5000/event/CreateResponse?request_id=' + this.selectedRequest.id,
         headers: {
-          Authorization:
-            'Bearer ' + token
+          Authorization: 'Bearer ' + token
         }
       }
 
       axios
         .request(config)
-        .then((response) => {
-          console.log(JSON.stringify(response.data))
+        .then(() => {
+          alertStore.showSuccess('Success', 'Your donation has been confirmed.', true)
+          location.reload()
         })
-        .catch((error) => {
-          console.log(error)
+        .catch(() => {
+          alertStore.showError('Error', 'An error occurred while confirming your request.')
         })
     }
   },
   created() {
     this.event_id = this.$route.params.id
-  },
-  mounted() {
     let userData = user()
     let token = userData.getToken
     if (token && token != null && token != undefined && token != '') {

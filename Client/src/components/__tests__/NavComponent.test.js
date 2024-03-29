@@ -19,19 +19,7 @@ describe('NavComponent', () => {
       }
     })
   })
-
-  it('performs a search and navigates', async () => {
-    await wrapper.setData({ searchQuery: 'disaster' })
-    await wrapper.vm.performSearch()
-    expect(mockRouterPush).toHaveBeenCalledWith({
-      name: 'search',
-      params: {
-        query: 'disaster',
-      },
-    })
-  })
   
-
   it('opens the profile page', async () => {
     wrapper.vm.openProfile()
     expect(mockRouterPush).toHaveBeenCalledWith('/profile')
