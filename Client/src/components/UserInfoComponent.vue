@@ -1,129 +1,140 @@
-/** * Component for displaying user information and address information. * * Props: * - None * *
-Data: * - searchQuery: string - The search query for address autocomplete. * - addresses: array -
-The list of addresses returned from the autocomplete API. * - addressDetails: object - The details
-of the selected address. * - loading: boolean - Indicates if the autocomplete API is currently
-loading. * - location: object - The longitude and latitude of the selected address. * - username:
-string - The username of the user. * - email: string - The email of the user. * - role: string - The
-role of the user. * - phone_number: string - The phone number of the user. * - edit: boolean -
-Indicates if the user information is in edit mode. * * Methods: * - fetchAddresses: Fetches the
-addresses from the autocomplete API based on the search query. * - debounce: Debounces a function to
-limit the number of calls within a certain time frame. * - selectAddress: Selects an address from
-the autocomplete suggestions and updates the address details. * - checkClear: Clears the address
-details and location. * - toggleEdit: Toggles the edit mode for user information. * - createItem:
-Redirects to the create item page. * * Lifecycle Hooks: * - created: Initializes the
-debouncedFetchAddresses method. * * @name AddressAutocomplete */
-
-
 <template>
-  <v-card class="mb-5" outlined tile>
-    <v-btn @click="createItem">Item/Category Management</v-btn>
-    <v-btn @click="routeEvent">Event Management</v-btn>
-    <v-card-title>User Information</v-card-title>
-    <v-container>
+  <v-card-title>User Profile</v-card-title>
+  <v-container>
+    <v-row>
+      <v-col cols="12" md="6">
+        <v-text-field label="Email" v-model="email" :readonly="!edit" outlined dense></v-text-field>
+      </v-col>
+      <v-col cols="12" md="6">
+        <v-text-field label="Role" v-model="role" :readonly="!edit" outlined dense></v-text-field>
+      </v-col>
+    </v-row>
+  </v-container>
+  <v-card-title>Address Information</v-card-title>
+  <v-container>
+    <v-text-field
+      v-if="edit"
+      class="mb-3"
+      :loading="loading"
+      outlined
+      clearable
+      label="Add Address"
+      v-model="searchQuery"
+      @keyup="debouncedFetchAddresses"
+      append-inner-icon="mdi-magnify"
+      @click:clear="checkClear"
+    ></v-text-field>
+    <v-list v-if="addresses.length" dense>
+      <v-list-item
+        v-for="address in addresses"
+        :key="address.properties.place_id"
+        @click="selectAddress(address)"
+      >
+        <v-list-item-title>{{ address.properties.formatted }}</v-list-item-title>
+      </v-list-item>
+    </v-list>
+    <v-text-field
+      readonly
+      outlined
+      label="Address"
+      v-model="addressDetails.address"
+      dense
+    ></v-text-field>
+    <v-text-field
+      v-if="edit"
+      outlined
+      label="Address Line 2"
+      v-model="addressDetails.addressLine2"
+      dense
+    ></v-text-field>
+    <v-text-field readonly outlined label="City" v-model="addressDetails.city" dense></v-text-field>
+    <v-text-field
+      readonly
+      outlined
+      label="State"
+      v-model="addressDetails.state"
+      dense
+    ></v-text-field>
+    <v-text-field
+      readonly
+      outlined
+      label="Zipcode"
+      v-model="addressDetails.zipcode"
+      dense
+    ></v-text-field>
+    <v-btn :color="edit ? 'success' : 'primary'" @click="toggleEdit">
+      <v-icon left>{{ edit ? 'mdi-content-save' : 'mdi-pencil' }}</v-icon>
+      {{ edit ? 'Save' : 'Edit' }}
+    </v-btn>
+  </v-container>
+  <div v-if="role == 'Donor' || 'Admin'">
+    <v-card-title>Pledges</v-card-title>
+    <v-btn @click="routePledge" color="primary">Create a Pledge</v-btn>
+    <div v-if="activePledges.length != 0">
+      <v-card-title>Your Active Pledges</v-card-title>
       <v-row>
-        <v-col cols="12" md="6">
-          <v-text-field
-            label="Username"
-            v-model="username"
-            :readonly="!edit"
-            outlined
-            dense
-          ></v-text-field>
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-text-field
-            label="Email"
-            v-model="email"
-            :readonly="!edit"
-            outlined
-            dense
-          ></v-text-field>
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-text-field label="Role" v-model="role" :readonly="!edit" outlined dense></v-text-field>
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-text-field
-            label="Phone Number"
-            v-model="phone_number"
-            :readonly="!edit"
-            outlined
-            dense
-          ></v-text-field>
+        <v-col
+          cols="12"
+          md="6"
+          lg="4"
+          v-for="(pledge, pledge_id) in activePledges"
+          :key="pledge_id"
+          class="my-2"
+        >
+          <v-card style="background-color: #f5f5f5">
+            <v-card-title>{{ pledge.item_name }}</v-card-title>
+            <v-card-text>
+              <div>Quantity Donated: {{ pledge.quantity_given }}</div>
+              <div>Quantity Remaining: {{ pledge.quantity_remaining }}</div>
+            </v-card-text>
+            <v-btn color="primary" @click="cancelpledge(pledge_id)">Cancel Pledge</v-btn>
+          </v-card>
         </v-col>
       </v-row>
-      <v-btn :color="edit ? 'success' : 'primary'" @click="toggleEdit">
-        <v-icon left>{{ edit ? 'mdi-content-save' : 'mdi-pencil' }}</v-icon>
-        {{ edit ? 'Save' : 'Edit' }}
-      </v-btn>
-    </v-container>
-    <v-card-title>Address Information</v-card-title>
-    <v-container>
-      <v-text-field
-        v-if="edit"
-        class="mb-3"
-        :loading="loading"
-        outlined
-        clearable
-        label="Add Address"
-        v-model="searchQuery"
-        @keyup="debouncedFetchAddresses"
-        append-inner-icon="mdi-magnify"
-        @click:clear="checkClear"
-      ></v-text-field>
-      <v-list v-if="addresses.length" dense>
-        <v-list-item
-          v-for="address in addresses"
-          :key="address.properties.place_id"
-          @click="selectAddress(address)"
+    </div>
+    <div v-if="pastPledges.length != 0">
+      <v-card-title>Your Past Pledges</v-card-title>
+      <v-row>
+        <v-col
+          cols="12"
+          md="6"
+          lg="3"
+          v-for="(pledge, pledge_id) in pastPledges"
+          :key="pledge_id"
+          class="my-2"
         >
-          <v-list-item-content>
-            <v-list-item-title>{{ address.properties.formatted }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-      <v-text-field
-        readonly
-        outlined
-        label="Address"
-        v-model="addressDetails.address"
-        dense
-      ></v-text-field>
-      <v-text-field
-        v-if="edit"
-        outlined
-        label="Address Line 2"
-        v-model="addressDetails.addressLine2"
-        dense
-      ></v-text-field>
-      <v-text-field
-        readonly
-        outlined
-        label="City"
-        v-model="addressDetails.city"
-        dense
-      ></v-text-field>
-      <v-text-field
-        readonly
-        outlined
-        label="State"
-        v-model="addressDetails.state"
-        dense
-      ></v-text-field>
-      <v-text-field
-        readonly
-        outlined
-        label="Zipcode"
-        v-model="addressDetails.zipcode"
-        dense
-      ></v-text-field>
-    </v-container>
-  </v-card>
+          <v-card style="background-color: #f5f5f5">
+            <v-card-title>{{ pledge.item_name }}</v-card-title>
+            <v-card-text>
+              <div>Quantity Given: {{ pledge.quantity_given }}</div>
+              <div>Quantity Remaining: {{ pledge.quantity_remaining }}</div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </div>
+  </div>
+  <div v-if="role == 'Recipient' || 'Admin'">
+    <div v-if="activeRequests != 0">
+      <v-card-title>Your Requests</v-card-title>
+    </div>
+    <div v-if="pastRequests != 0">
+      <v-card-title>Your Past Requests</v-card-title>
+    </div>
+  </div>
+  <v-card-title v-if="role == 'Admin'">Admin Settings</v-card-title>
+  <v-container v-if="role == 'Admin'">
+    <v-btn @click="createItem" color="primary" style="margin-right: 5vh"
+      >Items and Category Management</v-btn
+    >
+    <v-btn @click="routeEvent" color="primary">Event Management</v-btn>
+  </v-container>
 </template>
 
 <script>
 import axios from 'axios'
 import { user } from '../stores/user.js'
+import { alertStore } from '../stores/alert'
 export default {
   name: 'AddressAutocomplete',
   data() {
@@ -142,62 +153,54 @@ export default {
         longitude: '',
         latitude: ''
       },
-      username: 'temp',
       email: '',
       role: '',
-      phone_number: '',
-      edit: false
+      edit: false,
+      activePledges: [],
+      activeRequests: [],
+      pastRequests: [],
+      pastPledges: []
     }
   },
   created() {
-    this.debouncedFetchAddresses = this.debounce(this.fetchAddresses, 500)
+    this.debouncedFetchAddresses = this.debounce(this.fetchAddresses, 250)
     this.fetchUserProfile()
   },
 
   methods: {
-    
     editProfile() {
-      let userData = user()  
-
-    
-      if (!userData.token) {
-        alertStore.showError('You must be logged in to update your profile.')
-        return
-      }
-
+      let userData = user()
       let data = JSON.stringify({
         phone_number: this.phone_number,
         address: this.addressDetails.address,
         addressLine2: this.addressDetails.addressLine2,
         city: this.addressDetails.city,
         state: this.addressDetails.state,
-        zipcode: this.addressDetails.zipcode
-      });
-
+        zipcode: this.addressDetails.zipcode,
+        longitude: this.location.longitude,
+        latitude: this.location.latitude
+      })
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
         url: 'http://127.0.0.1:5000/users_bp/editProfile',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ` + userData.getToken,  
+          Authorization: `Bearer ` + userData.getToken
         },
         data: data
-      };
+      }
 
-      axios.request(config)
-        .then(response => {
-          console.log(JSON.stringify(response.data))
-
+      axios
+        .request(config)
+        .then(() => {
+          window.scrollTo(0, 0)
+          alertStore.showSuccess('Profile updated successfully')
         })
-        .catch(error => {
-          // Handle error
-          console.error("Error updating profile:", error);
-        });
-    }, 
-
-
-
+        .catch(() => {
+          alertStore.showError('Failed to edit profile')
+        })
+    },
 
     /**
      * Fetches addresses based on the search query.
@@ -238,10 +241,8 @@ export default {
      * @param {Object} address - The selected address object.
      */
     selectAddress(address) {
-      console.log('Selected Address')
       this.searchQuery = address.properties.formatted
       this.addresses = [] // Clear suggestions
-      // Example of parsing, adjust based on the actual API response and needs
       if (address.properties.street != null && address.properties.housenumber != null) {
         this.addressDetails.address =
           address.properties.housenumber + ' ' + address.properties.street
@@ -253,43 +254,81 @@ export default {
       this.addressDetails.city = address.properties.city
       this.addressDetails.state = address.properties.state
       this.addressDetails.zipcode = address.properties.postcode
+      this.location.longitude = address.geometry.coordinates[0]
+      this.location.latitude = address.geometry.coordinates[1]
     },
 
     fetchUserProfile() {
-      let userData = user();
-      if (!userData.token) {
-        alertStore.showError('You must be logged in to view your profile.');
-        return;
+      let userData = user()
+      let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: 'http://127.0.0.1:5000/users_bp/getProfile',
+        headers: {
+          Authorization: 'Bearer ' + userData.getToken
+        }
+      }
+      axios
+        .request(config)
+        .then((response) => {
+          this.username = response.data.username
+          this.email = response.data.email
+          this.role = response.data.role
+          this.phone_number = response.data.phone_number
+          this.addressDetails.address = response.data.address
+          this.addressDetails.addressLine2 = response.data.addressLine2
+          this.addressDetails.city = response.data.city
+          this.addressDetails.state = response.data.state
+          this.addressDetails.zipcode = response.data.zipcode
+          if (response.data.role == 'Donor' || response.data.role == 'Admin') {
+            this.fetchDonorPledges()
+          }
+          if (response.data.role == 'Recipient' || response.data.role == 'Admin') {
+            this.fetchRecipientRequests()
+          }
+        })
+        .catch(() => {
+          alertStore.showError('Failed to fetch user profile')
+        })
+    },
+    /**
+     * Fetches the donor's pledges.
+     */
+    fetchDonorPledges() {
+      let userData = user()
+      let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: 'http://127.0.0.1:5000/pledge/getUserPledges',
+        headers: {
+          Authorization: 'Bearer ' + userData.getToken
+        }
       }
 
-      const config = {
-        headers: {
-          'Authorization': `Bearer ${userData.getToken}`, 
-        }
-      };
-
-      axios.get('http://127.0.0.1:5000/users_bp/getProfile', config)
-        .then(response => {
-          const data = response.data;
-          this.username = data.username;
-          this.email = data.email;
-          this.role = data.role;
-          this.phone_number = data.phone_number;
-
-          this.addressDetails = {
-            address: data.address,
-            addressLine2: data.addressLine2,
-            city: data.city,
-            state: data.state,
-            zipcode: data.zipcode
-          };
+      axios
+        .request(config)
+        .then((response) => {
+          for (let i = 0; i < response.data.length; i++) {
+            if (response.data[i].is_fulfilled == 0) {
+              this.activePledges.push(response.data[i])
+            } else {
+              this.pastPledges.push(response.data[i])
+            }
+          }
         })
-        .catch(error => {
-          console.error("Error fetching user profile:", error);
-          
-        });
+        .catch(() => {
+          alertStore.showError('Failed to fetch user pledges')
+        })
     },
-  
+    /**
+     * Fetches the recipient's requests.
+     */
+    fetchRecipientRequests() {
+      // let userData = user()
+    },
+    cancelpledge(pledge_id) {
+      console.log(pledge_id)
+    },
     /**
      * Clears the address details and location.
      */
@@ -309,15 +348,13 @@ export default {
     /**
      * Toggles the edit mode.
      */
-     async toggleEdit() {
-    if (this.edit) {      
-      await this.editProfile();
-    }
-    this.edit = !this.edit; 
-  }
+    async toggleEdit() {
+      if (this.edit) {
+        await this.editProfile()
+      }
+      this.edit = !this.edit
+    },
 
-
-,
     /**
      * Redirects to the create item page.
      */
@@ -329,6 +366,9 @@ export default {
      */
     routeEvent() {
       this.$router.push({ name: 'eventManagement' })
+    },
+    routePledge() {
+      this.$router.push({ name: 'pledge' })
     }
   }
 }

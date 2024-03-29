@@ -1,5 +1,4 @@
 from stores import db
-from models.DonationRequest import DonationRequest
 
 class DisasterEvent(db.Model):
     __tablename__ = 'event'
@@ -15,9 +14,30 @@ class DisasterEvent(db.Model):
     requests = db.relationship('DonationRequest', backref='event', lazy=True)
     items = db.relationship('EventItem', backref='event', lazy=True)
 
+    def to_dict(self):
+        return {
+            'event_id': self.event_id,
+            'event_name': self.event_name,
+            'description': self.description,
+            'location': self.location,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'start_date': self.start_date,
+            'end_date': self.end_date,
+        }
+
 class EventItem(db.Model):
     __tablename__ = 'eventitem'
 
     event_item_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     event_id = db.Column(db.Integer, db.ForeignKey('event.event_id'), nullable=False)
     item_id = db.Column(db.Integer, db.ForeignKey('items.ItemID'), nullable=False)
+    isActive = db.Column(db.Integer, nullable=False, default=1)
+
+    def to_dict(self):
+        return {
+            'event_item_id': self.event_item_id,
+            'event_id': self.event_id,
+            'item_id': self.item_id,
+            'isActive': self.isActive
+        }

@@ -27,7 +27,6 @@ vi.mock('@/stores/user', () => ({
   })
 }))
 
-
 vi.mock('vue-router', () => ({
   useRouter: () => ({
     push: vi.fn()

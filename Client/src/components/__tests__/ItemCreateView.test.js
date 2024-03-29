@@ -55,11 +55,11 @@ describe('Component.vue', () => {
       description: 'New Description'
     }
     wrapper.vm.addItem()
-    expect(wrapper.vm.newItem).toEqual({ 
-      "category": "New Category",
-      "description": "New Description",
-      "name": "New Item",
-     })
+    expect(wrapper.vm.newItem).toEqual({
+      category: 'New Category',
+      description: 'New Description',
+      name: 'New Item'
+    })
     expect(wrapper.vm.showItemDialog).toBe(false)
     //Needs to be redone
   })

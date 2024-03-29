@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { events } from '../stores/events.js'
 import { user } from '../stores/user.js'
 import axios from 'axios'
 import { loadingBar } from '../stores/loading.js'
@@ -56,7 +55,6 @@ const router = createRouter({
             Authorization: 'Bearer ' + userData.getToken
           }
         }
-
         axios
           .request(config)
           .then(() => {
@@ -70,17 +68,26 @@ const router = createRouter({
     {
       path: '/event/:id',
       name: 'event',
+      component: () => import('../views/EventView.vue'),
       beforeEnter: (to, from, next) => {
-        const eventData = events()
-        let event = eventData.getEvent(to.params.id)
-        if (event != null && event != undefined) {
-          to.params.event = event
-          next()
-        } else {
-          next('/notfound')
+        let config = {
+          method: 'get',
+          maxBodyLength: Infinity,
+          url: 'http://127.0.0.1:5000/event/isEvent?event_id=' + to.params.id
         }
-      },
-      component: () => import('../views/EventView.vue')
+        axios
+          .request(config)
+          .then((response) => {
+            if (response.data['is_event'] === false) {
+              next('/404')
+            } else {
+              next()
+            }
+          })
+          .catch(() => {
+            next('/404')
+          })
+      }
     },
     {
       path: '/donation/:id',
@@ -124,7 +131,8 @@ const router = createRouter({
             next()
           })
           .catch(() => {
-            next('/login')
+            alertStore.showInfo('You must be an admin to access that page', 'Access Error', true)
+            next('/')
           })
       }
     },
@@ -150,7 +158,35 @@ const router = createRouter({
             next()
           })
           .catch(() => {
-            next('/login')
+            alertStore.showInfo('You must be an admin to access that page', 'Access Error', true)
+            next('/')
+          })
+      }
+    },
+    {
+      path: '/pledge',
+      name: 'pledge',
+      component: () => import('../views/PledgeView.vue'),
+      beforeEnter: (to, from, next) => {
+        let userData = user()
+        let config = {
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: 'http://127.0.0.1:5000/users_bp/verifyDonor',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + userData.getToken
+          }
+        }
+        axios
+          .request(config)
+          .then(() => {
+            console.log(userData.getToken)
+            next()
+          })
+          .catch(() => {
+            alertStore.showInfo('You must be a donor to access that page', 'Access Error', true)
+            next('/')
           })
       }
     },
