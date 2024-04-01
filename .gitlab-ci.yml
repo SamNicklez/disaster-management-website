@@ -14,9 +14,12 @@ coverage_tests:
   #Cd Server
   #python -m coverage run -m pytest
   #python -m coverage xml
+
+  #python -m coverage xml
       - Client/test-results.xml
       - Client/coverage
       - Server/coverage.xml
+      - Server/coverage.lcov
     expire_in: 1 week
   
 sonarqube-check:
