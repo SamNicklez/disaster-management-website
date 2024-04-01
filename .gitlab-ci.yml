@@ -1,7 +1,6 @@
 stages:
   - test
   - analyze
-
 coverage_tests:
   stage: test
   image: node:latest
@@ -11,23 +10,14 @@ coverage_tests:
     - npm run coverage:unit
   artifacts:
     paths:
+  #Since we have to run server tests locally, here are the commands
+  #Cd Server
+  #python -m coverage run -m pytest
+  #python -m coverage xml
       - Client/test-results.xml
       - Client/coverage
-      # - Server/coverage.xml
+      - Server/coverage.xml
     expire_in: 1 week
-
-# server_unit_test:
-#   stage: test
-#   image: python:latest
-#   script:
-#     - cd Server
-#     - pip install -r requirements.txt
-#     - coverage run -m pytest
-#     - coverage xml
-#   artifacts:
-#     paths:
-#       - Server/coverage.xml
-#     expire_in: 1 week
   
 sonarqube-check:
   stage: analyze

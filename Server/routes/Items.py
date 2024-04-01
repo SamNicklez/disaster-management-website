@@ -58,7 +58,6 @@ def create_item():
     try:
         
         data = request.get_json()
-        print(data)
         category = Category.query.filter_by(CategoryName=data['CategoryName']).first()
         item = Item.query.filter_by(ItemName=data['ItemName']).first()
 
