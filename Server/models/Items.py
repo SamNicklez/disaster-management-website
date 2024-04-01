@@ -16,4 +16,13 @@ class Item(db.Model):
     CategoryId = db.Column(db.Integer, db.ForeignKey('category.CategoryId') ,nullable=False)
     category = db.relationship('Category', backref=db.backref('items', lazy=True))
 
+    def to_dict(self):
+        return {
+            'ItemID': self.ItemID,
+            'ItemName': self.ItemName,
+            'ItemDescription': self.ItemDescription,
+            'isActive': self.isActive,
+            'CategoryId': self.CategoryId
+        }
+
     

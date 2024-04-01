@@ -3,15 +3,18 @@
     <div>
       <h1>Active Disasters</h1>
       <v-row>
-        <v-col cols="12" sm="6" v-for="event in this.events" :key="event.route_id">
-          <v-card @click="goToEvent(event.route_id)" class="ma-1" hoverable id="card">
-            <v-card-title style="font-size: 2em">{{ event.name }}</v-card-title>
+        <v-col cols="12" sm="6" v-for="event in this.events" :key="event.event_id">
+          <v-card @click="goToEvent(event.event_id)" class="ma-1" hoverable id="card">
+            <v-card-title style="font-size: 2em">{{
+              this.truncateName(event.event_name, 40) || 'Title Not Found'
+            }}</v-card-title>
             <v-card-text style="font-size: 1.1em">
               <div>
-                <b>{{ event.location }}</b>
+                <b>{{ this.truncateName(event.location, 60) || 'Location Not Found' }}</b>
               </div>
-              <div>{{ event.date }} at {{ event.time }}</div>
-              <div>{{ event.description }}</div>
+              <br />
+              <div>{{ this.formatDate(event.start_date) || 'Date Not Found' }}</div>
+              <div>{{ this.truncateName(event.description, 75) || 'No Description' }}</div>
             </v-card-text>
           </v-card>
         </v-col>
@@ -21,8 +24,7 @@
 </template>
 
 <script>
-import { events } from '../stores/events.js'
-
+import axios from 'axios'
 export default {
   data() {
     return {
@@ -35,11 +37,24 @@ export default {
      * @returns {Array} The list of events.
      */
     events() {
-      return this.eventData ? this.eventData.getEvents : []
+      return this.eventData
     }
   },
   mounted() {
-    this.eventData = events()
+    let config = {
+      method: 'get',
+      maxBodyLength: Infinity,
+      url: 'http://127.0.0.1:5000/event/GetAllEvents'
+    }
+
+    axios
+      .request(config)
+      .then((response) => {
+        this.eventData = response.data.events.slice(0, 10)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   },
   methods: {
     /**
@@ -48,6 +63,20 @@ export default {
      */
     goToEvent(id) {
       this.$router.push({ name: 'event', params: { id: id } })
+    },
+    formatDate(dateString) {
+      const date = new Date(dateString)
+      const month = date.getMonth() + 1
+      const day = date.getDate()
+      const year = date.getFullYear()
+      return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`
+    },
+    truncateName(name, maxLength) {
+      if (!name) return name
+      if (name.length > maxLength) {
+        return name.substring(0, maxLength) + '...'
+      }
+      return name
     }
   }
 }

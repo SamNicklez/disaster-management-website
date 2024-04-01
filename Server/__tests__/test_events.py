@@ -2,7 +2,7 @@ from flask import Flask
 import unittest
 from unittest.mock import patch
 from models.DisasterEvent import DisasterEvent, EventItem
-from models.DonationRequest import DonationRequest, ItemRequest
+from models.DonationRequest import DonationRequest
 from models.Items import Item
 from Flask_app import events_bp
 

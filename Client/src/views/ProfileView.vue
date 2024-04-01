@@ -11,7 +11,7 @@ import UserInfoComponent from '@/components/UserInfoComponent.vue'
       id="card"
       elevation="8"
       rounded="lg"
-      style="margin-bottom: 10vh; background-color: #e0dfd5"
+      style="margin-bottom: 10vh"
     >
       <UserInfoComponent />
     </v-card>
@@ -20,6 +20,6 @@ import UserInfoComponent from '@/components/UserInfoComponent.vue'
 
 <style scoped>
 #card {
-  width: 55%;
+  width: 60%;
 }
 </style>

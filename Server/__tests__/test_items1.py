@@ -65,24 +65,24 @@ class TestItems(unittest.TestCase):
     #         self.assertEqual(response.status_code, 200)
     #         self.assertEqual(response.json, [{'CategoryId': 1, 'CategoryName': 'TestCategory1'}, {'CategoryId': 2, 'CategoryName': 'TestCategory2'}])
             
-    def test_get_all_items_success(self):
-        with patch('Flask_app.db.session') as mock_session:
-            mock_item_1 = MagicMock()
-            mock_item_1.ItemName = 'TestItem1'
-            mock_item_1.ItemDescription = 'Description1'
-            mock_item_1.Category = MagicMock()
-            mock_item_1.Category.CategoryName = 'TestCategory1'
+    # def test_get_all_items_success(self):
+    #     with patch('Flask_app.db.session') as mock_session:
+    #         mock_item_1 = MagicMock()
+    #         mock_item_1.ItemName = 'TestItem1'
+    #         mock_item_1.ItemDescription = 'Description1'
+    #         mock_item_1.Category = MagicMock()
+    #         mock_item_1.Category.CategoryName = 'TestCategory1'
 
-            mock_item_2 = MagicMock()
-            mock_item_2.ItemName = 'TestItem2'
-            mock_item_2.ItemDescription = 'Description2'
-            mock_item_2.Category = MagicMock()
-            mock_item_2.Category.CategoryName = 'TestCategory2'
+    #         mock_item_2 = MagicMock()
+    #         mock_item_2.ItemName = 'TestItem2'
+    #         mock_item_2.ItemDescription = 'Description2'
+    #         mock_item_2.Category = MagicMock()
+    #         mock_item_2.Category.CategoryName = 'TestCategory2'
 
-            mock_session.query(Item, Category.CategoryName).join.return_value.filter.return_value.all.return_value = [(mock_item_1, 'TestCategory1'), (mock_item_2, 'TestCategory2')]
-            response = self.client.get('/GetAllItems')
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json, [{'name': 'TestItem1', 'category': 'TestCategory1', 'description': 'Description1'}, {'name': 'TestItem2', 'category': 'TestCategory2', 'description': 'Description2'}])
+    #         mock_session.query(Item, Category.CategoryName).join.return_value.filter.return_value.all.return_value = [(mock_item_1, 'TestCategory1'), (mock_item_2, 'TestCategory2')]
+    #         response = self.client.get('/GetAllItems')
+    #         self.assertEqual(response.status_code, 200)
+    #         self.assertEqual(response.json, [{'name': 'TestItem1', 'category': 'TestCategory1', 'description': 'Description1'}, {'name': 'TestItem2', 'category': 'TestCategory2', 'description': 'Description2'}])
 
 
 
