@@ -326,3 +326,52 @@ def passwordReset():
             return jsonify({"error": "Invalid password"}), 401
     except Exception as e:
         return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500
+
+@users_bp.route('/sendforgotpasswordemail', methods=['POST'])
+def forgotPassword():
+    try:
+        data = request.get_json()
+        user = User.query.filter_by(Email=data["email"]).first()
+        if not user:
+            return jsonify({"message": "If a account with this email exists, a code was sent to your email"}), 201
+        
+        verify_token = random.randint(100000, 999999)
+        # Send user email for verification
+        smtp_server = "smtp.gmail.com"
+
+        port = 587  # For starttls
+        sender_email = os.getenv("EMAIL")
+        password = os.getenv("PASSWORD")
+        context = ssl.create_default_context()
+        try:
+            server = smtplib.SMTP(smtp_server, port)
+            server.ehlo()
+            server.starttls(context=context)
+            server.ehlo()
+            server.login(sender_email, password)
+            server.sendmail(
+            sender_email, data["email"], f"Subject: Password Reset\n\nYour verification code is {verify_token}")
+        except Exception as e:
+            print(f"Error: {str(e)}")
+            return jsonify({"error": "Internal Server Error"}), 500
+        finally:
+            server.quit()
+
+        return jsonify({"message": "If a account with this email exists, a code was sent to your email"}), 201
+
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return jsonify({"error": "Internal Server Error"}), 500
+    
+@users_bp.route('/verifyforgotpassword', methods=['POST'])
+def verifyForgotPassword():
+    try:
+        data = request.get_json()
+        user = User.query.filter_by(Email=data["email"]).first()
+        if user.IsVerified == data["verification"]:
+            return jsonify({"message": "User verified successfully"}), 200
+        else:
+            return jsonify({"error": "Invalid verification code"}), 401
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
