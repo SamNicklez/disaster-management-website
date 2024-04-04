@@ -351,6 +351,8 @@ def forgotPassword():
             server.login(sender_email, password)
             server.sendmail(
             sender_email, data["email"], f"Subject: Password Reset\n\nYour verification code is {verify_token}")
+            user.verify_code = verify_token
+            db.session.commit()
         except Exception as e:
             print(f"Error: {str(e)}")
             return jsonify({"error": "Internal Server Error"}), 500
@@ -368,10 +370,10 @@ def verifyForgotPassword():
     try:
         data = request.get_json()
         user = User.query.filter_by(Email=data["email"]).first()
-        if user.IsVerified == data["verification"]:
-            return jsonify({"message": "User verified successfully"}), 200
-        else:
-            return jsonify({"error": "Invalid verification code"}), 401
+        if not user:
+            return jsonify({"error": "Code or Email is incorrect, please try again"}), 500
+        
+
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
