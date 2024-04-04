@@ -304,3 +304,25 @@ def getRole():
 
     except Exception as e:
         return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500
+    
+@users_bp.route('/passwordreset', methods=['POST'])
+@token_auth.login_required
+def passwordReset():
+    auth_header = request.headers.get('Authorization')
+    token = auth_header.split(
+        " ")[1] if auth_header and auth_header.startswith('Bearer ') else None
+    if token is None:
+        return jsonify({"error": "User is not logged in"}), 401
+    try:
+        user_id = jwt.decode(token, "secret", algorithms=["HS256"])["id"]
+        data = request.get_json()
+        current_user = User.query.filter_by(UserId=user_id).first()
+        if current_user and check_password_hash(current_user.Password, data["old_password"]):
+            hashed_new_password = generate_password_hash(data["new_password"])
+            current_user.Password = hashed_new_password
+            db.session.commit()
+            return jsonify({"message": "Password updated successfully"}), 200
+        else:
+            return jsonify({"error": "Invalid password"}), 401
+    except Exception as e:
+        return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500
