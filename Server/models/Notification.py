@@ -8,7 +8,7 @@ class Notification(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.UserId'), nullable=False)
     message = db.Column(db.Text, nullable=False)
     is_dismissed = db.Column(db.Boolean, default=False, nullable=False)
-    created_date = db.Column(db.DateTime, default=datetime.utcnow)
+    created_date = db.Column(db.DateTime, default=datetime.now())
 
     def to_dict(self):
         """

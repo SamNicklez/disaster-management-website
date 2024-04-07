@@ -9,13 +9,14 @@
                 <v-autocomplete
                   v-model="selectedUserId"
                   :items="users"
-                  item-text="name"
+                  item-title= "displayText"
                   item-value="id"
                   label="Select User"
                   return-object
                   single-line
                   clearable
-                ></v-autocomplete>
+                >
+              </v-autocomplete>
                 <v-text-field
                   v-model="notificationMessage"
                   label="Notification Message"
@@ -56,7 +57,7 @@
     methods: {
       
       async createNotification() {
-        const userData = user(); // Assuming you have a method to get current user's data
+        const userData = user(); 
         if (!this.selectedUserId || !this.notificationMessage) {
           alertStore.showError('Please select a user and enter a message.');
           return;
@@ -68,39 +69,42 @@
         };
 
         try {
-          await axios.post('http://127.0.0.1:5000/notifications/create', payload, {
+          await axios.post('http://127.0.0.1:5000/notification/create', payload, {
             headers: {
               'Content-Type': 'application/json',
-              Authorization: 'Bearer' + userData.getToken(),
+              Authorization: 'Bearer ' + userData.getToken,
             },
           });
 
-      this.notificationMessage = '';
-      this.selectedUserId = null;
-      alertStore.showSuccess('Notification created successfully.');
-    } catch (error) {
-      console.error('Failed to create notification:', error);
-      alertStore.showError('Failed to send notification. Please try again.');
-    }
-  },
-  fetchAllUsers() {
-    let userData = user();
-    axios.get('http://127.0.0.1:5000/users/getAllUsers', {
-      headers: {
-        Authorization: 'Bearer' + userData.getToken
-      }
-    })
-    .then((response) => {
-      this.users = response.data.map(user => ({
-        name: user.email,
-        id: user.id
-      }));
-    })
-    .catch((error) => {
-      console.error('Failed to fetch users:', error);
-      alertStore.showError('Error fetching users');
-    });
-  }
+          this.notificationMessage = '';
+          this.selectedUserId = null;
+          alertStore.showSuccess('Notification created successfully.');
+        } catch (error) {
+          console.error('Failed to create notification:', error);
+          alertStore.showError('Failed to send notification. Please try again.');
+        }
+      },
+    fetchAllUsers() {
+      let userData = user();
+      axios.get('http://127.0.0.1:5000/users_bp/getAllUsers', {
+        headers: {
+          Authorization: 'Bearer ' + userData.getToken
+        }
+      })
+      .then((response) => {
+        this.users = response.data.map(user => {
+          return{
+          displayText: `ID: ${user.id} | EMAIL: ${user.email}`,
+          email: user.email,
+          id: user.id
+          };
+        });
+      })
+      .catch((error) => {
+        console.error('Failed to fetch users:', error);
+        alertStore.showError('Error fetching users');
+        });
+      },
     },
   };
   </script>
