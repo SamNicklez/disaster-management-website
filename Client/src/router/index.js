@@ -1,3 +1,5 @@
+import NotificationView from '../views/NotificationView.vue';
+
 import { createRouter, createWebHistory } from 'vue-router'
 import { user } from '../stores/user.js'
 import axios from 'axios'
@@ -134,6 +136,35 @@ const router = createRouter({
             alertStore.showInfo('You must be an admin to access that page', 'Access Error', true)
             next('/')
           })
+      }
+    },
+    {
+      path: '/createNotification',
+      name: 'createNotification',
+      component: () => import('../views/NotificationView.vue'),
+      beforeEnter: (to, from, next) => {
+        let userData = user()
+        let config = {
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: 'http://127.0.0.1:5000/users_bp/verifyUser',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + userData.getToken
+          }
+        }
+        axios
+        .request(config)
+        .then(() => {
+            next()
+          }) 
+          .catch(() => {
+            alertStore.showInfo('You must be an admin to access that page', 'Access Error', true)
+            next('/')
+          })
+        .catch(() => {  
+          next('/')
+        })
       }
     },
     {

@@ -124,10 +124,25 @@
   </div>
   <v-card-title v-if="role == 'Admin'">Admin Settings</v-card-title>
   <v-container v-if="role == 'Admin'">
-    <v-btn @click="createItem" color="primary" style="margin-right: 5vh"
-      >Items and Category Management</v-btn
-    >
-    <v-btn @click="routeEvent" color="primary">Event Management</v-btn>
+    <v-row>
+    <v-col cols="auto">
+      <v-btn @click="createItem" color="secondary">
+        Items and Category Management
+      </v-btn>
+    </v-col>
+
+    <v-col cols="auto">
+      <v-btn @click="routeEvent" color="secondary">
+        Event Management
+      </v-btn>
+    </v-col>
+
+    <v-col cols="auto">
+      <v-btn @click="routeNotification" color="secondary">
+        Notification Management
+      </v-btn>
+    </v-col>
+  </v-row>
   </v-container>
 </template>
 
@@ -360,6 +375,12 @@ export default {
      */
     createItem() {
       this.$router.push({ name: 'createItem' })
+    },
+    /**
+     * Redirects to the create notification page.
+     */
+    routeNotification() {
+      this.$router.push({ name: 'createNotification' });
     },
     /**
      * Redirects to the event management page.

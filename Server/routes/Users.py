@@ -304,3 +304,25 @@ def getRole():
 
     except Exception as e:
         return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500
+@users_bp.route('/getAllUsers', methods=['GET'])
+@admin_auth.login_required 
+def getAllUsers():
+    """
+    Fetch all users.
+
+    Outputs:
+    - If successful, returns a JSON object with an array of all users.
+    - If there is an internal server error, returns a JSON object with an error message.
+    """
+    try:
+        users = User.query.all()
+        users_data = [{
+            "id": user.UserId,
+            "email": user.Email,
+            "role": Role.query.filter_by(RoleID=user.RoleID).first().Name
+        } for user in users]
+
+        return jsonify(users_data), 200
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return jsonify({"error": "Internal Server Error"}), 500
