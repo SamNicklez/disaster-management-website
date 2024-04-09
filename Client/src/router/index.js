@@ -222,6 +222,10 @@ const router = createRouter({
       }
     },
     {
+      path: '/notificationsList',
+      name: 'notificationsList'
+    },
+    {
       path: '/:catchAll(.*)',
       name: '404',
       component: () => import('../views/NotFoundView.vue')

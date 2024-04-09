@@ -114,6 +114,8 @@
       </v-row>
     </div>
   </div>
+  <v-card-title>Notifications</v-card-title>
+  <v-btn @click="routeNotificationsList" color="primary">View Notifications</v-btn>
   <div v-if="role == 'Recipient' || 'Admin'">
     <div v-if="activeRequests != 0">
       <v-card-title>Your Requests</v-card-title>
@@ -122,6 +124,7 @@
       <v-card-title>Your Past Requests</v-card-title>
     </div>
   </div>
+
   <v-card-title v-if="role == 'Admin'">Admin Settings</v-card-title>
   <v-container v-if="role == 'Admin'">
     <v-row>
@@ -390,6 +393,9 @@ export default {
     },
     routePledge() {
       this.$router.push({ name: 'pledge' })
+    },
+    routeNotificationsList() {
+      this.$router.push({ name: 'notificationsList' })
     }
   }
 }
