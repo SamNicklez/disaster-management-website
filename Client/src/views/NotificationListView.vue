@@ -10,10 +10,8 @@
             v-for="notification in notifications"
             :key="notification.id"
           >
-            <v-list-item-content>
               <v-list-item-title>{{ notification.title }}</v-list-item-title>
               <v-list-item-subtitle>{{ notification.message }}</v-list-item-subtitle>
-            </v-list-item-content>
           </v-list-item>
         </v-list>
       </v-card-text>
@@ -21,8 +19,9 @@
   </template>
   
   <script>
-  import axios from 'axios';
-  
+import axios from 'axios';
+import { user } from '../stores/user.js'
+import { alertStore } from '../stores/alert.js'
   export default {
     data() {
       return {

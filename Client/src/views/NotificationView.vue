@@ -64,7 +64,7 @@
         }
 
         const payload = {
-          user_id: this.selectedUserId.id, // Assuming your selectedUserId object has an id property
+          user_id: this.selectedUserId.id, 
           message: this.notificationMessage,
         };
 

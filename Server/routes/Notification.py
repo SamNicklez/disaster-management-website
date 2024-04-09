@@ -2,6 +2,8 @@ from flask import Blueprint, jsonify, request
 from stores import db
 from models.Notification import Notification
 from routes import admin_auth
+import jwt
+
 notification_bp = Blueprint('notification', __name__)
 
 @notification_bp.route('/create', methods=['POST'])
@@ -36,3 +38,26 @@ def create_notification():
     except Exception as e:
         print(f"Error: {str(e)}")
         return jsonify({"error": "Internal Server Error"}), 500
+
+@notification_bp.route('/getUserNotifications', methods=['GET'])
+def get_notifications():
+    """
+    Get all notifications for the logged-in user.
+
+    Returns:
+        A JSON response with a list of notifications for the user.
+        A JSON response with an error message if there is an exception.
+    """
+    try:
+        auth_header = request.headers.get('Authorization')
+        token = auth_header.split(" ")[1] if auth_header and auth_header.startswith('Bearer ') else None
+        if token is None:
+            return jsonify({"error": "User is not logged in"}), 401
+        
+        user_id = jwt.decode(token, "your_secret_key_here", algorithms=["HS256"])["id"]
+        notifications = Notification.query.filter_by(user_id=user_id).all()
+        
+        return jsonify([notification.to_dict() for notification in notifications]), 200
+    except Exception as e:
+        print(e)  
+        return jsonify({'error': str(e)}), 500
