@@ -5,14 +5,14 @@
         <v-spacer></v-spacer>
       </v-card-title>
       <v-card-text>
-        <v-list dense> <!-- Added 'dense' for a more compact list -->
+        <v-list dense>
             <v-list-item v-for="notification in notifications" :key="notification.id" class="notification-item">
-            <v-row align="center"> <!-- This will vertically center the content -->
+            <v-row align="center">
                 <v-col cols="9">
                 <v-list-item-subtitle>{{ notification.message }}</v-list-item-subtitle>
                 </v-col>
                 <v-col cols="3" class="text-end">
-                <span class="caption">{{ notification.created_date }}</span>
+                <span class="caption">{{ formatDate(notification.created_date) }}</span>
                 </v-col>
             </v-row>
             </v-list-item>
@@ -55,7 +55,15 @@ import { alertStore } from '../stores/alert.js'
           .catch(error => {
             console.error('There was an error fetching the notifications:', error);
           });
-      },
+        },
+        
+        formatDate(date) {
+            const newDate = new Date(date);
+                const day = newDate.getDate().toString().padStart(2, '0');
+                const month = (newDate.getMonth() + 1).toString().padStart(2, '0'); // getMonth() is zero-based
+                const year = newDate.getFullYear();
+                return `${month}/${day}/${year}`; // Example: 07/08/2023
+        },
     },
   };
   </script>
