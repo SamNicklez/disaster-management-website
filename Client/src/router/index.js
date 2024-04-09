@@ -223,7 +223,8 @@ const router = createRouter({
     },
     {
       path: '/notificationsList',
-      name: 'notificationsList'
+      name: 'notificationsList',
+      component: () => import('../views/NotificationListView.vue')
     },
     {
       path: '/:catchAll(.*)',
