@@ -5,18 +5,28 @@
         <v-spacer></v-spacer>
       </v-card-title>
       <v-card-text>
-        <v-list>
-          <v-list-item
-            v-for="notification in notifications"
-            :key="notification.id"
-          >
-              <v-list-item-title>{{ notification.title }}</v-list-item-title>
-              <v-list-item-subtitle>{{ notification.message }}</v-list-item-subtitle>
-          </v-list-item>
+        <v-list dense> <!-- Added 'dense' for a more compact list -->
+            <v-list-item v-for="notification in notifications" :key="notification.id" class="notification-item">
+            <v-row align="center"> <!-- This will vertically center the content -->
+                <v-col cols="9">
+                <v-list-item-subtitle>{{ notification.message }}</v-list-item-subtitle>
+                </v-col>
+                <v-col cols="3" class="text-end">
+                <span class="caption">{{ notification.created_date }}</span>
+                </v-col>
+            </v-row>
+            </v-list-item>
         </v-list>
       </v-card-text>
     </v-card>
   </template>
+  
+  <style scoped>
+  .notification-item {
+    border-bottom: 1px solid #eee; /* Add a subtle separator */
+  }
+  </style>
+  
   
   <script>
 import axios from 'axios';
@@ -34,7 +44,7 @@ import { alertStore } from '../stores/alert.js'
     methods: {
       fetchNotifications() {
         let userData = user();
-        axios.get('http://127.0.0.1:5000/users_bp/getAllUsers', {
+        axios.get('http://127.0.0.1:5000/notification/get', {
             headers: {
                 Authorization: 'Bearer ' + userData.getToken
             }

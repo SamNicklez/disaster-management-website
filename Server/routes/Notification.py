@@ -34,12 +34,12 @@ def create_notification():
         db.session.add(new_notification)
         db.session.commit()
 
-        return jsonify({'message': 'Notification created successfully'}), 201
+        return jsonify({'message': 'Notification created successfully'}), 200
     except Exception as e:
         print(f"Error: {str(e)}")
         return jsonify({"error": "Internal Server Error"}), 500
 
-@notification_bp.route('/getUserNotifications', methods=['GET'])
+@notification_bp.route('/get', methods=['GET'])
 def get_notifications():
     """
     Get all notifications for the logged-in user.
@@ -54,10 +54,11 @@ def get_notifications():
         if token is None:
             return jsonify({"error": "User is not logged in"}), 401
         
-        user_id = jwt.decode(token, "your_secret_key_here", algorithms=["HS256"])["id"]
+        user_id = jwt.decode(token, "secret", algorithms=["HS256"])["id"]
         notifications = Notification.query.filter_by(user_id=user_id).all()
+        
         
         return jsonify([notification.to_dict() for notification in notifications]), 200
     except Exception as e:
-        print(e)  
+        print(f"Error: {str(e)}")
         return jsonify({'error': str(e)}), 500
