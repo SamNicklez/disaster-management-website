@@ -9,7 +9,7 @@
             <v-list-item v-for="notification in notifications" :key="notification.id" class="notification-item">
             <v-row align="center">
                 <v-col cols="9">
-                <v-list-item-subtitle>{{ notification.message }}</v-list-item-subtitle>
+                <v-list-item-title>{{ notification.message }}</v-list-item-title>
                 </v-col>
                 <v-col cols="3" class="text-end">
                 <span class="caption">{{ formatDate(notification.created_date) }}</span>
@@ -56,13 +56,13 @@ import { alertStore } from '../stores/alert.js'
             console.error('There was an error fetching the notifications:', error);
           });
         },
-        
+
         formatDate(date) {
             const newDate = new Date(date);
                 const day = newDate.getDate().toString().padStart(2, '0');
-                const month = (newDate.getMonth() + 1).toString().padStart(2, '0'); // getMonth() is zero-based
+                const month = (newDate.getMonth() + 1).toString().padStart(2, '0'); 
                 const year = newDate.getFullYear();
-                return `${month}/${day}/${year}`; // Example: 07/08/2023
+                return `${month}/${day}/${year}`; 
         },
     },
   };
