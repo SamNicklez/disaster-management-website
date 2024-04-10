@@ -227,6 +227,11 @@ const router = createRouter({
       component: () => import('../views/NotificationListView.vue')
     },
     {
+      path: '/viewUnread',
+      name: 'viewUnread',
+      component: () => import('../views/NavComponentView.vue')
+    },
+    {
       path: '/:catchAll(.*)',
       name: '404',
       component: () => import('../views/NotFoundView.vue')

@@ -54,6 +54,7 @@
 
 <script>
 import '@mdi/font/css/materialdesignicons.css'
+import { Axios } from 'axios'
 export default {
   data() {
     return {
@@ -95,7 +96,19 @@ export default {
      * Populates the notifications
      */
     populateNotifications() {
-      //Somewhere in here, ping server to get unread notifications for the user
+      let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: 'http://127.0.0.1:5000/notificaiton_bp/viewUnread',
+        headers: {
+          Authorization: 'Bearer ' + userData.getToken
+        }
+      }
+      axios
+       .request(config)
+       .then(response => {
+          this.notifications = response.data.notifications
+        })
     },
     /**
      * Closes a notification
