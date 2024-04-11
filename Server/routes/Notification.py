@@ -92,3 +92,26 @@ def get_unread_notifications():
     except Exception as e:
         print(f"Error: {str(e)}")
         return jsonify({'error': 'An error occurred while fetching notifications'}), 500
+
+@notification_bp.route('/markRead/<int:notification_id>', methods=['POST'])
+def mark_notification_as_read(notification_id):
+    try:
+        auth_header = request.headers.get('Authorization')
+        token = auth_header.split(" ")[1] if auth_header and auth_header.startswith('Bearer ') else None
+       
+        if token is None:
+            return jsonify({"error": "User is not logged in"}), 401
+        
+        user_id = jwt.decode(token, "secret", algorithms=["HS256"])["id"]
+        # Find and update the notification
+        notification = Notification.query.filter_by(user_id=user_id, notification_id=notification_id).first()
+        if not notification:
+            return jsonify({"error": "Notification not found"}), 404
+
+        notification.is_dismissed = True
+        db.session.commit()
+
+        return jsonify({"message": "Notification marked as read"}), 200
+
+    except Exception as e:
+        return jsonify({"error": "An error occurred: " + str(e)}), 500

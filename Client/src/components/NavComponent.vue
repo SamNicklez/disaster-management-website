@@ -93,7 +93,6 @@ export default {
      */
     populateNotifications() {
       let userData = user()
-      console.log('Fetching notifications...');
       let config = {
         method: 'get',
         maxBodyLength: Infinity,
@@ -112,9 +111,22 @@ export default {
      * Closes a notification
      * @param {int} index
      */
-    closeNoti(index) {
-      this.notifications.splice(index, 1)
-      //Somewhere in here, ping server to mark notification as read
+     closeNoti(index) {
+      let userData = user()
+        const notificationId = this.notifications[index].notification_id;
+          axios.post(`http://127.0.0.1:5000/notification/markRead/${notificationId}`, {}, {
+            headers: {
+              'Authorization': `Bearer ` + userData.getToken, 
+            }
+          })
+          .then(response => {
+            console.log(response.data.message); // "Notification marked as read"
+            // Remove the notification from the list after successfully marking it as read
+            this.notifications.splice(index, 1);
+          })
+          .catch(error => {
+            console.error("Error marking notification as read:", error);
+          });
     }
   }
 }
