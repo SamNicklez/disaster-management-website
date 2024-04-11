@@ -62,3 +62,33 @@ def get_notifications():
     except Exception as e:
         print(f"Error: {str(e)}")
         return jsonify({'error': str(e)}), 500
+    
+@notification_bp.route('/viewUnread', methods=['GET'])
+def get_unread_notifications():
+    """
+    Get all unread notifications for the logged-in user.
+
+    Returns:
+        A JSON response with a list of unread notifications for the user.
+        A JSON response with an error message if there is an exception.
+    """
+    try:
+        auth_header = request.headers.get('Authorization')
+        token = auth_header.split(" ")[1] if auth_header and auth_header.startswith('Bearer ') else None
+        
+        if token is None:
+            return jsonify({"error": "Authorization token is missing"}), 401
+        
+        # Assuming 'your_secret_key' is your actual secret key used for encoding the JWT tokens
+        user_id = jwt.decode(token, "secret", algorithms=["HS256"])["id"]
+        
+        unread_notifications = Notification.query.filter_by(user_id=user_id, is_dismissed=False).all()   
+        
+        return jsonify([notification.to_dict() for notification in unread_notifications]), 200
+    except jwt.ExpiredSignatureError:
+        return jsonify({'error': 'Token has expired'}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({'error': 'Invalid token'}), 401
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return jsonify({'error': 'An error occurred while fetching notifications'}), 500

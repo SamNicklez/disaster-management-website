@@ -54,17 +54,13 @@
 
 <script>
 import '@mdi/font/css/materialdesignicons.css'
-import { Axios } from 'axios'
+import { user } from '../stores/user.js'
+import axios from 'axios'
 export default {
   data() {
     return {
       searchQuery: '',
-      notifications: [
-        { title: 'Notification 1', description: 'This is a notification' },
-        { title: 'Notification 2', description: 'This is a notification' },
-        { title: 'Notification 3', description: 'This is a notification' },
-        { title: 'Notification 4', description: 'This is a notification' }
-      ]
+      notifications: []
     }
   },
   methods: {
@@ -96,10 +92,12 @@ export default {
      * Populates the notifications
      */
     populateNotifications() {
+      let userData = user()
+      console.log('Fetching notifications...');
       let config = {
         method: 'get',
         maxBodyLength: Infinity,
-        url: 'http://127.0.0.1:5000/notificaiton_bp/viewUnread',
+        url: 'http://127.0.0.1:5000/notification/viewUnread',
         headers: {
           Authorization: 'Bearer ' + userData.getToken
         }
@@ -107,7 +105,7 @@ export default {
       axios
        .request(config)
        .then(response => {
-          this.notifications = response.data.notifications
+          this.notifications = response.data
         })
     },
     /**
