@@ -398,7 +398,6 @@ def verifyForgotPassword():
                 server.quit()
             return jsonify({"message": "Your password has been upated, please check your email for details"}), 200
 
-
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
