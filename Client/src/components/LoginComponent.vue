@@ -162,7 +162,7 @@ export default {
      * Routes to the forgot password page
      */
     forgotPass() {
-      console.log('Forgot password')
+      this.$router.push({ name: 'forgotPassword' })
       //Router push to somewhere to reset password
     },
     /**

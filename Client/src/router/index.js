@@ -191,6 +191,11 @@ const router = createRouter({
       }
     },
     {
+      path: '/forgotPassword',
+      name: 'forgotPassword',
+      component: () => import('../views/ForgotPasswordView.vue')
+    },
+    {
       path: '/:catchAll(.*)',
       name: '404',
       component: () => import('../views/NotFoundView.vue')

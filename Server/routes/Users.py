@@ -376,8 +376,7 @@ def verifyForgotPassword():
         if not user:
             return jsonify({"error": "Code or Email is incorrect, please try again"}), 500
         if user.verify_code == data["code"]:
-            password_characters_no_special = string.ascii_letters + string.digits
-            password_no_special = ''.join(random.choice(password_characters_no_special) for i in range(10))
+            password_no_special = ''.join(random.choices('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*', k=12))
             hashed_password = generate_password_hash(password_no_special)
             user.Password = hashed_password
             smtp_server = "smtp.gmail.com"
@@ -393,7 +392,7 @@ def verifyForgotPassword():
                 server.ehlo()
                 server.login(sender_email, password)
                 server.sendmail(
-                sender_email, data["email"], f"Subject: Password Reset\n\nWe have issued a new password for your account: {password_no_special}, please login and change it immediately.")
+                sender_email, data["email"], f"Subject: Password Reset\n\nWe have issued a new password for your account:    {password_no_special}    please login and change it immediately in your profile.")
                 db.session.commit()
             except Exception as e:
                 print(f"Error: {str(e)}")
