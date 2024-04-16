@@ -313,6 +313,10 @@ def passwordReset():
     try:
         user_id = jwt.decode(token, "secret", algorithms=["HS256"])["id"]
         data = request.get_json()
+        if not data["old_password"] or not data["new_password"]:
+            return jsonify({"error": "Please provide both old and new password"}), 400
+        if data["old_password"] == data["new_password"]:
+            return jsonify({"error": "Old and new password cannot be the same"}), 400
         current_user = User.query.filter_by(UserId=user_id).first()
         if current_user and check_password_hash(current_user.Password, data["old_password"]):
             hashed_new_password = generate_password_hash(data["new_password"])

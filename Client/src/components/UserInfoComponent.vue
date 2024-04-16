@@ -206,7 +206,7 @@ export default {
       activeRequests: [],
       pastRequests: [],
       pastPledges: [],
-      dialog: true,
+      dialog: false,
       oldPassword: '',
       oldPasswordConfirm: '',
       newPassword: '',
@@ -454,15 +454,41 @@ export default {
       this.$router.push({ name: 'pledge' })
     },
     changePassword() {
+      let userData = user()
       if (this.canSubmit) {
-        // Call an API or method to change the password
-        console.log('Password change requested.')
+        let data = JSON.stringify({
+          old_password: this.oldPassword,
+          new_password: this.newPassword
+        })
+
+        let config = {
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: 'http://127.0.0.1:5000/users_bp/passwordreset',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization:
+              'Bearer ' + userData.getToken
+          },
+          data: data
+        }
+
+        axios
+          .request(config)
+          .then(() => {
+            alertStore.showSuccess('Password reset successfully')
+            this.dialog = false
+          })
+          .catch((error) => {
+            alertStore.showError(error.message)
+            this.dialog = false
+          })
       } else {
         this.alertText = 'Please ensure that the passwords match and meet the requirements.'
         this.showAlert = true
       }
     },
-    resetForm(){
+    resetForm() {
       this.oldPassword = ''
       this.oldPasswordConfirm = ''
       this.newPassword = ''
