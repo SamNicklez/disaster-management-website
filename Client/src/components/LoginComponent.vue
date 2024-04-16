@@ -94,6 +94,7 @@ export default {
      */
     login() {
       let userData = user()
+      console.log(userData)
       if (this.username != '' && this.password != '') {
         if (
           userData.getLoginAttempts >= 3 &&

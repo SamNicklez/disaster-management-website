@@ -9,6 +9,7 @@
         <v-text-field label="Role" v-model="role" :readonly="!edit" outlined dense></v-text-field>
       </v-col>
     </v-row>
+    <v-btn variant="outlined" @click="this.dialog = true">Reset Password</v-btn>
   </v-container>
   <v-card-title>Address Information</v-card-title>
   <v-container>
@@ -129,6 +130,51 @@
     >
     <v-btn @click="routeEvent" color="primary">Event Management</v-btn>
   </v-container>
+  <v-dialog v-model="dialog" style="max-width: 40vw" @click:outside="resetForm">
+    <v-card>
+      <v-alert
+        v-if="showAlert"
+        class="alert"
+        density="compact"
+        type="warning"
+        :title="alertText"
+        variant="tonal"
+      ></v-alert>
+      <v-card-title>Reset Password</v-card-title>
+      <v-text-field
+        label="Old Password"
+        v-model="oldPassword"
+        type="password"
+        :rules="[rules.required]"
+        style="margin-bottom: 1vh"
+      ></v-text-field>
+      <v-text-field
+        label="Re-enter Old Password"
+        v-model="oldPasswordConfirm"
+        type="password"
+        :rules="[rules.required, rules.matchPasswords(oldPassword)]"
+        style="margin-bottom: 1vh"
+      ></v-text-field>
+      <v-text-field
+        label="New Password"
+        v-model="newPassword"
+        type="password"
+        hint="8-15 characters, includes a capital letter and a special character like .,?!"
+        persistent-hint
+        :rules="[rules.required, rules.passwordComplexity]"
+        style="margin-bottom: 1vh"
+      ></v-text-field>
+      <v-text-field
+        label="Confirm New Password"
+        v-model="newPasswordConfirm"
+        type="password"
+        :rules="[rules.required, rules.matchPasswords(newPassword)]"
+      ></v-text-field>
+      <v-card-actions>
+        <v-btn :disabled="!canSubmit" color="primary" block @click="changePassword">Submit</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
@@ -159,7 +205,44 @@ export default {
       activePledges: [],
       activeRequests: [],
       pastRequests: [],
-      pastPledges: []
+      pastPledges: [],
+      dialog: true,
+      oldPassword: '',
+      oldPasswordConfirm: '',
+      newPassword: '',
+      newPasswordConfirm: '',
+      alertText: 'Please check your input.',
+      showAlert: false,
+      rules: {
+        required: (value) => !!value || 'This field is required.',
+        matchPasswords: (reference) => (value) => value === reference || 'Passwords do not match.',
+        passwordComplexity: (value) => {
+          if (value.length < 8 || value.length > 15) {
+            return 'Password must be 8-15 characters long.'
+          }
+          if (!/[A-Z]/.test(value)) {
+            return 'Password must contain at least one capital letter.'
+          }
+          if (!/[.,?!]/.test(value)) {
+            return 'Password must contain at least one special character (.,?!).'
+          }
+          return true
+        }
+      }
+    }
+  },
+  computed: {
+    canSubmit() {
+      // Simply checks all rules by invoking them; useful if you want to show alert or disable submit based on general validity
+      return (
+        this.rules.required(this.oldPassword) === true &&
+        this.rules.required(this.oldPasswordConfirm) === true &&
+        this.rules.matchPasswords(this.oldPassword)(this.oldPasswordConfirm) === true &&
+        this.rules.required(this.newPassword) === true &&
+        this.rules.passwordComplexity(this.newPassword) === true &&
+        this.rules.required(this.newPasswordConfirm) === true &&
+        this.rules.matchPasswords(this.newPassword)(this.newPasswordConfirm) === true
+      )
     }
   },
   created() {
@@ -369,6 +452,21 @@ export default {
     },
     routePledge() {
       this.$router.push({ name: 'pledge' })
+    },
+    changePassword() {
+      if (this.canSubmit) {
+        // Call an API or method to change the password
+        console.log('Password change requested.')
+      } else {
+        this.alertText = 'Please ensure that the passwords match and meet the requirements.'
+        this.showAlert = true
+      }
+    },
+    resetForm(){
+      this.oldPassword = ''
+      this.oldPasswordConfirm = ''
+      this.newPassword = ''
+      this.newPasswordConfirm = ''
     }
   }
 }
