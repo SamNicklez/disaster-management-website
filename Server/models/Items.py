@@ -27,6 +27,7 @@ class Item(db.Model):
     
     def to_dict_match(self):
         return {
+            'ItemID': self.ItemID,
             'ItemName': self.ItemName,
             'ItemDescription': self.ItemDescription,
         }

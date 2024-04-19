@@ -4,6 +4,7 @@ from models.Pledges import Pledge
 from models.DonationRequest import DonationRequest
 from models.Response import Response
 from models.Items import Item
+from models.Users import User
 from models.DisasterEvent import DisasterEvent, EventItem
 from routes import admin_auth
 
@@ -155,5 +156,20 @@ def grabAllActiveRequests():
             request.pop('is_fulfilled')
             request.pop('user_id')
         return jsonify(requests), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@matches_bp.route('/grabPotentialMatches', methods=['POST'])
+@admin_auth.login_required
+def grabPotentialMatches():
+    try:
+        data = request.get_json()
+        item_id = data.get('item_id')
+        pledges = Pledge.query.filter_by(item_id=item_id, is_fulfilled=0).all()
+        pledges = [pledge.to_dict() for pledge in pledges]
+        for pledge in pledges:
+            pledge['location'] = User.query.filter_by(UserId=pledge['user_id']).first().return_state()
+            pledge.pop('user_id')
+        return jsonify(pledges), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500

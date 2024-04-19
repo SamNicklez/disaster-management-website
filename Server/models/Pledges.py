@@ -18,3 +18,10 @@ class Pledge(db.Model):
             'quantity_remaining': self.quantity_remaining,
             'is_fulfilled': self.is_fulfilled,
         }
+    
+    def to_dict_match(self):
+        return {
+            'pledge_id': self.pledge_id,
+            'quantity_remaining': self.quantity_remaining,
+            'user_id': self.user_id
+        }
