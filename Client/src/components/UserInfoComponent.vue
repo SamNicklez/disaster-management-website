@@ -128,7 +128,8 @@
     <v-btn @click="createItem" color="primary" style="margin-right: 5vh"
       >Items and Category Management</v-btn
     >
-    <v-btn @click="routeEvent" color="primary">Event Management</v-btn>
+    <v-btn @click="routeEvent" color="primary" style="margin-right: 5vh">Event Management</v-btn>
+    <v-btn @click="routePledgeMatcher" color="primary">Pledge Matcher</v-btn>
   </v-container>
   <v-dialog v-model="dialog" style="max-width: 40vw" @click:outside="resetForm">
     <v-card>
@@ -493,6 +494,9 @@ export default {
       this.oldPasswordConfirm = ''
       this.newPassword = ''
       this.newPasswordConfirm = ''
+    },
+    routePledgeMatcher() {
+      this.$router.push({ name: 'match' })
     }
   }
 }

@@ -196,6 +196,33 @@ const router = createRouter({
       component: () => import('../views/ForgotPasswordView.vue')
     },
     {
+      path: '/match',
+      name: 'match',
+      component: () => import('../views/PledgeMatcherView.vue'),
+      beforeEnter: (to, from, next) => {
+        let userData = user()
+        let config = {
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: 'http://127.0.0.1:5000/users_bp/verifyUser',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + userData.getToken
+          }
+        }
+
+        axios
+          .request(config)
+          .then(() => {
+            next()
+          })
+          .catch(() => {
+            alertStore.showInfo('You must be an admin to access that page', 'Access Error', true)
+            next('/')
+          })
+      }
+    },
+    {
       path: '/:catchAll(.*)',
       name: '404',
       component: () => import('../views/NotFoundView.vue')
