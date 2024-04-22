@@ -374,3 +374,37 @@ def get_responses_by_event_id():
 
     except Exception as e:
         return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
+
+
+
+ 
+@events_bp.route("/getActiveRequests", methods=["GET"])
+def get_active_requests():
+    try:
+        conn = db.engine.raw_connection()
+        cursor = conn.cursor()
+        cursor.callproc('GetActiveRequests')  # Call the stored procedure
+        requests = cursor.fetchall()  # Fetch all results
+        cursor.close()
+        conn.close()
+ 
+        serialized_requests = []
+        for request in requests:
+            serialized_request = {
+                "request_id": request[0],
+                "event_id": request[1],
+                "user_id": request[2],
+                "event_item_id": request[3],
+                "is_fulfilled": request[4],
+                "quantity_requested": request[5],
+                "quantity_remaining": request[6],
+                "created_date": request[7].strftime("%Y-%m-%d %H:%M:%S") if request[7] else None,
+                "modified_date": request[8].strftime("%Y-%m-%d %H:%M:%S") if request[8] else None
+            }
+            serialized_requests.append(serialized_request)
+ 
+        return jsonify({"active_requests": serialized_requests}), 200
+ 
+    except Exception as e:
+        return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
+

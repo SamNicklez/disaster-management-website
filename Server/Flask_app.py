@@ -20,6 +20,7 @@ app.register_blueprint(items_bp, url_prefix='/item')
 app.register_blueprint(events_bp, url_prefix='/event')
 app.register_blueprint(pledges_bp, url_prefix='/pledge')
 app.register_blueprint(matches_bp, url_prefix='/match')
+# app.register_blueprint(shipment_bp, url_prefix='/shipment')
 
 @app.route("/")
 def home():

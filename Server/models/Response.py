@@ -9,3 +9,4 @@ class Response(db.Model):
     quantity_donated = db.Column(db.Integer, nullable=False)
     created_date = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
     shipped_date = db.Column(db.DateTime, nullable=True)
+    shipping_number = db.Column(db.String(255), nullable=True)
