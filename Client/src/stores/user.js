@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia'
-// Import the persistedstate plugin
 
 export const user = defineStore('user', {
-  // Using the setup function approach to define state, getters, and actions
+  persist: {
+    enabled: true,
+  },
   state: () => ({
     username: '',
     token: '',
@@ -45,10 +46,9 @@ export const user = defineStore('user', {
       this.refreshDate = null
       this.loginAttempts = 0
       this.lastLoginAttempt = null
+    },
+    initializeDefaultState() {
+      this.$reset();
     }
   },
-  // Configure persisted state
-  persist: {
-    enabled: true
-  }
 })
