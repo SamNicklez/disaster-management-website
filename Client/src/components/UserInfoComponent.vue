@@ -115,6 +115,8 @@
       </v-row>
     </div>
   </div>
+  <v-card-title>Notifications</v-card-title>
+  <v-btn @click="routeNotificationsList" color="primary">View Notifications</v-btn>
   <div v-if="role == 'Recipient' || 'Admin'">
     <div v-if="activeRequests != 0">
       <v-card-title>Your Requests</v-card-title>
@@ -123,12 +125,28 @@
       <v-card-title>Your Past Requests</v-card-title>
     </div>
   </div>
+
   <v-card-title v-if="role == 'Admin'">Admin Settings</v-card-title>
   <v-container v-if="role == 'Admin'">
-    <v-btn @click="createItem" color="primary" style="margin-right: 5vh"
-      >Items and Category Management</v-btn
-    >
-    <v-btn @click="routeEvent" color="primary">Event Management</v-btn>
+    <v-row>
+    <v-col cols="auto">
+      <v-btn @click="createItem" color="secondary">
+        Items and Category Management
+      </v-btn>
+    </v-col>
+
+    <v-col cols="auto">
+      <v-btn @click="routeEvent" color="secondary">
+        Event Management
+      </v-btn>
+    </v-col>
+
+    <v-col cols="auto">
+      <v-btn @click="routeNotification" color="secondary">
+        Notification Management
+      </v-btn>
+    </v-col>
+  </v-row>
   </v-container>
   <v-dialog v-model="dialog" style="max-width: 40vw" @click:outside="resetForm">
     <v-card>
@@ -445,6 +463,12 @@ export default {
       this.$router.push({ name: 'createItem' })
     },
     /**
+     * Redirects to the create notification page.
+     */
+    routeNotification() {
+      this.$router.push({ name: 'createNotification' });
+    },
+    /**
      * Redirects to the event management page.
      */
     routeEvent() {
@@ -452,6 +476,9 @@ export default {
     },
     routePledge() {
       this.$router.push({ name: 'pledge' })
+    },
+    routeNotificationsList() {
+      this.$router.push({ name: 'notificationsList' })
     },
     changePassword() {
       let userData = user()
