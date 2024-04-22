@@ -11,3 +11,4 @@ class DonationRequest(db.Model):
     quantity_remaining = db.Column(db.Integer, nullable=True)
     created_date = db.Column(db.DateTime, nullable=True)
     modified_date = db.Column(db.DateTime, nullable=True)
+    shipping_number = db.Column(db.String(255), nullable=True)
