@@ -6,6 +6,7 @@ from routes.Users import users_bp
 from routes.Events import events_bp
 from routes.Pledges import pledges_bp
 from routes.Notification import notification_bp
+from routes.Match import matches_bp
 import os
 
 app = Flask(__name__)
@@ -19,6 +20,7 @@ app.register_blueprint(users_bp, url_prefix='/users_bp')
 app.register_blueprint(items_bp, url_prefix='/item')
 app.register_blueprint(events_bp, url_prefix='/event')
 app.register_blueprint(pledges_bp, url_prefix='/pledge')
+app.register_blueprint(matches_bp, url_prefix='/match')
 app.register_blueprint(notification_bp, url_prefix='/notification')
 
 @app.route("/")

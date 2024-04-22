@@ -3,13 +3,9 @@ from routes import token_auth, admin_auth, donor_auth, recipient_auth
 from models.Users import User
 from models.Roles import Role
 from werkzeug.security import generate_password_hash, check_password_hash
-import jwt
 from stores import db
 from datetime import datetime
-import random
-import smtplib
-import ssl
-import os
+import string,ssl,os,smtplib,random,jwt
 
 
 users_bp = Blueprint('users_bp', __name__)
@@ -304,7 +300,110 @@ def getRole():
 
     except Exception as e:
         return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500
-@users_bp.route('/getAllUsers', methods=['GET'])
+
+
+@users_bp.route('/passwordreset', methods=['POST'])
+@token_auth.login_required
+def passwordReset():
+    auth_header = request.headers.get('Authorization')
+    token = auth_header.split(
+        " ")[1] if auth_header and auth_header.startswith('Bearer ') else None
+    if token is None:
+        return jsonify({"error": "User is not logged in"}), 401
+    try:
+        user_id = jwt.decode(token, "secret", algorithms=["HS256"])["id"]
+        data = request.get_json()
+        if not data["old_password"] or not data["new_password"]:
+            return jsonify({"error": "Please provide both old and new password"}), 400
+        if data["old_password"] == data["new_password"]:
+            return jsonify({"error": "Old and new password cannot be the same"}), 400
+        current_user = User.query.filter_by(UserId=user_id).first()
+        if current_user and check_password_hash(current_user.Password, data["old_password"]):
+            hashed_new_password = generate_password_hash(data["new_password"])
+            current_user.Password = hashed_new_password
+            db.session.commit()
+            return jsonify({"message": "Password updated successfully"}), 200
+        else:
+            return jsonify({"error": "Invalid password"}), 401
+    except Exception as e:
+        return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500
+
+
+@users_bp.route('/sendforgotpasswordemail', methods=['POST'])
+def forgotPassword():
+    try:
+        data = request.get_json()
+        user = User.query.filter_by(Email=data["email"]).first()
+        if not user:
+            return jsonify({"message": "If a account with this email exists, a code was sent to your email"}), 201
+
+        verify_token = random.randint(100000, 999999)
+        # Send user email for verification
+        smtp_server = "smtp.gmail.com"
+
+        port = 587  # For starttls
+        sender_email = os.getenv("EMAIL")
+        password = os.getenv("PASSWORD")
+        context = ssl.create_default_context()
+        try:
+            server = smtplib.SMTP(smtp_server, port)
+            server.ehlo()
+            server.starttls(context=context)
+            server.ehlo()
+            server.login(sender_email, password)
+            server.sendmail(
+            sender_email, data["email"], f"Subject: Password Reset\n\nYour verification code is {verify_token}")
+            user.verify_code = verify_token
+            db.session.commit()
+        except Exception as e:
+            print(f"Error: {str(e)}")
+            return jsonify({"error": "Internal Server Error"}), 500
+        finally:
+            server.quit()
+
+        return jsonify({"message": "If a account with this email exists, a code was sent to your email"}), 201
+
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
+
+@users_bp.route('/verifyforgotpassword', methods=['POST'])
+def verifyForgotPassword():
+    try:
+        data = request.get_json()
+        user = User.query.filter_by(Email=data["email"]).first()
+        if not user:
+            return jsonify({"error": "Code or Email is incorrect, please try again"}), 500
+        if user.verify_code == data["code"]:
+            password_no_special = ''.join(random.choices('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*', k=12))
+            hashed_password = generate_password_hash(password_no_special)
+            user.Password = hashed_password
+            smtp_server = "smtp.gmail.com"
+
+            port = 587
+            sender_email = os.getenv("EMAIL")
+            password = os.getenv("PASSWORD")
+            context = ssl.create_default_context()
+            try:
+                server = smtplib.SMTP(smtp_server, port)
+                server.ehlo()
+                server.starttls(context=context)
+                server.ehlo()
+                server.login(sender_email, password)
+                server.sendmail(
+                sender_email, data["email"], f"Subject: Password Reset\n\nWe have issued a new password for your account:    {password_no_special}    please login and change it immediately in your profile.")
+                db.session.commit()
+            except Exception as e:
+                print(f"Error: {str(e)}")
+                return jsonify({"error": "Internal Server Error"}), 500
+            finally:
+                server.quit()
+            return jsonify({"message": "Your password has been upated, please check your email for details"}), 200
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500@users_bp.route('/getAllUsers', methods=['GET'])
 @admin_auth.login_required 
 def getAllUsers():
     """

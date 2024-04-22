@@ -17,4 +17,5 @@ class User(db.Model):
     Latitude = db.Column(db.Float, nullable=False)
     Longitude = db.Column(db.Float, nullable=False)
     ZipCode: int = db.Column(db.Integer, nullable=False)
+    verify_code = db.Column(db.Integer, nullable=False)
     

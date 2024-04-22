@@ -222,6 +222,11 @@ const router = createRouter({
       }
     },
     {
+      path: '/forgotPassword',
+      name: 'forgotPassword',
+      component: () => import('../views/ForgotPasswordView.vue')
+    },
+    {
       path: '/notificationsList',
       name: 'notificationsList',
       component: () => import('../views/NotificationListView.vue')
