@@ -38,8 +38,8 @@
             append-icon="mdi-close"
             @click="closeNoti(i)"
           >
-            <v-list-item-title>{{ item.message }}</v-list-item-title>
-            <!-- <v-list-item-subtitle>{{ item.description }}</v-list-item-subtitle> -->
+          <v-list-item-title :style="{ textTransform: 'uppercase' }">{{ item.title }}</v-list-item-title>
+          <v-list-item-subtitle>{{ item.message }}</v-list-item-subtitle>
           </v-list-item>
         </v-list>
         <v-list lines="three" style="min-width: 25vw" v-else>

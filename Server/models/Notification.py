@@ -7,6 +7,7 @@ class Notification(db.Model):
     notification_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.UserId'), nullable=False)
     message = db.Column(db.Text, nullable=False)
+    title = db.Column(db.Text, nullable=False)
     is_dismissed = db.Column(db.Boolean, default=False, nullable=False)
     created_date = db.Column(db.DateTime, default=datetime.now())
 
@@ -18,6 +19,7 @@ class Notification(db.Model):
             'notification_id': self.notification_id,
             'user_id': self.user_id,
             'message': self.message,
+            'title' : self.title,
             'is_dismissed': self.is_dismissed,
             'created_date': self.created_date.isoformat()  
         }

@@ -90,7 +90,7 @@ CREATE TABLE Pledge (
 );
 
 CREATE TABLE Notification (
-  notification_id INT PRIMARY KEY,
+  notification_id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT,
   message TEXT,
   title TEXT,

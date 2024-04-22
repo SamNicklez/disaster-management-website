@@ -27,10 +27,11 @@ def create_notification():
         
         data = request.get_json()
         user_id = data.get('user_id')
+        title = data.get('title')
         message = data.get('message')
 
         # Create and save the new notification
-        new_notification = Notification(user_id=user_id, message=message)
+        new_notification = Notification(user_id=user_id, message=message, title=title)
         db.session.add(new_notification)
         db.session.commit()
 

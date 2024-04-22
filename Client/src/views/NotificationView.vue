@@ -17,6 +17,12 @@
                   clearable
                 >
               </v-autocomplete>
+              <v-text-field
+                  v-model="notificationTitle"
+                  label="Notification Title"
+                  required
+                  :rules="messageRules"
+                ></v-text-field>
                 <v-text-field
                   v-model="notificationMessage"
                   label="Notification Message"
@@ -45,6 +51,7 @@
       valid: false,
       users: [], 
       selectedUserId: null,
+      notificationTitle: '',
       notificationMessage: '',
       messageRules: [
         v => !!v || 'Notification message is required',
@@ -58,13 +65,14 @@
       
       async createNotification() {
         const userData = user(); 
-        if (!this.selectedUserId || !this.notificationMessage) {
+        if (!this.selectedUserId || !this.notificationMessage || !this.notificationTitle) {
           alertStore.showError('Please select a user and enter a message.');
           return;
         }
 
         const payload = {
           user_id: this.selectedUserId.id, 
+          title: this.notificationTitle,
           message: this.notificationMessage,
         };
 
@@ -77,6 +85,7 @@
           });
 
           this.notificationMessage = '';
+          this.notificationTitle = '';
           this.selectedUserId = null;
           alertStore.showSuccess('Notification created successfully.');
         } catch (error) {
