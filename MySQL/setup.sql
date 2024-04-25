@@ -90,9 +90,10 @@ CREATE TABLE Pledge (
 );
 
 CREATE TABLE Notification (
-  notification_id INT PRIMARY KEY,
+  notification_id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT,
   message TEXT,
+  title TEXT,
   is_dismissed BOOL,
   created_date DATETIME,
   FOREIGN KEY (user_id) REFERENCES User(user_id)

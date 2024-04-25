@@ -38,8 +38,8 @@
             append-icon="mdi-close"
             @click="closeNoti(i)"
           >
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-            <v-list-item-subtitle>{{ item.description }}</v-list-item-subtitle>
+          <v-list-item-title :style="{ textTransform: 'uppercase' }">{{ item.title }}</v-list-item-title>
+          <v-list-item-subtitle>{{ item.message }}</v-list-item-subtitle>
           </v-list-item>
         </v-list>
         <v-list lines="three" style="min-width: 25vw" v-else>
@@ -54,16 +54,13 @@
 
 <script>
 import '@mdi/font/css/materialdesignicons.css'
+import { user } from '../stores/user.js'
+import axios from 'axios'
 export default {
   data() {
     return {
       searchQuery: '',
-      notifications: [
-        { title: 'Notification 1', description: 'This is a notification' },
-        { title: 'Notification 2', description: 'This is a notification' },
-        { title: 'Notification 3', description: 'This is a notification' },
-        { title: 'Notification 4', description: 'This is a notification' }
-      ]
+      notifications: []
     }
   },
   methods: {
@@ -95,15 +92,41 @@ export default {
      * Populates the notifications
      */
     populateNotifications() {
-      //Somewhere in here, ping server to get unread notifications for the user
+      let userData = user()
+      let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: 'http://127.0.0.1:5000/notification/viewUnread',
+        headers: {
+          Authorization: 'Bearer ' + userData.getToken
+        }
+      }
+      axios
+       .request(config)
+       .then(response => {
+          this.notifications = response.data
+        })
     },
     /**
      * Closes a notification
      * @param {int} index
      */
-    closeNoti(index) {
-      this.notifications.splice(index, 1)
-      //Somewhere in here, ping server to mark notification as read
+     closeNoti(index) {
+      let userData = user()
+        const notificationId = this.notifications[index].notification_id;
+          axios.post(`http://127.0.0.1:5000/notification/markRead/${notificationId}`, {}, {
+            headers: {
+              'Authorization': `Bearer ` + userData.getToken, 
+            }
+          })
+          .then(response => {
+            console.log(response.data.message); // "Notification marked as read"
+            // Remove the notification from the list after successfully marking it as read
+            this.notifications.splice(index, 1);
+          })
+          .catch(error => {
+            console.error("Error marking notification as read:", error);
+          });
     }
   }
 }

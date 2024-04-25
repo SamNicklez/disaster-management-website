@@ -7,6 +7,13 @@ from models.Items import Item
 from models.Users import User
 from models.DisasterEvent import DisasterEvent, EventItem
 from routes import admin_auth
+from geopy.distance import geodesic
+
+from sqlalchemy.exc import SQLAlchemyError
+from routes import donor_auth
+import jwt
+from datetime import datetime
+
 
 matches_bp = Blueprint('Matches', __name__)
 
@@ -28,12 +35,19 @@ def match_request_to_pledge():
         event = DisasterEvent.query.filter_by(event_id=donation_request.event_id).first()
         if not event:
             return jsonify({"error": "Event not found"}), 404
-
+        event_location = (event.latitude, event.longitude)
         event_item = EventItem.query.filter_by(event_item_id=donation_request.event_item_id).first()
         if not event_item:
             return jsonify({"error": "Event item not found"}), 404
 
         pledges = Pledge.query.filter(Pledge.item_id == event_item.item_id, Pledge.quantity_remaining > 0).all()
+        
+        pledges = sorted(
+            pledges,
+            key=lambda x: geodesic(
+                (x.user.latitude, x.user.longitude), event_location).kilometers
+        )
+        
         if pledges:
             for pledge in pledges:
                 quantity_to_donate = min(donation_request.quantity_remaining, pledge.quantity_remaining)
@@ -132,8 +146,8 @@ def match_specific_request_to_pledge():
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
-    
+        return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500    
+
 
     
 @matches_bp.route('/grabAllActiveRequests', methods=['GET'])
@@ -173,3 +187,24 @@ def grabPotentialMatches():
         return jsonify(pledges), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+@matches_bp.route('/completeshipment', methods=['POST'])
+@donor_auth.login_required
+def complete_shipment():
+    try:
+        response_id = request.json.get('response_id')
+        print(response_id)
+        shipping_number = request.json.get('shipping_number')
+        response = Response.query.get(response_id)
+        response.shipping_number = shipping_number
+        response.shipped_date = datetime.now()
+        db.session.commit()
+
+        return jsonify({'message': 'Shipping information updated successfully.'}), 200
+
+
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({'error': 'An error occurred while updating the shipment status.'}), 500
+
+    except Exception as e:
+        return jsonify({'error': 'An unexpected error occurred.'}), 500

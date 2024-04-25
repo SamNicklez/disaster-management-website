@@ -23,3 +23,4 @@ class DonationRequest(db.Model):
             'quantity_remaining': self.quantity_remaining,
             'created_date': self.created_date,
         }
+    shipping_number = db.Column(db.String(255), nullable=True)

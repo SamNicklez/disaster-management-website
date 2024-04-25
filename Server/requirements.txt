@@ -7,3 +7,4 @@ Flask-HTTPAuth
 PyJWT
 mysqlclient
 flask-cors
+geopy
