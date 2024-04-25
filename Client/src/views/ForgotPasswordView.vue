@@ -103,7 +103,7 @@ export default {
         maxBodyLength: Infinity,
         url: 'http://127.0.0.1:5000/users_bp/verifyforgotpassword',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         data: data
       }
@@ -115,7 +115,7 @@ export default {
           this.dialog = false
         })
         .catch(() => {
-          this.alertText = "Invalid verification code"
+          this.alertText = 'Invalid verification code'
           this.alert = true
         })
     },
@@ -142,7 +142,7 @@ export default {
         maxBodyLength: Infinity,
         url: 'http://127.0.0.1:5000/users_bp/sendforgotpasswordemail',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         data: data
       }

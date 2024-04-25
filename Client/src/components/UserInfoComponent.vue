@@ -129,29 +129,21 @@
   <v-card-title v-if="role == 'Admin'">Admin Settings</v-card-title>
   <v-container v-if="role == 'Admin'">
     <v-row>
-    <v-col cols="auto">
-      <v-btn @click="createItem" color="secondary">
-        Items and Category Management
-      </v-btn>
-    </v-col>
+      <v-col cols="auto">
+        <v-btn @click="createItem" color="secondary"> Items and Category Management </v-btn>
+      </v-col>
 
-    <v-col cols="auto">
-      <v-btn @click="routeEvent" color="secondary">
-        Event Management
-      </v-btn>
-    </v-col>
+      <v-col cols="auto">
+        <v-btn @click="routeEvent" color="secondary"> Event Management </v-btn>
+      </v-col>
 
-    <v-col cols="auto">
-      <v-btn @click="routeNotification" color="secondary">
-        Notification Management
-      </v-btn>
-    </v-col>
-    <v-col cols="auto">
-      <v-btn @click="routePledgeMatcher" color="secondary">
-        Pledge Matcher
-      </v-btn>
-    </v-col>
-  </v-row>
+      <v-col cols="auto">
+        <v-btn @click="routeNotification" color="secondary"> Notification Management </v-btn>
+      </v-col>
+      <v-col cols="auto">
+        <v-btn @click="routePledgeMatcher" color="secondary"> Pledge Matcher </v-btn>
+      </v-col>
+    </v-row>
   </v-container>
   <v-dialog v-model="dialog" style="max-width: 40vw" @click:outside="resetForm">
     <v-card>
@@ -471,7 +463,7 @@ export default {
      * Redirects to the create notification page.
      */
     routeNotification() {
-      this.$router.push({ name: 'createNotification' });
+      this.$router.push({ name: 'createNotification' })
     },
     /**
      * Redirects to the event management page.
@@ -499,8 +491,7 @@ export default {
           url: 'http://127.0.0.1:5000/users_bp/passwordreset',
           headers: {
             'Content-Type': 'application/json',
-            Authorization:
-              'Bearer ' + userData.getToken
+            Authorization: 'Bearer ' + userData.getToken
           },
           data: data
         }

@@ -1,4 +1,4 @@
-import NotificationView from '../views/NotificationView.vue';
+import NotificationView from '../views/NotificationView.vue'
 
 import { createRouter, createWebHistory } from 'vue-router'
 import { user } from '../stores/user.js'
@@ -154,17 +154,17 @@ const router = createRouter({
           }
         }
         axios
-        .request(config)
-        .then(() => {
+          .request(config)
+          .then(() => {
             next()
-          }) 
+          })
           .catch(() => {
             alertStore.showInfo('You must be an admin to access that page', 'Access Error', true)
             next('/')
           })
-        .catch(() => {  
-          next('/')
-        })
+          .catch(() => {
+            next('/')
+          })
       }
     },
     {

@@ -87,8 +87,7 @@ export default {
         method: 'get',
         url: 'http://127.0.0.1:5000/match/grabAllActiveRequests',
         headers: {
-          Authorization:
-            'Bearer ' + userData.token
+          Authorization: 'Bearer ' + userData.token
         }
       }
 
@@ -114,8 +113,7 @@ export default {
         url: 'http://127.0.0.1:5000/match/grabPotentialMatches',
         headers: {
           'Content-Type': 'application/json',
-          Authorization:
-            'Bearer ' + userData.token
+          Authorization: 'Bearer ' + userData.token
         },
         data: data
       }
@@ -123,16 +121,16 @@ export default {
       axios
         .request(config)
         .then((response) => {
-          if(response.data.length === 0){
-            this.pledges = [{
-              location: {
-                State: 'No matches found'
-              },
-              quantity_remaining: 'No matches found'
-            
-            }]
-          }
-          else{
+          if (response.data.length === 0) {
+            this.pledges = [
+              {
+                location: {
+                  State: 'No matches found'
+                },
+                quantity_remaining: 'No matches found'
+              }
+            ]
+          } else {
             this.pledges = response.data
           }
         })
@@ -153,15 +151,14 @@ export default {
       this.selectedDonor = row.item
     },
     autoMatch() {
-      if (!this.selectedRequest){
+      if (!this.selectedRequest) {
         return
       }
-      
     },
     confirmMatch() {
       if (!this.selectedRequest || !this.selectedDonor) {
         return
-      } 
+      }
       // Confirm the match between selectedRequest and selectedDonor
       console.log('Match confirmed between:', this.selectedRequest, this.selectedDonor)
     }
