@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 8.0.36, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.36, for macos14 (x86_64)
 --
 -- Host: localhost    Database: theapp
 -- ------------------------------------------------------
@@ -216,6 +216,7 @@ CREATE TABLE `request` (
   `is_fulfilled` tinyint(1) DEFAULT NULL,
   `created_date` datetime DEFAULT NULL,
   `modified_date` datetime DEFAULT NULL,
+  `shipping_number` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`request_id`),
   KEY `request_ibfk_2_idx` (`user_id`),
   KEY `request_ibfk_1` (`event_id`),
@@ -230,7 +231,7 @@ CREATE TABLE `request` (
 
 LOCK TABLES `request` WRITE;
 /*!40000 ALTER TABLE `request` DISABLE KEYS */;
-INSERT INTO `request` VALUES (1,16,1,25,15,0,1,'2024-03-28 14:05:54',NULL),(2,16,1,24,15,0,1,'2024-03-28 14:09:30',NULL),(3,16,1,26,15,0,1,'2024-03-29 08:52:33',NULL),(4,16,1,25,890,0,1,'2024-03-29 08:52:57',NULL),(5,16,1,25,789,0,1,'2024-03-29 08:54:17',NULL),(6,16,1,24,15,0,1,'2024-03-29 10:28:48',NULL),(7,18,1,30,25,25,0,'2024-03-31 15:33:28',NULL);
+INSERT INTO `request` VALUES (1,16,1,25,15,0,1,'2024-03-28 14:05:54',NULL,NULL),(2,16,1,24,15,0,1,'2024-03-28 14:09:30',NULL,NULL),(3,16,1,26,15,0,1,'2024-03-29 08:52:33',NULL,NULL),(4,16,1,25,890,0,1,'2024-03-29 08:52:57',NULL,NULL),(5,16,1,25,789,0,1,'2024-03-29 08:54:17',NULL,NULL),(6,16,1,24,15,0,1,'2024-03-29 10:28:48',NULL,NULL),(7,18,1,30,25,25,0,'2024-03-31 15:33:28',NULL,NULL);
 /*!40000 ALTER TABLE `request` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -279,6 +280,7 @@ CREATE TABLE `response` (
   `quantity_donated` int DEFAULT NULL,
   `created_date` datetime DEFAULT NULL,
   `shipped_date` datetime DEFAULT NULL,
+  `shipping_number` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`response_id`),
   KEY `response_ibfk_2_idx` (`user_id`),
   CONSTRAINT `response_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserId`) ON DELETE SET NULL ON UPDATE SET NULL
@@ -291,7 +293,7 @@ CREATE TABLE `response` (
 
 LOCK TABLES `response` WRITE;
 /*!40000 ALTER TABLE `response` DISABLE KEYS */;
-INSERT INTO `response` VALUES (1,1,1,0,15,'2024-03-28 14:41:13',NULL),(2,2,1,0,15,'2024-03-29 08:50:30',NULL),(3,3,1,0,15,'2024-03-29 08:52:37',NULL),(4,4,1,0,890,'2024-03-29 08:52:59',NULL),(5,5,1,0,789,'2024-03-29 08:56:30',NULL),(6,6,1,0,15,'2024-03-31 15:33:04',NULL),(7,6,1,0,0,'2024-03-31 15:33:04',NULL);
+INSERT INTO `response` VALUES (1,1,1,0,15,'2024-03-28 14:41:13',NULL,NULL),(2,2,1,0,15,'2024-03-29 08:50:30',NULL,NULL),(3,3,1,0,15,'2024-03-29 08:52:37',NULL,NULL),(4,4,1,0,890,'2024-03-29 08:52:59',NULL,NULL),(5,5,1,0,789,'2024-03-29 08:56:30',NULL,NULL),(6,6,1,0,15,'2024-03-31 15:33:04',NULL,NULL),(7,6,1,0,0,'2024-03-31 15:33:04',NULL,NULL);
 /*!40000 ALTER TABLE `response` ENABLE KEYS */;
 UNLOCK TABLES;
 
