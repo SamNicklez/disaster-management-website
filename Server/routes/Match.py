@@ -11,7 +11,7 @@ from geopy.distance import geodesic
 matches_bp = Blueprint('Matches', __name__)
 
 @matches_bp.route('/AutoMatchRequestToPledge', methods=['POST'])
-#@admin_auth.login_required
+@admin_auth.login_required
 def match_request_to_pledge():
     data = request.get_json()
     request_id = data.get('request_id')
