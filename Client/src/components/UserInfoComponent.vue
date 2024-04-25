@@ -146,6 +146,11 @@
         Notification Management
       </v-btn>
     </v-col>
+    <v-col cols="auto">
+      <v-btn @click="routePledgeMatcher" color="secondary">
+        Pledge Matcher
+      </v-btn>
+    </v-col>
   </v-row>
   </v-container>
   <v-dialog v-model="dialog" style="max-width: 40vw" @click:outside="resetForm">

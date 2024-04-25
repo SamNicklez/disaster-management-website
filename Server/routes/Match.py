@@ -174,7 +174,7 @@ def grabAllActiveRequests():
         return jsonify({'error': str(e)}), 500
 
 @matches_bp.route('/grabPotentialMatches', methods=['POST'])
-@admin_auth.login_required
+# @admin_auth.login_required
 def grabPotentialMatches():
     try:
         data = request.get_json()
@@ -187,6 +187,7 @@ def grabPotentialMatches():
         return jsonify(pledges), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    
 @matches_bp.route('/completeshipment', methods=['POST'])
 @donor_auth.login_required
 def complete_shipment():
