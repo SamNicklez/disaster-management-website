@@ -1,5 +1,3 @@
-import NotificationView from '../views/NotificationView.vue'
-
 import { createRouter, createWebHistory } from 'vue-router'
 import { user } from '../stores/user.js'
 import axios from 'axios'
