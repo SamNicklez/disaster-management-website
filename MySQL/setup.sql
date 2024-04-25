@@ -31,12 +31,6 @@ CREATE TABLE Event (
   description TEXT
 );
 
-CREATE TABLE Item (
-  item_id INT PRIMARY KEY,
-  name VARCHAR(255),
-  category VARCHAR(255),
-  description TEXT
-);
 
 CREATE TABLE EventItem (
   event_item_id INT PRIMARY KEY,
