@@ -5,6 +5,7 @@ from models.DonationRequest import DonationRequest
 from models.Response import Response
 from models.DisasterEvent import DisasterEvent, EventItem
 from routes import admin_auth
+from geopy.distance import geodesic
 
 from sqlalchemy.exc import SQLAlchemyError
 from routes import donor_auth
@@ -32,12 +33,19 @@ def match_request_to_pledge():
         event = DisasterEvent.query.filter_by(event_id=donation_request.event_id).first()
         if not event:
             return jsonify({"error": "Event not found"}), 404
-
+        event_location = (event.latitude, event.longitude)
         event_item = EventItem.query.filter_by(event_item_id=donation_request.event_item_id).first()
         if not event_item:
             return jsonify({"error": "Event item not found"}), 404
 
         pledges = Pledge.query.filter(Pledge.item_id == event_item.item_id, Pledge.quantity_remaining > 0).all()
+        
+        pledges = sorted(
+            pledges,
+            key=lambda x: geodesic(
+                (x.user.latitude, x.user.longitude), event_location).kilometers
+        )
+        
         if pledges:
             for pledge in pledges:
                 quantity_to_donate = min(donation_request.quantity_remaining, pledge.quantity_remaining)
