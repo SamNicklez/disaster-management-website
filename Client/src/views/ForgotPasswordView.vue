@@ -78,6 +78,7 @@
 </template>
 
 <script>
+import { loadingBar } from '../stores/loading.js'
 import axios from 'axios'
 import { alertStore } from '../stores/alert.js'
 export default {
@@ -123,6 +124,7 @@ export default {
       this.$router.push({ name: 'login' })
     },
     verifyEmail() {
+      loadingBar.loading = true
       const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
       if (!emailRegex.test(this.username)) {
         alertStore.showWarning('Invalid email format', 'Error')
@@ -151,9 +153,11 @@ export default {
         .request(config)
         .then(() => {
           this.dialog = true
+          loadingBar.loading = false
         })
         .catch((error) => {
           alertStore.showError(error.message)
+          loadingBar.loading = false
         })
     }
   }
