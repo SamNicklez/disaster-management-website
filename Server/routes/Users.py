@@ -404,6 +404,8 @@ def verifyForgotPassword():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": "Internal Server Error"}), 500@users_bp.route('/getAllUsers', methods=['GET'])
+    
+@users_bp.route('/getAllUsers', methods=['GET'])
 @admin_auth.login_required 
 def getAllUsers():
     """
