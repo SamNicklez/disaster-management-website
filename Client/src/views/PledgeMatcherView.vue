@@ -22,8 +22,16 @@
             <v-btn color="primary" @click="autoMatch">Auto Match</v-btn>
             <v-card>
               <v-card-title>Request Details</v-card-title>
-              <v-card-text>
-                {{ selectedRequest }}
+              <v-card-text v-if="selectedRequest != null">
+                <b>Event Name: </b>{{ selectedRequest.event.event_name }}
+                <br>
+                <b>Event Location: </b>{{ selectedRequest.event.location }}
+                <br>
+                <b>Item Requested: </b>{{ selectedRequest.item.ItemName }}
+                <br>
+                <b>Description: </b>{{ selectedRequest.item.ItemDescription }}
+                <br>
+                <b>Quantity Required: </b>{{ selectedRequest.quantity_remaining }}
               </v-card-text>
             </v-card>
             <v-card>
@@ -148,6 +156,9 @@ export default {
       return date.toLocaleDateString('en-US', options)
     },
     handleDonorClick(event, row) {
+      if (row.item.location.State === 'No matches found') {
+        return
+      }
       this.selectedDonor = row.item
     },
     autoMatch() {
