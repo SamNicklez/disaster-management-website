@@ -144,6 +144,7 @@ def grabAllActiveRequests():
         # Yes i know this is probs the worst way to do this but i'm tired
         requests = DonationRequest.query.filter_by(is_fulfilled=0).all()
         requests = [request.to_dict() for request in requests]
+        return_requests = []
         for request in requests:
             event = DisasterEvent.query.filter_by(event_id=request['event_id']).first()
             if event.end_date != None:
@@ -152,11 +153,13 @@ def grabAllActiveRequests():
             event_item = EventItem.query.filter_by(event_item_id=request['event_item_id']).first()
             request['event'] = event.to_dict_match()
             request['item'] = Item.query.filter_by(ItemID=event_item.item_id).first().to_dict_match()
-            request.pop('event_id')
-            request.pop('event_item_id')
-            request.pop('is_fulfilled')
-            request.pop('user_id')
-        return jsonify(requests), 200
+            if request['item']['isActive'] != -1:
+                request.pop('event_id')
+                request.pop('event_item_id')
+                request.pop('is_fulfilled')
+                request.pop('user_id')
+                return_requests.append(request)
+        return jsonify(return_requests), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

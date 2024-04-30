@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-app-bar scroll-behavior="hide">
+    <v-app-bar>
       <v-toolbar-title>
         <v-btn text to="/" variant="plain" class="button">Disaster Donation</v-btn>
       </v-toolbar-title>

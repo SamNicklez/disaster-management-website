@@ -30,6 +30,7 @@ class Item(db.Model):
             'ItemID': self.ItemID,
             'ItemName': self.ItemName,
             'ItemDescription': self.ItemDescription,
+            'isActive': self.isActive,
         }
 
     
