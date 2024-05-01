@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-app-bar scroll-behavior="hide">
+    <v-app-bar>
       <v-toolbar-title>
         <v-btn text to="/" variant="plain" class="button">Disaster Donation</v-btn>
       </v-toolbar-title>
@@ -38,8 +38,10 @@
             append-icon="mdi-close"
             @click="closeNoti(i)"
           >
-          <v-list-item-title :style="{ textTransform: 'uppercase' }">{{ item.title }}</v-list-item-title>
-          <v-list-item-subtitle>{{ item.message }}</v-list-item-subtitle>
+            <v-list-item-title :style="{ textTransform: 'uppercase' }">{{
+              item.title
+            }}</v-list-item-title>
+            <v-list-item-subtitle>{{ item.message }}</v-list-item-subtitle>
           </v-list-item>
         </v-list>
         <v-list lines="three" style="min-width: 25vw" v-else>
@@ -101,32 +103,35 @@ export default {
           Authorization: 'Bearer ' + userData.getToken
         }
       }
-      axios
-       .request(config)
-       .then(response => {
-          this.notifications = response.data
-        })
+      axios.request(config).then((response) => {
+        this.notifications = response.data
+      })
     },
     /**
      * Closes a notification
      * @param {int} index
      */
-     closeNoti(index) {
+    closeNoti(index) {
       let userData = user()
-        const notificationId = this.notifications[index].notification_id;
-          axios.post(`http://127.0.0.1:5000/notification/markRead/${notificationId}`, {}, {
+      const notificationId = this.notifications[index].notification_id
+      axios
+        .post(
+          `http://127.0.0.1:5000/notification/markRead/${notificationId}`,
+          {},
+          {
             headers: {
-              'Authorization': `Bearer ` + userData.getToken, 
+              Authorization: `Bearer ` + userData.getToken
             }
-          })
-          .then(response => {
-            console.log(response.data.message); // "Notification marked as read"
-            // Remove the notification from the list after successfully marking it as read
-            this.notifications.splice(index, 1);
-          })
-          .catch(error => {
-            console.error("Error marking notification as read:", error);
-          });
+          }
+        )
+        .then((response) => {
+          console.log(response.data.message) // "Notification marked as read"
+          // Remove the notification from the list after successfully marking it as read
+          this.notifications.splice(index, 1)
+        })
+        .catch((error) => {
+          console.error('Error marking notification as read:', error)
+        })
     }
   }
 }

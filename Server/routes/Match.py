@@ -3,6 +3,8 @@ from stores import db
 from models.Pledges import Pledge
 from models.DonationRequest import DonationRequest
 from models.Response import Response
+from models.Items import Item
+from models.Users import User
 from models.DisasterEvent import DisasterEvent, EventItem
 from models.Users import User
 from routes import admin_auth
@@ -77,12 +79,11 @@ def match_request_to_pledge():
 
 
 @matches_bp.route('/ManualMatchRequestToPledge', methods=['POST'])
-@admin_auth.login_required
+# @admin_auth.login_required
 def match_specific_request_to_pledge():
     data = request.get_json()
     request_id = data.get('request_id')
     pledge_id = data.get('pledge_id')
-
     if not request_id or not pledge_id:
         return jsonify({"error": "Both request_id and pledge_id are required"}), 400
 
@@ -131,8 +132,52 @@ def match_specific_request_to_pledge():
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
+        print(e)
+        return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500    
 
+
+    
+@matches_bp.route('/grabAllActiveRequests', methods=['GET'])
+@admin_auth.login_required
+def grabAllActiveRequests():
+    try:
+        # Yes i know this is probs the worst way to do this but i'm tired
+        requests = DonationRequest.query.filter_by(is_fulfilled=0).all()
+        requests = [request.to_dict() for request in requests]
+        return_requests = []
+        for request in requests:
+            event = DisasterEvent.query.filter_by(event_id=request['event_id']).first()
+            if event.end_date != None:
+                # Remove this request from list
+                requests.remove(request)
+            event_item = EventItem.query.filter_by(event_item_id=request['event_item_id']).first()
+            request['event'] = event.to_dict_match()
+            request['item'] = Item.query.filter_by(ItemID=event_item.item_id).first().to_dict_match()
+            if request['item']['isActive'] != -1:
+                request.pop('event_id')
+                request.pop('event_item_id')
+                request.pop('is_fulfilled')
+                request.pop('user_id')
+                return_requests.append(request)
+        return jsonify(return_requests), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@matches_bp.route('/grabPotentialMatches', methods=['POST'])
+# @admin_auth.login_required
+def grabPotentialMatches():
+    try:
+        data = request.get_json()
+        item_id = data.get('item_id')
+        pledges = Pledge.query.filter_by(item_id=item_id, is_fulfilled=0).all()
+        pledges = [pledge.to_dict() for pledge in pledges]
+        for pledge in pledges:
+            pledge['location'] = User.query.filter_by(UserId=pledge['user_id']).first().return_state()
+            pledge.pop('user_id')
+        return jsonify(pledges), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
 @matches_bp.route('/completeshipment', methods=['POST'])
 @donor_auth.login_required
 def complete_shipment():

@@ -11,4 +11,16 @@ class DonationRequest(db.Model):
     quantity_remaining = db.Column(db.Integer, nullable=True)
     created_date = db.Column(db.DateTime, nullable=True)
     modified_date = db.Column(db.DateTime, nullable=True)
+
+    def to_dict(self):
+        return {
+            'request_id': self.request_id,
+            'event_id': self.event_id,
+            'user_id': self.user_id,
+            'event_item_id': self.event_item_id,
+            'is_fulfilled': self.is_fulfilled,
+            'quantity_requested': self.quantity_requested,
+            'quantity_remaining': self.quantity_remaining,
+            'created_date': self.created_date,
+        }
     shipping_number = db.Column(db.String(255), nullable=True)
