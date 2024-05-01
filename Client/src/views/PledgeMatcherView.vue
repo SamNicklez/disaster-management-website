@@ -24,20 +24,22 @@
               <v-card-title>Request Details</v-card-title>
               <v-card-text v-if="selectedRequest != null">
                 <b>Event Name: </b>{{ selectedRequest.event.event_name }}
-                <br>
+                <br />
                 <b>Event Location: </b>{{ selectedRequest.event.location }}
-                <br>
+                <br />
                 <b>Item Requested: </b>{{ selectedRequest.item.ItemName }}
-                <br>
+                <br />
                 <b>Description: </b>{{ selectedRequest.item.ItemDescription }}
-                <br>
+                <br />
                 <b>Quantity Required: </b>{{ selectedRequest.quantity_remaining }}
               </v-card-text>
             </v-card>
             <v-card>
               <v-card-title>Donor Details</v-card-title>
-              <v-card-text>
-                {{ selectedDonor }}
+              <v-card-text v-if="selectedDonor != null">
+                <b>Donor Location: </b>{{ selectedDonor.location.State }}
+                <br />
+                <b>Quantity Available: </b>{{ selectedDonor.quantity_remaining }}
               </v-card-text>
             </v-card>
             <v-btn color="primary" @click="confirmMatch">Confirm Match</v-btn>
@@ -65,6 +67,7 @@
 <script>
 import axios from 'axios'
 import { user } from '../stores/user.js'
+import { alertStore } from '@/stores/alert.js'
 export default {
   name: 'ActiveRequestsTable',
   data() {
@@ -111,6 +114,7 @@ export default {
     handleRequestClick(event, row) {
       let userData = user()
       this.selectedRequest = row.item
+      this.selectedDonor = null
       let data = JSON.stringify({
         item_id: row.item.item.ItemID
       })
@@ -165,13 +169,88 @@ export default {
       if (!this.selectedRequest) {
         return
       }
+      let userData = user()
+      let data = JSON.stringify({
+        request_id: this.selectedRequest.request_id
+      })
+
+      let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: 'http://127.0.0.1:5000/match/AutoMatchRequestToPledge',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + userData.token
+        },
+        data: data
+      }
+
+      axios
+        .request(config)
+        .then((response) => {
+          if (response.data['potential_pledges'].length === 0) {
+            this.selectedDonor = {
+              location: {
+                State: 'No matches found'
+              },
+              quantity_remaining: 'No matches found'
+            }
+            return
+          }
+          this.selectedDonor = {
+            pledge_id: response.data['potential_pledges'][0]['pledge_id'],
+            location: {
+              State: response.data['potential_pledges'][0]['state']
+            },
+            quantity_remaining: response.data['potential_pledges'][0]['quantity']
+          }
+
+          console.log(JSON.stringify(response.data))
+        })
+        .catch((error) => {
+          console.log(error)
+          this.selectedDonor = {
+            location: {
+              State: 'No matches found'
+            },
+            quantity_remaining: 'No matches found'
+          }
+        })
     },
     confirmMatch() {
       if (!this.selectedRequest || !this.selectedDonor) {
         return
       }
-      // Confirm the match between selectedRequest and selectedDonor
-      console.log('Match confirmed between:', this.selectedRequest, this.selectedDonor)
+      let userData = user()
+
+      let pledge_id = this.selectedDonor.pledge_id
+      let request_id = this.selectedRequest.request_id
+      let data = JSON.stringify({
+        "request_id": request_id,
+        "pledge_id": pledge_id
+      })
+
+      let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: 'http://127.0.0.1:5000/match/ManualMatchRequestToPledge',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization:
+            'Bearer ' + userData.token
+        },
+        data: data
+      }
+
+      axios
+        .request(config)
+        .then(() => {
+          alertStore.showSuccess('Response created successfully!')
+          this.fetchActiveRequests()
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     }
   }
 }

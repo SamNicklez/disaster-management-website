@@ -19,7 +19,7 @@ from datetime import datetime
 matches_bp = Blueprint('Matches', __name__)
 
 @matches_bp.route('/AutoMatchRequestToPledge', methods=['POST'])
-# @admin_auth.login_required
+@admin_auth.login_required
 def match_request_to_pledge():
     data = request.get_json()
     request_id = data.get('request_id')
@@ -79,12 +79,11 @@ def match_request_to_pledge():
 
 
 @matches_bp.route('/ManualMatchRequestToPledge', methods=['POST'])
-@admin_auth.login_required
+# @admin_auth.login_required
 def match_specific_request_to_pledge():
     data = request.get_json()
     request_id = data.get('request_id')
     pledge_id = data.get('pledge_id')
-
     if not request_id or not pledge_id:
         return jsonify({"error": "Both request_id and pledge_id are required"}), 400
 
@@ -133,6 +132,7 @@ def match_specific_request_to_pledge():
 
     except Exception as e:
         db.session.rollback()
+        print(e)
         return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500    
 
 
