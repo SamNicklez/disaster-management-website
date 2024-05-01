@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 
 export const user = defineStore('user', {
   persist: {
-    enabled: true,
+    enabled: true
   },
   state: () => ({
     username: '',
@@ -48,7 +48,7 @@ export const user = defineStore('user', {
       this.lastLoginAttempt = null
     },
     initializeDefaultState() {
-      this.$reset();
+      this.$reset()
     }
-  },
+  }
 })

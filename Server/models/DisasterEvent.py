@@ -25,6 +25,13 @@ class DisasterEvent(db.Model):
             'start_date': self.start_date,
             'end_date': self.end_date,
         }
+    
+    def to_dict_match(self):
+        return {
+            'event_name': self.event_name,
+            'location': self.location,
+            'start_date': self.start_date,
+        }
 
 class EventItem(db.Model):
     __tablename__ = 'eventitem'

@@ -24,5 +24,13 @@ class Item(db.Model):
             'isActive': self.isActive,
             'CategoryId': self.CategoryId
         }
+    
+    def to_dict_match(self):
+        return {
+            'ItemID': self.ItemID,
+            'ItemName': self.ItemName,
+            'ItemDescription': self.ItemDescription,
+            'isActive': self.isActive,
+        }
 
     

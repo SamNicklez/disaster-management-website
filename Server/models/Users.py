@@ -18,4 +18,10 @@ class User(db.Model):
     Longitude = db.Column(db.Float, nullable=False)
     ZipCode: int = db.Column(db.Integer, nullable=False)
     verify_code = db.Column(db.Integer, nullable=False)
+
+
+    def return_state(self):
+        return {
+            'State': self.State,
+        }
     

@@ -3,7 +3,7 @@ import EventList from '../components/EventsListComponent.vue'
 </script>
 
 <template>
-  <div class="card">
+  <!-- <div class="card">
     <h1>Our Mission</h1>
     <br />
     <p>
@@ -11,7 +11,7 @@ import EventList from '../components/EventsListComponent.vue'
       that everyone should have access to the basic necessities of life. We are dedicated to helping
       those in need and we are committed to making a difference in the world.
     </p>
-  </div>
+  </div> -->
   <EventList />
 </template>
 

@@ -1,5 +1,3 @@
-import NotificationView from '../views/NotificationView.vue';
-
 import { createRouter, createWebHistory } from 'vue-router'
 import { user } from '../stores/user.js'
 import axios from 'axios'
@@ -154,17 +152,17 @@ const router = createRouter({
           }
         }
         axios
-        .request(config)
-        .then(() => {
+          .request(config)
+          .then(() => {
             next()
-          }) 
+          })
           .catch(() => {
             alertStore.showInfo('You must be an admin to access that page', 'Access Error', true)
             next('/')
           })
-        .catch(() => {  
-          next('/')
-        })
+          .catch(() => {
+            next('/')
+          })
       }
     },
     {
@@ -225,6 +223,33 @@ const router = createRouter({
       path: '/forgotPassword',
       name: 'forgotPassword',
       component: () => import('../views/ForgotPasswordView.vue')
+    },
+    {
+      path: '/match',
+      name: 'match',
+      component: () => import('../views/PledgeMatcherView.vue'),
+      beforeEnter: (to, from, next) => {
+        let userData = user()
+        let config = {
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: 'http://127.0.0.1:5000/users_bp/verifyUser',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + userData.getToken
+          }
+        }
+
+        axios
+          .request(config)
+          .then(() => {
+            next()
+          })
+          .catch(() => {
+            alertStore.showInfo('You must be an admin to access that page', 'Access Error', true)
+            next('/')
+          })
+      }
     },
     {
       path: '/notificationsList',
