@@ -226,8 +226,8 @@ export default {
       let pledge_id = this.selectedDonor.pledge_id
       let request_id = this.selectedRequest.request_id
       let data = JSON.stringify({
-        "request_id": request_id,
-        "pledge_id": pledge_id
+        request_id: request_id,
+        pledge_id: pledge_id
       })
 
       let config = {
@@ -236,8 +236,7 @@ export default {
         url: 'http://127.0.0.1:5000/match/ManualMatchRequestToPledge',
         headers: {
           'Content-Type': 'application/json',
-          Authorization:
-            'Bearer ' + userData.token
+          Authorization: 'Bearer ' + userData.token
         },
         data: data
       }
