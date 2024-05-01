@@ -79,7 +79,7 @@ def match_request_to_pledge():
 
 
 @matches_bp.route('/ManualMatchRequestToPledge', methods=['POST'])
-# @admin_auth.login_required
+@admin_auth.login_required
 def match_specific_request_to_pledge():
     data = request.get_json()
     request_id = data.get('request_id')
@@ -164,7 +164,7 @@ def grabAllActiveRequests():
         return jsonify({'error': str(e)}), 500
 
 @matches_bp.route('/grabPotentialMatches', methods=['POST'])
-# @admin_auth.login_required
+@admin_auth.login_required
 def grabPotentialMatches():
     try:
         data = request.get_json()
