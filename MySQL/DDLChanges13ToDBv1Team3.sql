@@ -32,16 +32,6 @@ CREATE TABLE `category` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `category`
---
-
-LOCK TABLES `category` WRITE;
-/*!40000 ALTER TABLE `category` DISABLE KEYS */;
-INSERT INTO `category` VALUES (1,'Medicine',1),(2,'Fruits',1),(3,'Canned Food',1),(4,'Dry Rations',1),(5,'Water and Beverages',1);
-/*!40000 ALTER TABLE `category` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `event`
 --
 
@@ -64,15 +54,6 @@ CREATE TABLE `event` (
 ) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `event`
---
-
-LOCK TABLES `event` WRITE;
-/*!40000 ALTER TABLE `event` DISABLE KEYS */;
-INSERT INTO `event` VALUES (11,'Test Event','Test Location',123.456,789.012,'2024-03-15','2024-03-20','This is a test event'),(12,'Test Event','Test Location',123.456,789.012,'2024-03-15','2024-03-20','This is a test event'),(13,'Tornado','Oklahoma City, OK',123.456,789.012,'2024-03-12',NULL,'A category 5 hurricane has struck New Orleans, LA. The city is in need of food, water, and medical supplies.'),(14,'Hurricane','New Orleans, LA',123.456,789.012,'2021-10-10',NULL,'A category 5 hurricane has struck New Orleans, LA. The city is in need of food, water, and medical supplies.'),(15,'Earthquake','Iowa City, IA',123.456,789.012,'2021-10-10',NULL,'A 7.0 magnitude earthquake has struck Iowa City, IA. The city is in need of food, water, and medical supplies.'),(16,'Earthquake','Texas City, Texas',29.396,-94.9175,'2024-03-28',NULL,'Test Earthquake to see if items work'),(17,'Test Event','Iowa City, Iowa',41.6613,-91.5299,'2024-03-31',NULL,'This is a test event for sprint 2'),(18,'This is a test','Iowa City, Iowa',41.6613,-91.5299,'2024-03-31',NULL,'test description');
-/*!40000 ALTER TABLE `event` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `eventitem`
@@ -93,16 +74,6 @@ CREATE TABLE `eventitem` (
   CONSTRAINT `eventitem_ibfk_2` FOREIGN KEY (`item_id`) REFERENCES `items` (`ItemID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `eventitem`
---
-
-LOCK TABLES `eventitem` WRITE;
-/*!40000 ALTER TABLE `eventitem` DISABLE KEYS */;
-INSERT INTO `eventitem` VALUES (10,11,101,1),(11,11,102,1),(12,11,103,1),(13,12,101,1),(14,12,102,1),(15,12,103,1),(24,16,101,1),(25,16,102,1),(26,16,105,1),(27,17,101,1),(28,17,105,1),(29,17,103,1),(30,18,101,1),(31,18,103,1),(32,18,105,1);
-/*!40000 ALTER TABLE `eventitem` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 DROP TABLE IF EXISTS `item`;
@@ -127,16 +98,6 @@ CREATE TABLE `items` (
   CONSTRAINT `CategoryId` FOREIGN KEY (`CategoryId`) REFERENCES `category` (`CategoryId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=106 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `items`
---
-
-LOCK TABLES `items` WRITE;
-/*!40000 ALTER TABLE `items` DISABLE KEYS */;
-INSERT INTO `items` VALUES (101,'Apple',2,'Apple is a Fruit',1),(102,'Biscuits',4,'Ideally in small packs distributable to individuals',1),(103,'Water-500ml',5,'Water in 500ml bottles',1),(104,'Ibf-50',1,'',1),(105,'Canned Beef',3,'',1);
-/*!40000 ALTER TABLE `items` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `notification`
@@ -190,16 +151,6 @@ CREATE TABLE `pledge` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `pledge`
---
-
-LOCK TABLES `pledge` WRITE;
-/*!40000 ALTER TABLE `pledge` DISABLE KEYS */;
-INSERT INTO `pledge` VALUES (1,1,102,100,100,0);
-/*!40000 ALTER TABLE `pledge` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `request`
 --
 
@@ -224,16 +175,6 @@ CREATE TABLE `request` (
   CONSTRAINT `request_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `request`
---
-
-LOCK TABLES `request` WRITE;
-/*!40000 ALTER TABLE `request` DISABLE KEYS */;
-INSERT INTO `request` VALUES (1,16,1,25,15,0,1,'2024-03-28 14:05:54',NULL,NULL),(2,16,1,24,15,0,1,'2024-03-28 14:09:30',NULL,NULL),(3,16,1,26,15,0,1,'2024-03-29 08:52:33',NULL,NULL),(4,16,1,25,890,0,1,'2024-03-29 08:52:57',NULL,NULL),(5,16,1,25,789,0,1,'2024-03-29 08:54:17',NULL,NULL),(6,16,1,24,15,0,1,'2024-03-29 10:28:48',NULL,NULL),(7,18,1,30,25,25,0,'2024-03-31 15:33:28',NULL,NULL);
-/*!40000 ALTER TABLE `request` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `requestitem`
@@ -287,15 +228,6 @@ CREATE TABLE `response` (
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `response`
---
-
-LOCK TABLES `response` WRITE;
-/*!40000 ALTER TABLE `response` DISABLE KEYS */;
-INSERT INTO `response` VALUES (1,1,1,0,15,'2024-03-28 14:41:13',NULL,NULL),(2,2,1,0,15,'2024-03-29 08:50:30',NULL,NULL),(3,3,1,0,15,'2024-03-29 08:52:37',NULL,NULL),(4,4,1,0,890,'2024-03-29 08:52:59',NULL,NULL),(5,5,1,0,789,'2024-03-29 08:56:30',NULL,NULL),(6,6,1,0,15,'2024-03-31 15:33:04',NULL,NULL),(7,6,1,0,0,'2024-03-31 15:33:04',NULL,NULL);
-/*!40000 ALTER TABLE `response` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `role`
@@ -407,16 +339,6 @@ CREATE TABLE `users` (
   UNIQUE KEY `Email_UNIQUE` (`Email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `users`
---
-
-LOCK TABLES `users` WRITE;
-/*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,NULL,NULL,'samuelnicklaus1@gmail.com','scrypt:32768:8:1$M4OVKxEihK5R0XqS$c98dc50da19fd1c0273f39ebf5b67c9622df18cfabcaf21e330d95860b327858e26094d68497521a123f04d0d084a198442d209ba85a43a01c207768a47af90a',NULL,1,1,'Iowa','Iowa City','229 South Dubuque Street',41.658192,-91.533464,52240,NULL),(2,NULL,NULL,'snicklaus@uiowa.edu','scrypt:32768:8:1$K95GO4dcZVHJuork$408d3fca22d84e3391d650fcd0120f804b8ed573c2f3ce7fc4c111b64471c44b194357900e725fbae84301a3581293e7b6db331ed4ef6f1d8f007086983965f4',NULL,2,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(3,NULL,NULL,'udithaj7@gmail.com','scrypt:32768:8:1$DFksqltv5RNNkRG9$edde554550a6d773811947251945cf050f1a2a332dcc45f3535f5e34959f595ea41b89b269cd8740b29e2496722b1457a89db40705d26379c8b835fe047f80ec',NULL,1,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(5,NULL,NULL,'spenholman@uiowa.edu','scrypt:32768:8:1$IxZmK0StCgOuO3mQ$58c5433538c911a4082b753f05914895e001f972cbdd16285f0318a0337cc1621d924e6906e71a88f2294805c0060817371177f3e0677dc52b5562739a7f3da6',NULL,1,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
-/*!40000 ALTER TABLE `users` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Dumping routines for database 'theapp'
